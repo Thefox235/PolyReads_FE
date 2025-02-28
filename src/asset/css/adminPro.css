@@ -1,0 +1,174 @@
+/* Container chính */
+.admin-product {
+
+  float: right;
+  background-color: #f7f7f7;
+  width: 80%;
+  margin: 15px;
+  margin-top: 61px;
+  padding-top: 15px;
+  box-sizing: border-box;
+  font-family: "Inter-Light", Helvetica, sans-serif;
+}
+.action-button
+{      
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.trash
+{
+  padding: 10px; 
+  background-color: #FBDDDD;
+  border: none;
+}
+.fix
+{
+  padding: 10px;
+
+  background-color: #D3EADD;
+}
+/* Header */
+.admin-product__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #fff;
+  margin-bottom: 20px;
+}
+
+.admin-product__header-left,
+.admin-product__header-right {
+  display: flex;
+  align-items: center;
+}
+
+.admin-product__menu-wrapper {
+  width: 70px;
+  height: 61px;
+  background-color: #917fb3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-product__menu {
+  width: 30px;
+  height: 30px;
+}
+
+.admin-product__logo {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.admin-product__download {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.admin-product__logo-text {
+  font-family: "Inter-Medium", Helvetica, sans-serif;
+  font-weight: 500;
+  color: #fff;
+  font-size: 28px;
+  -webkit-text-stroke: 1px #000;
+  margin-left: 10px;
+}
+
+/* Phần Thêm Danh Mục & tiêu đề danh mục */
+.admin-product__action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.book-description {
+  width: 300px;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;      
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.book-name {
+  width: 300px;
+  -webkit-line-clamp: 6;      
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.admin-product__btn-add-category {
+  padding: 8px 12px;
+  background-color: #917fb3;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: "Inter-Medium", Helvetica, sans-serif;
+  font-size: 16px;
+}
+
+.admin-product__category-title {
+  font-family: "Inter-Medium", Helvetica, sans-serif;
+  font-size: 24px;
+  color: #333;
+}
+
+/* Bảng sản phẩm */
+.admin-product__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.admin-product__table th,
+.admin-product__table td {
+
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.admin-product__table th {
+  background-color: #917fb3;
+  color: #fff;
+  font-family: "Inter-Medium", Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.admin-product__table td {
+  font-family: "Inter-Light", Helvetica, sans-serif;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Hình ảnh sản phẩm trong bảng */
+.admin-product__table img {
+  width: 89px;
+  height: 124px;
+  object-fit: cover;
+}
+
+/* Phân trang */
+.admin-product__pagination {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.admin-product__pagination-btn {
+  padding: 8px 12px;
+  background-color: #917fb3;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.admin-product__pagination-btn--active {
+  background-color: #ff5f5f;
+}

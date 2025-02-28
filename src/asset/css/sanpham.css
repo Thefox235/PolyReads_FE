@@ -1,0 +1,254 @@
+.san-pham,
+.san-pham * {
+  box-sizing: border-box;
+}
+
+.san-pham {
+  display: flex;
+  padding-top: 30px;
+  /* flex-wrap: wrap; */
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  background-color: #f9f9f9;
+  max-width: 1200px;
+  overflow: hidden;
+}
+
+.san-pham-item {
+  display: flex;
+  flex-direction: column;
+
+  width: 227px;
+  height: 450px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 0.25px solid #9a9797;
+  box-shadow: 5px 5px 4px 0px rgba(145, 127, 179, 1);
+  padding: 15px;
+  transition: all 0.3s ease;
+}
+
+.san-pham-item:hover {
+
+  transform: translateY(-10px);
+  border: 1px solid red;
+  box-shadow: none;
+}
+
+.san-pham-item img {
+  width: 100%;
+  height: 266px;
+  object-fit: cover;
+  border-radius: 20px 20px 0 0;
+}
+
+.sach-title {
+  color: #000000;
+  text-align: left;
+  font-family: "Inter-Medium", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 10px 0;
+}
+
+.shop-name-price-old {
+  display: flex;
+  justify-content: space-between;
+  align-items: left;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.shop-name {
+  color: #000000;
+  text-align: right;
+  font-family: "Inter-Medium", sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.price-old {
+  color: #a3a3a3;
+  text-align: left;
+  font-family: "Inter-Light", sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  text-decoration: line-through;
+}
+
+.price-current {
+  color: #fe6332;
+  text-align: left;
+  font-family: "Inter-Medium", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.add-to-cart {
+  color: #ff3a3a;
+  text-align: center;
+  font-family: "Inter-Medium", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  margin-top: auto;
+  padding: 10px;
+  width: 100%;
+  background-color: #fff;
+  border-top: 0.5px solid #000000;
+  border-radius: 0 0 20px 20px;
+}
+
+.list-product {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  /* Adjust gap as needed */
+  padding-top: 15px;
+  justify-content: start;
+}
+
+@media (max-width: 768px) {
+  .mobile-product {}
+
+}
+
+.list-product {
+  overflow: hidden;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.products-wrapper,
+.products-wrapper2,
+.products-wrapper3 {
+  display: flex;
+  gap: 15px;
+  transition: transform 0.5s ease-in-out;
+}
+
+@media (min-width: 1168px) {
+  .container-card2 .list-product .mobile-product {
+    width: 171.5px;
+  }
+
+}
+
+@media (max-width: 568px) {
+  .container-card2 .list-product .mobile-product {
+    width: 80%;
+  }
+
+}
+
+.products-wrapper .mobile-product {
+  width: 171.5px;
+}
+
+.mobile-product {
+  width: 171.5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.mobile-product:hover .product-name {
+  color: red;
+}
+
+.mobile-product:hover .product-price {
+  color: yellow;
+}
+
+.product-image {
+  position: relative;
+}
+
+.product-image img {
+  width: 170px;
+  height: 235px;
+  object-fit: cover;
+}
+
+.product-details {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+  font-family: "Inter-Light", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+  margin-bottom: 5px;
+}
+.sptt {
+  text-transform: uppercase;
+  background: #917FB3;
+  color: #fff;
+  font-size: 20px;
+  padding: 8px 50px;
+  clip-path: polygon(10px 0%,
+          /* Góc trên bên trái */
+          calc(100% - 25px) 0%,
+          /* Góc trên bên phải */
+          100% 100px,
+          /* Cắt góc trên bên phải */
+          100% 100px,
+          /* Góc dưới bên phải */
+          0% 100px,
+          /* Góc dưới bên trái */
+          100% 600px
+          /* Cắt góc trên bên trái */
+      );
+}
+.price-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.product-price {
+  font-family: "Inter-Light", sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #C92127;
+}
+
+.sale-badge {
+  background: #C92127;
+  color: #fff;
+  padding: 5px;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.price-sold-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.product-old-price {
+  font-family: "Inter-Light", sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  text-decoration: line-through;
+  color: #666;
+}
+
+.product-sold {
+  font-family: "Inter-Light", sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: #666;
+}
