@@ -18,7 +18,8 @@ import ViewAuthor from './components/admin/viewAuthor';
 import CreateAuthor from './components/admin/createAuthor';
 import EditAuthor from './components/admin/editAuthor';
 import Contact from './components/contact';
-
+import PrivateRoute from './components/PrivateRoute';
+import Register from './components/register';
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
           {/* Các route không cần header (hoặc có layout khác) */}
           <Route element={<MainLayout />}>
             <Route path="/contact" element={<Contact />} />
-
+            <Route path="/register" element={<Register />} />
             <Route path="/login" element={<AuthForm />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/product/:id" element={<Detail />} />
@@ -46,15 +47,15 @@ function App() {
 
           {/* Các route admin có thể đặt ở đây nếu muốn dùng chung layout */}
           <Route element={<AdminLayout />}>
-            <Route path="/viewPro" element={<ViewPro />} />
-            <Route path="/viewCate" element={<ViewCate />} />
-            <Route path="/viewAuthor" element={<ViewAuthor />} />
-            <Route path="/createPro" element={<CreatePro />} />
-            <Route path="/createCate" element={<CreateCate />} />
-            <Route path="/createAuthor" element={<CreateAuthor />} />
-            <Route path="/editSp/:id" element={<EditPro />} />
-            <Route path="/editCate/:id" element={<EditCate />} />
-            <Route path="/editAuthor/:id" element={<EditAuthor />} />
+            <Route path="/viewPro" element={<PrivateRoute element={ViewPro} roles={['1']} />} />
+            <Route path="/viewCate" element={<PrivateRoute element={ViewCate} roles={['1']} />} />
+            <Route path="/viewAuthor" element={<PrivateRoute element={ViewAuthor} roles={['1']} />} />
+            <Route path="/createPro" element={<PrivateRoute element={CreatePro} roles={['1']} />} />
+            <Route path="/createCate" element={<PrivateRoute element={CreateCate} roles={['1']} />} />
+            <Route path="/createAuthor" element={<PrivateRoute element={CreateAuthor} roles={['1']} />} />
+            <Route path="/editSp/:id" element={<PrivateRoute element={EditPro} roles={['1']} />} />
+            <Route path="/editCate/:id" element={<PrivateRoute element={EditCate} roles={['1']} />} />
+            <Route path="/editAuthor/:id" element={<PrivateRoute element={EditAuthor } roles={['1']} />} />
           </Route>
           <Route path="/sideBar" element={<SideBar />} />
 

@@ -2,6 +2,12 @@
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:3000'; 
+//hàm sát thực otp
+export const verifyOTP = async (data) => {
+  // data gồm { userId, otp }
+  const response = await axios.post(`${BASE_URL}/users/verify-otp`, data);
+  return response.data;
+};
 //hàm lấy hình ảnh theo productId
 export const getImagesByProductId = async (productId) => {
   try {

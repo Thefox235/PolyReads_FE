@@ -41,8 +41,8 @@ const HeaderNoBan = () => {
                             </div>
                             <nav className="d-flex align-items-center custom-nav">
                                 <li>Tiếng Việt</li>
-                                <li className="border-start p-2">ĐĂNG KÝ</li>
-                                <li className="border-start p-2">ĐĂNG NHẬP</li>
+                                <li className="border-start p-2"><a href='/register' style={{color:"#212529"}}>ĐĂNG KÝ</a></li>
+                                <li className="border-start p-2"> <a href='/login' style={{color:"#212529"}}>ĐĂNG NHẬP</a></li>
                                 <li className="border-start p-2">
                                     <img
                                         src="https://media-hosting.imagekit.io//c2caec833b6e46b1/heart0.png?Expires=1835161260&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=ECcmFiPc25rbl0Ua6OVmPhaGXj9bv48u7DJ8WIHciHUxydXUxwlSoqdw4AdC~gB53Cd89-aCTQA0T9J-Oo6gyV5UMEUPOf3oarUUO3yWii47mhIDpBoddhkZ94GvkN9s~WkQbiyqJlrJzXNUrgLLOy8lOQvn8uCB3ZL39e6x4s~2b06sSG2~plFdvQC2tBHYyqXst7J1rXRRhtIDybKKQI28vuQVwogOBL6v-SLHeIve30qQ64bMS6KBx7JPTyqkkmf93yfez076uPj489G83T4fXAPCAboBqnT8S1XETXtfQZjL-Y2WsQz3BVM9vZ9HyShpbENHzuZVlT~tdjS6EQ__"
