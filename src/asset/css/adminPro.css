@@ -10,6 +10,11 @@
   box-sizing: border-box;
   font-family: "Inter-Light", Helvetica, sans-serif;
 }
+.admin-product__table td.banner-image .banner-img {
+  width: 880px;
+  height: 450px;
+  object-fit: cover;
+}
 .action-button
 {      
   display: flex;
@@ -25,7 +30,7 @@
 .fix
 {
   padding: 10px;
-
+  border: none;
   background-color: #D3EADD;
 }
 /* Header */
@@ -114,8 +119,9 @@
 
 .admin-product__category-title {
   font-family: "Inter-Medium", Helvetica, sans-serif;
-  font-size: 24px;
+  font-size: 16px;
   color: #333;
+  font-weight: bold;
 }
 
 /* Bảng sản phẩm */

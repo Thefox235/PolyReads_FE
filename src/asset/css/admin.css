@@ -5,6 +5,15 @@
   justify-content: space-between;
   width: 100%;
 }
+
+.btn-primary
+{
+  background-color: #917fb3;
+}
+.btn-secondary
+{
+  background-color: #917fb3;
+}
 .viewCate-container-fluid
 {
   float: right;
@@ -16,37 +25,92 @@
   box-sizing: border-box;
   font-family: "Inter-Light", Helvetica, sans-serif;
 }
-.editPro-container
-{
-  float: right;
+.editPro-container {
   background-color: #f7f7f7;
-  width: 80%;
-  margin: 15px;
-  margin-top: 61px;
-  padding: 30px;
-  box-sizing: border-box;
-  font-family: "Inter-Light", Helvetica, sans-serif;
-}
-.editPro-container .form-group
-{
-  padding: 15px;
-}
-.addPro-container
-{
-  float: right;
-  background-color: #f7f7f7;
-  width: 80%;
-  margin: 15px;
-  margin-top: 61px;
-  padding: 30px;
-  box-sizing: border-box;
-  font-family: "Inter-Light", Helvetica, sans-serif;
-}
-.addPro-container .form-group
-{
   width: 100%;
-  padding: 15px;
+  padding: 30px;
+  box-sizing: border-box;
+  font-family: "Inter-Light", Helvetica, sans-serif;
 }
+.editPro-container h1 
+{
+  font-size: 16px;
+  font-weight: bold;
+  padding-bottom: 15px;
+}
+/* Giãn cách dưới mỗi nhóm */
+.editPro-container .form-group {
+  margin-bottom: 15px;
+}
+
+/* Style cho label */
+.editPro-container .form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Style cho input, textarea, select */
+.editPro-container .form-control {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* Thêm sảm phẩm css */
+.addPro-container {
+  background-color: #f7f7f7;
+  width: 100%;
+  padding: 30px;
+  box-sizing: border-box;
+  font-family: "Inter-Light", Helvetica, sans-serif;
+}
+.addPro-container h1 
+{
+  font-size: 16px;
+  font-weight: bold;
+  padding-bottom: 15px;
+}
+/* Giãn cách dưới mỗi nhóm */
+.addPro-container .form-group {
+  margin-bottom: 15px;
+}
+
+/* Style cho label */
+.addPro-container .form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Style cho input, textarea, select */
+.addPro-container .form-control {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Container cho 2 input cùng hàng */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px; /* khoảng cách giữa các cột */
+  margin-bottom: 15px;
+}
+
+/* Mỗi form-group trong hàng chiếm khoảng 45% để tạo khoảng trắng giữa các cột */
+.form-row .form-group {
+  flex: 1 1 45%;
+}
+
+/* Các form-group full-width chiếm cả hàng */
+.form-group.full-width {
+  flex: 1 1 100%;
+}
+
 .author-card .form-group
 {
   padding: 15px;

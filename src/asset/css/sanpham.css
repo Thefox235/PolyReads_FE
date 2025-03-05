@@ -20,11 +20,11 @@
   flex-direction: column;
 
   width: 227px;
-  height: 450px;
+  height: 455px;
   background: #ffffff;
   border-radius: 20px;
   border: 0.25px solid #9a9797;
-  box-shadow: 5px 5px 4px 0px rgba(145, 127, 179, 1);
+  /* box-shadow: 5px 5px 4px 0px rgba(145, 127, 179, 1); */
   padding: 15px;
   transition: all 0.3s ease;
 }
@@ -44,6 +44,19 @@
 }
 
 .sach-title {
+  /* Thiết lập hiển thị dạng webkit-box để hỗ trợ dòng giới hạn */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;   /* Giới hạn tối đa 2 dòng */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+
+  /* Giữ chiều cao cố định cho 2 dòng */
+  line-height: 18px;        /* Điều chỉnh phù hợp với font-size */
+  height: 36px;             /* 2 dòng x 18px */
+
+  /* Các thuộc tính ban đầu */
   color: #000000;
   text-align: left;
   font-family: "Inter-Medium", sans-serif;
@@ -51,6 +64,7 @@
   font-weight: 500;
   margin: 10px 0;
 }
+
 
 .shop-name-price-old {
   display: flex;
@@ -110,10 +124,16 @@
 }
 
 @media (max-width: 768px) {
-  .mobile-product {}
+  .mobile-product 
+  {
+    width: 220.5px;
+  }
 
 }
-
+.sptt
+{
+  padding: 0 40px;
+}
 .list-product {
   overflow: hidden;
   width: 100%;
@@ -130,7 +150,7 @@
 
 @media (min-width: 1168px) {
   .container-card2 .list-product .mobile-product {
-    width: 171.5px;
+    width: 220.5px;
   }
 
 }
@@ -143,12 +163,15 @@
 }
 
 .products-wrapper .mobile-product {
-  width: 171.5px;
+  width: 220.5px;
 }
-
+.NewProducts .list-product .mobile-product 
+{
+  width: 208.5px;
+}
 .mobile-product {
-  width: 171.5px;
-  border: 1px solid #ccc;
+  width: 220.5px;
+  /* border: 1px solid #ccc; */
   border-radius: 5px;
   overflow: hidden;
   background: #fff;
@@ -167,6 +190,8 @@
 
 .product-image {
   position: relative;
+  display: flex;
+  justify-content: center;
 }
 
 .product-image img {
@@ -182,12 +207,35 @@
 }
 
 .product-name {
+  /* Các thuộc tính bắt buộc để giới hạn 2 dòng và hiển thị dấu ellipsis nếu vượt quá */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  
+  /* Đảm bảo phần tử xác định chiều rộng */
+  width: 100%;
+  
+  /* Các thuộc tính font chữ và style */
   font-family: "Inter-Light", sans-serif;
   font-size: 14px;
   font-weight: 400;
   color: #333333;
   margin-bottom: 5px;
+
+  /* Xác định line-height và height cố định cho 2 dòng */
+  line-height: 20px;  /* Điều chỉnh tùy theo thiết kế */
+  height: 40px;       /* 2 dòng x 20px */
 }
+
+
+.mobile-product:hover .product-name {
+  color: red;
+}
+
+
 .sptt {
   text-transform: uppercase;
   background: #917FB3;

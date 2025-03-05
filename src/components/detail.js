@@ -355,7 +355,7 @@ const Detail = () => {
                 </div>
                 <button className="btn-dg">
                   <img
-                    src="https://s3-alpha-sig.figma.com/img/b6aa/f657/1978c185a7f2282d0ed1795e3d590d94?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=lq9~A-EVpEjUyfZ2NB3O8C23vM2J0qDRJOg3ARxLHp3hbmfTksjZqbrueTTDLn3LBCGV1Txgy67YRkDbbOP1VaGpE8QdJigiEkAHCBSkmzpxN5RfZxfWYtqinc2ot895VRittCp9HlxaKBWjTE2~BZ0jM6YbkWtbbHoQjOIc8UGC~M5rgxeFKhyTUGxBqgJgc6W54XHIXTjHSRZyigP87y~7loQVCZR~n7Ci1earH5On7gFl60sK7TWWZ56XrQNMbFJ9F3w~cQjDDesAyQTGaxXDocxc0fbpcWaIFQY2S7q8kPBaaFhtSRxPM-sde6aSGOpKZuUkmkm7Jv-EKPyOug__"
+                    src="https://media-hosting.imagekit.io//e53ddc3e6be34a6a/Hand%20With%20Pen.png?Expires=1835791964&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=PJC2u5WFpYM5ORSBexftdgeTtsCwdBwfnJwvlVOwvE-4MY8f8XIJUGcFa7Eyf8DD0HNW72RTGUponK7XVxUy5kZORgWfUssFzodQEXds0XcWBgozC1e9zfZ-GpzUbiZSjvRtqKni2Id6xz1YSQHeqbAKNm-aQnvuiEl0alOJEcoktpR2XUjh~cWF5cPQmBxAt7YoUT8hv5T0fOpLJ2LQsmp75-mS32ePvV0kvheoXxMrxNMD3ql-KS9xvwVd~ATa2WUcYxWKwYO1T0a9jwmXef~5bX3~L3lsUjn~A3NjSV2td7N0YK7RECrqIQ6-WEAq8CkEwRfoRoWJHTJuKIsfwQ__"
                     alt="Viết đánh giá"
                     width={30}
                   />
@@ -390,7 +390,7 @@ const Detail = () => {
                   <div className="review-footer d-flex align-items-center gap-4">
                     <div className="review-helpful d-flex align-items-center gap-2">
                       <img
-                        src="https://s3-alpha-sig.figma.com/img/7ef3/8b5f/9f5710eaf5f5df53922b0e53b62def82?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=P5LEdOC2I9oVefCxo6lAN~au9f4v2eI7i5gXKbap8-Wgxo-xA-G~leotfnS9rMe7zLGaTgOEbGzP85SHF3Kv16JkTPu6NS~gOyXdNTwbcnIDiXyLlYBev3fF8ZrMxPH5Eg-7KZXQmGERCw4JGXPOwaFvPWbRqHE4mmduNyzf8~niXglbl0e1NdHZs-bh1WFHxodm5dMRdr3nZXkMLSisrvp~44hxwN1aBnfIiimgOGgS4cohejGA1HHWnI2i-yDs4Q8-e8G3MW3uZcQdT5jiZ8kSE3gKFyYK3nhJVE-XM1EX1vk~7LcePbf-z4aR1VlS4x0286e5DPRgUy6AAlI~zg__"
+                        src="https://media-hosting.imagekit.io//da4de5807dfd47de/Facebook%20Like.png?Expires=1835791963&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=t7-46AdUsTOXIE0Cg7IiRQoWmEZY-~zS4UTkftE6X49wXu5dnBuHE4bBLHAJ7QneCpXBoznqrUvYVxXRNpUMOkF9McmwRXL3WzFqJgSdZ9uMlC2rlQMLqcSQNtE3c9gp49w8SFi1On4Or6ogcl4Ez52NblC-ZOnprHCIH3JudlH3WxmEFichJcfvH4WbzJRDQr6vl4ExjRYzGPtE1q8nt8coo8VDgcC4Tb0eXvhhJUJAwnH2Wdv074SyIJlVUKVdj1PeltUgclKm6cpKzvgnI5Lu~lw4LrNpqHcUjeqS5pPADVAjQ39AZCNwU4MiGuVitbVd8RNWVDeECLTA2UAeMg__"
                         width={18}
                         alt="Hữu ích"
                       />

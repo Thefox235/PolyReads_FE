@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/home';
 import Detail from './components/detail';
@@ -21,8 +21,13 @@ import Contact from './components/contact';
 import PrivateRoute from './components/PrivateRoute';
 import Register from './components/register';
 import Cart from './components/cart';
+import ViewBanner from './components/admin/viewBanner';
+import { createBanner } from './api/server';
+import EditBanner from './components/admin/editBanner';
 
 function App() {
+
+  // console.log(user);
   return (
     <div className="App">
       <Router>
@@ -52,12 +57,18 @@ function App() {
             <Route path="/viewPro" element={<PrivateRoute element={ViewPro} roles={['1']} />} />
             <Route path="/viewCate" element={<PrivateRoute element={ViewCate} roles={['1']} />} />
             <Route path="/viewAuthor" element={<PrivateRoute element={ViewAuthor} roles={['1']} />} />
+            <Route path="/viewBanner" element={<PrivateRoute element={ViewBanner} roles={['1']} />} />
+
             <Route path="/createPro" element={<PrivateRoute element={CreatePro} roles={['1']} />} />
             <Route path="/createCate" element={<PrivateRoute element={CreateCate} roles={['1']} />} />
             <Route path="/createAuthor" element={<PrivateRoute element={CreateAuthor} roles={['1']} />} />
+            <Route path="/createBanner" element={<PrivateRoute element={createBanner} roles={['1']} />} />
+
             <Route path="/editSp/:id" element={<PrivateRoute element={EditPro} roles={['1']} />} />
             <Route path="/editCate/:id" element={<PrivateRoute element={EditCate} roles={['1']} />} />
             <Route path="/editAuthor/:id" element={<PrivateRoute element={EditAuthor } roles={['1']} />} />
+            <Route path="/editBanner/:id" element={<PrivateRoute element={EditBanner } roles={['1']} />} />
+
           </Route>
           <Route path="/sideBar" element={<SideBar />} />
 

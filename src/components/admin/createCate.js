@@ -24,7 +24,8 @@ const CreateCate = () => {
       console.log('Danh mục mới:', newCategory);
       alert('Thêm danh mục thành công');
       // Reset form sau khi submit thành công
-      setForm({ name: '', description: '' });
+      window.location.reload(); // Reload lại trang sau khi thêm danh mục thành công
+      // setForm({ name: '', description: '' });
       setError('');
     } catch (error) {
       setError('Có lỗi xảy ra khi thêm danh mục');

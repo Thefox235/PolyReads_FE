@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import {
-  getProductById,
   getCategories,
   getAuthor,
   getImagesByProductId,
   updateProduct
 } from '../../api/server';
 
-const EditPro = () => {
-  const { id } = useParams();
-
-  // State cho thông tin sản phẩm (không chứa hình ảnh vì ảnh nằm ở bảng riêng)
-  const [form, setForm] = useState({
+const EditPro = ({ initialData, onClose }) => {
+  // Sử dụng dữ liệu ban đầu được truyền từ component cha
+  const [form, setForm] = useState(initialData || {
     name: '',
     title: '',
     description: '',
@@ -32,51 +28,43 @@ const EditPro = () => {
   const [categories, setCategories] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [error, setError] = useState('');
-
-  // State cho danh sách hình ảnh đã thêm (mảng các object { url })
+  // State cho danh sách hình ảnh
   const [images, setImages] = useState([]);
-  // State cho URL ảnh mới nhập từ input
   const [imageUrlInput, setImageUrlInput] = useState('');
 
+  // Load thông tin danh mục và tác giả
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Lấy thông tin sản phẩm
-        const productData = await getProductById(id);
-        setForm(productData);
-
-        // Lấy hình ảnh liên quan tới sản phẩm từ bảng hình ảnh
-        const imagesData = await getImagesByProductId(id);
+        const catData = await getCategories();
+        setCategories(catData);
+        const authData = await getAuthor();
+        setAuthors(authData);
+        // Nếu bạn có API để lấy hình ảnh theo product id:
+        const imagesData = await getImagesByProductId(initialData._id);
         if (imagesData && imagesData.length > 0) {
           setImages(imagesData);
         }
-
-        // Lấy danh sách danh mục và tác giả
-        const categoriesData = await getCategories();
-        setCategories(categoriesData);
-        const authorsData = await getAuthor();
-        setAuthors(authorsData);
       } catch (err) {
         console.error('Có lỗi xảy ra khi lấy dữ liệu:', err);
-        setError('Có lỗi xảy ra khi lấy dữ liệu sản phẩm, danh mục hoặc tác giả');
+        setError('Có lỗi xảy ra khi lấy danh mục hoặc tác giả');
       }
     };
+    if (initialData) {
+      fetchData();
+    }
+  }, [initialData]);
 
-    fetchData();
-  }, [id]);
-
-  // Xử lý thay đổi đối với các input chung của product
+  // Handler cho các input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // Xử lý thay đổi cho input URL hình ảnh mới
   const handleImageInputChange = (e) => {
     setImageUrlInput(e.target.value);
   };
 
-  // Khi nhấn nút "Thêm ảnh", thêm URL vào mảng images
   const handleAddImage = () => {
     if (imageUrlInput.trim()) {
       setImages(prev => [...prev, { url: imageUrlInput.trim() }]);
@@ -84,35 +72,24 @@ const EditPro = () => {
     }
   };
 
-  // Hàm submit cập nhật sản phẩm
-  const fetchData = async () => {
-    try {
-      const productData = await getProductById(id);
-      setForm(productData);
-      const imagesData = await getImagesByProductId(id);
-      if (imagesData && imagesData.length > 0) {
-        setImages(imagesData);
-      }
-    } catch (error) {
-      console.error('Có lỗi xảy ra khi lấy dữ liệu:', error);
-    }
+  const handleDeleteImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateProduct(id, form, images);
-      alert('Sản phẩm đã được cập nhật thành công!');
-      await fetchData(); // cập nhật lại dữ liệu sau update
+      // Gọi API cập nhật sản phẩm với id từ initialData
+      await updateProduct(initialData._id, form, images);
+      alert('Cập nhật sản phẩm thành công!');
+      // Đóng modal sau khi thành công
+      window.location.reload();
+
     } catch (err) {
       console.error('Có lỗi xảy ra khi cập nhật sản phẩm:', err);
       setError('Có lỗi xảy ra khi cập nhật sản phẩm');
+      alert('Có lỗi xảy ra khi cập nhật sản phẩm');
     }
-  };
-  
-  //xóa hình
-  const handleDeleteImage = (index) => {
-    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
   return (
@@ -120,198 +97,198 @@ const EditPro = () => {
       <h1>Sửa sản phẩm</h1>
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>
-        {/* Tên sản phẩm */}
-        <div className="form-group">
-          <label htmlFor="name">Tên sản phẩm:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            className="form-control"
-          />
+        {/* Row 1: Tên sản phẩm và Title */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="name">Tên sản phẩm:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="title">Title:</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
         </div>
 
-        {/* Title */}
-        <div className="form-group">
-          <label htmlFor="title">Title:</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            className="form-control"
-          />
+        {/* Row 2: Số lượng và Giá */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="stock">Số lượng:</label>
+            <input
+              type="number"
+              id="stock"
+              name="stock"
+              value={form.stock}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="price">Giá:</label>
+            <input
+              type="number"
+              id="price"
+              name="price"
+              value={form.price}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
         </div>
 
-        {/* Số lượng */}
-        <div className="form-group">
-          <label htmlFor="stock">Số lượng:</label>
-          <input
-            type="number"
-            id="stock"
-            name="stock"
-            value={form.stock}
-            onChange={handleChange}
-            className="form-control"
-          />
+        {/* Row 3: Trọng lượng và Kích thước */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="weight">Trọng lượng:</label>
+            <input
+              type="text"
+              id="weight"
+              name="weight"
+              value={form.weight}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="size">Kích thước:</label>
+            <input
+              type="text"
+              id="size"
+              name="size"
+              value={form.size}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
         </div>
 
-        {/* Giá */}
-        <div className="form-group">
-          <label htmlFor="price">Giá:</label>
-          <input
-            type="number"
-            id="price"
-            name="price"
-            value={form.price}
-            onChange={handleChange}
-            className="form-control"
-          />
+        {/* Row 4: Số trang và Ngôn ngữ */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="pages">Số trang:</label>
+            <input
+              type="text"
+              id="pages"
+              name="pages"
+              value={form.pages}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="language">Ngôn ngữ:</label>
+            <input
+              type="text"
+              id="language"
+              name="language"
+              value={form.language}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
         </div>
 
-        {/* Trọng lượng */}
-        <div className="form-group">
-          <label htmlFor="weight">Trọng lượng:</label>
-          <input
-            type="text"
-            id="weight"
-            name="weight"
-            value={form.weight}
-            onChange={handleChange}
-            className="form-control"
-          />
+        {/* Row 5: Hình thức và Năm phát hành */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="format">Hình thức:</label>
+            <input
+              type="text"
+              id="format"
+              name="format"
+              value={form.format}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="published_date">Năm phát hành:</label>
+            <input
+              type="date"
+              id="published_date"
+              name="published_date"
+              value={form.published_date}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
         </div>
 
-        {/* Kích thước */}
-        <div className="form-group">
-          <label htmlFor="size">Kích thước:</label>
-          <input
-            type="text"
-            id="size"
-            name="size"
-            value={form.size}
-            onChange={handleChange}
-            className="form-control"
-          />
+        {/* Row 6: Nhà xuất bản (full-width) */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="publisher">Nhà xuất bản:</label>
+            <input
+              type="text"
+              id="publisher"
+              name="publisher"
+              value={form.publisher}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="description">Mô tả:</label>
+            <textarea
+              id="description"
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              placeholder="Nhập mô tả"
+              className="form-control"
+            ></textarea>
+          </div>
         </div>
 
-        {/* Số trang */}
-        <div className="form-group">
-          <label htmlFor="pages">Số trang:</label>
-          <input
-            type="text"
-            id="pages"
-            name="pages"
-            value={form.pages}
-            onChange={handleChange}
-            className="form-control"
-          />
+        {/* Row 8: Danh mục và Tác giả */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="category">Danh mục:</label>
+            <select
+              id="category"
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              className="form-control"
+            >
+              <option value="">Chọn danh mục</option>
+              {categories.map(dm => (
+                <option key={dm._id} value={dm._id}>{dm.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="author">Tác giả:</label>
+            <select
+              id="author"
+              name="author"
+              value={form.author}
+              onChange={handleChange}
+              className="form-control"
+            >
+              <option value="">Chọn tác giả</option>
+              {authors.map(au => (
+                <option key={au._id} value={au._id}>{au.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* Ngôn ngữ */}
-        <div className="form-group">
-          <label htmlFor="language">Ngôn ngữ:</label>
-          <input
-            type="text"
-            id="language"
-            name="language"
-            value={form.language}
-            onChange={handleChange}
-            className="form-control"
-          />
-        </div>
-
-        {/* Hình thức */}
-        <div className="form-group">
-          <label htmlFor="format">Hình thức:</label>
-          <input
-            type="text"
-            id="format"
-            name="format"
-            value={form.format}
-            onChange={handleChange}
-            className="form-control"
-          />
-        </div>
-
-        {/* Năm phát hành */}
-        <div className="form-group">
-          <label htmlFor="published_date">Năm phát hành:</label>
-          <input
-            type="date"
-            id="published_date"
-            name="published_date"
-            value={form.published_date}
-            onChange={handleChange}
-            className="form-control"
-          />
-        </div>
-
-        {/* Nhà xuất bản */}
-        <div className="form-group">
-          <label htmlFor="publisher">Nhà xuất bản:</label>
-          <input
-            type="text"
-            id="publisher"
-            name="publisher"
-            value={form.publisher}
-            onChange={handleChange}
-            className="form-control"
-          />
-        </div>
-
-        {/* Mô tả */}
-        <div className="form-group">
-          <label htmlFor="description">Mô tả:</label>
-          <textarea
-            id="description"
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            placeholder="Nhập mô tả"
-            className="form-control"
-          ></textarea>
-        </div>
-
-        {/* Danh mục */}
-        <div className="form-group">
-          <label htmlFor="category">Danh mục:</label>
-          <select
-            id="category"
-            name="category"
-            value={form.category}
-            onChange={handleChange}
-            className="form-control"
-          >
-            <option value="">Chọn danh mục</option>
-            {categories.map(dm => (
-              <option key={dm._id} value={dm._id}>{dm.name}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Tác giả */}
-        <div className="form-group">
-          <label htmlFor="author">Tác giả:</label>
-          <select
-            id="author"
-            name="author"
-            value={form.author}
-            onChange={handleChange}
-            className="form-control"
-          >
-            <option value="">Chọn tác giả</option>
-            {authors.map(au => (
-              <option key={au._id} value={au._id}>{au.name}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Phần hình ảnh sản phẩm */}
-        <div className="form-group">
+        {/* Row 9: Hình ảnh sản phẩm (full-width) */}
+        <div className="form-group full-width">
           <label htmlFor="imageUrl">Hình ảnh sản phẩm (URL):</label>
           <input
             type="text"
@@ -363,9 +340,8 @@ const EditPro = () => {
           )}
         </div>
 
-
-        <button type="submit"  className="btn btn-primary">Submit</button>
-
+        {/* Nút Submit */}
+        <button type="submit" className="btn btn-primary">Sửa sản phẩm</button>
       </form>
     </div>
   );

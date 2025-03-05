@@ -1,18 +1,18 @@
 import { Link } from 'react-router-dom';
 import '../asset/css/header.css';
-import React, { useEffect } from 'react';
-const HeaderNoBan = () => {
-    
-      // Functions to handle open and close elements
-      const closeElement = () => {
+import React from 'react';
+const HeaderNoBan = ({ user, handleLogout }) => {
+
+    // Functions to handle open and close elements
+    const closeElement = () => {
         const element = document.querySelector(".moblie");
         if (element) element.classList.remove("open");
-      };
-    
-      const openElement = () => {
+    };
+
+    const openElement = () => {
         const element = document.querySelector(".moblie");
         if (element) element.classList.toggle("open");
-      };
+    };
     return (
         <>
             <header>
@@ -41,8 +41,47 @@ const HeaderNoBan = () => {
                             </div>
                             <nav className="d-flex align-items-center custom-nav">
                                 <li>Tiếng Việt</li>
-                                <li className="border-start p-2"><a href='/register' style={{color:"#212529"}}>ĐĂNG KÝ</a></li>
-                                <li className="border-start p-2"> <a href='/login' style={{color:"#212529"}}>ĐĂNG NHẬP</a></li>
+                                <>
+                                    {user ? (
+                                        <li className="user-dropdown-menu">
+                                            <button className="user-dropdown-btn">
+                                                {user.name}
+                                            </button>
+                                            <div className="user-dropdown-content">
+                                                {user.role === "1" && (
+                                                    <>
+                                                        <a href="/dashboard">
+                                                            <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Dashboard
+                                                        </a>
+                                                        <a href="/viewPro">
+                                                            <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Quản lý sản phẩm
+                                                        </a>
+                                                        <a href="/admin/users">
+                                                            <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Quản lý người dùng
+                                                        </a>
+                                                        <hr className="user-dropdown-divider" />
+                                                    </>
+                                                )}
+                                                <a href="#" onClick={handleLogout}>
+                                                    ĐĂNG XUẤT
+                                                </a>
+                                            </div>
+                                        </li>
+                                    ) : (
+                                        <>
+                                            <li className="border-start p-2">
+                                                <Link to="/register" style={{ color: "#212529" }}>
+                                                    ĐĂNG KÝ
+                                                </Link>
+                                            </li>
+                                            <li className="border-start p-2">
+                                                <Link to="/login" style={{ color: "#212529" }}>
+                                                    ĐĂNG NHẬP
+                                                </Link>
+                                            </li>
+                                        </>
+                                    )}
+                                </>
                                 <li className="border-start p-2">
                                     <img
                                         src="https://media-hosting.imagekit.io//c2caec833b6e46b1/heart0.png?Expires=1835161260&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=ECcmFiPc25rbl0Ua6OVmPhaGXj9bv48u7DJ8WIHciHUxydXUxwlSoqdw4AdC~gB53Cd89-aCTQA0T9J-Oo6gyV5UMEUPOf3oarUUO3yWii47mhIDpBoddhkZ94GvkN9s~WkQbiyqJlrJzXNUrgLLOy8lOQvn8uCB3ZL39e6x4s~2b06sSG2~plFdvQC2tBHYyqXst7J1rXRRhtIDybKKQI28vuQVwogOBL6v-SLHeIve30qQ64bMS6KBx7JPTyqkkmf93yfez076uPj489G83T4fXAPCAboBqnT8S1XETXtfQZjL-Y2WsQz3BVM9vZ9HyShpbENHzuZVlT~tdjS6EQ__"
@@ -179,7 +218,7 @@ const HeaderNoBan = () => {
                                     <p>Allbook</p>
                                     <p>Sách mới</p>
                                     <p>FAQ</p>
-                                    <Link  style={{ color: "#212529" }} to={'/contact'}>Liên hệ</Link>
+                                    <Link style={{ color: "#212529" }} to={'/contact'}>Liên hệ</Link>
                                 </div>
                             </div>
                             <div className="d-flex justify-content-center">
