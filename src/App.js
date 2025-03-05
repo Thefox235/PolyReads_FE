@@ -20,6 +20,7 @@ import EditAuthor from './components/admin/editAuthor';
 import Contact from './components/contact';
 import PrivateRoute from './components/PrivateRoute';
 import Register from './components/register';
+import Cart from './components/cart';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
           {/* Các route không cần header (hoặc có layout khác) */}
           <Route element={<MainLayout />}>
             <Route path="/contact" element={<Contact />} />
+            <Route path="/cart" element={<Cart />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<AuthForm />} />
             <Route path="/logout" element={<Logout />} />

@@ -1,0 +1,170 @@
+.cart-container {
+    width: 80%;
+    margin: auto;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.cart-header {
+    display: grid;
+    grid-template-columns: 1fr 150px 150px; /* Chia thành 3 cột */
+    align-items: center;
+    padding: 10px;
+    font-weight: bold;
+    background-color: #f8f8f8;
+}
+
+.cart-header-item {
+    padding: 5px 10px;
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 40px 80px 1fr 150px 100px 40px;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 10px;
+    background-color: #f8f8f8;
+}
+
+.cart-img {
+    width: 80px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.cart-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 90%;
+}
+
+.book-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 1.4;
+}
+
+.book-type {
+    font-size: 14px;
+    color: #777;
+    margin: 2px 0;
+}
+
+.price {
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+.discount-price {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.original-price {
+    color: #999;
+    text-decoration: line-through;
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+.cart-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ff0800;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: rgb(51, 51, 51);
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    width: fit-content;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.quantity button {
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.quantity input {
+    width: 30px;
+    text-align: center;
+    border: none;
+    font-size: 16px;
+}
+
+.quantity button:hover {
+    background: #ddd;
+}
+.promo-section {
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.title-promotion{
+    color: rgb(5, 125, 206);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgb(172, 172, 172);
+    margin-bottom: 10px;
+}
+.title-discount{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.progress-container {
+    margin-top: 10px;
+    background: #f8f9fa;
+    padding: 10px;
+    padding: 0;
+}
+
+.progress {
+    height: 8px !important;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #007bff;
+    border-radius: 4px;
+}
+
+.progress-info span {
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.btn-sm {
+    padding: 5px 12px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.discount{
+    background: #4c98fca9;
+    color:#006eff;
+    padding: 5px 10px;
+    margin-top: 8px;
+}
