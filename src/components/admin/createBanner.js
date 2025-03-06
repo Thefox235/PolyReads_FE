@@ -6,7 +6,7 @@ const CreateBanner = ({ onClose, onCreateSuccess }) => {
   const [form, setForm] = useState({
     title: '',
     image_url: '',
-    position: '',
+    position: 'line-banner', // giá trị mặc định
     is_active: true  // mặc định active
   });
   const [error, setError] = useState('');
@@ -19,13 +19,34 @@ const CreateBanner = ({ onClose, onCreateSuccess }) => {
     }));
   };
 
+  const validateForm = () => {
+    // Kiểm tra các trường bắt buộc không được để trống
+    if (!form.title.trim()) {
+      setError("Vui lòng nhập tiêu đề banner");
+      return false;
+    }
+    if (!form.image_url.trim()) {
+      setError("Vui lòng nhập URL của hình ảnh");
+      return false;
+    }
+    // Nếu cần validate thêm các trường khác, bạn có thể thêm điều kiện ở đây.
+    setError(""); // reset lỗi nếu hợp lệ
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return; // Dừng khi validate không hợp lệ
+    }
+    
     try {
       const newBanner = await createBanner(form);
       alert('Banner đã được tạo thành công!');
+      window.location.reload(); // Reload lại trang sau khi thêm danh mục thành công
       if (onCreateSuccess) onCreateSuccess(newBanner);
-      window.location.reload();
+      // window.location.reload(); // Nếu muốn reload trang; bạn có thể xử lý khác chẳng hạn đóng modal.
     } catch (err) {
       console.error('Lỗi khi tạo banner:', err);
       setError('Có lỗi xảy ra khi tạo banner');
@@ -36,6 +57,7 @@ const CreateBanner = ({ onClose, onCreateSuccess }) => {
     <div className="createBanner-container">
       <h1>Create Banner</h1>
       {error && <div className="alert alert-danger">{error}</div>}
+      
       <form onSubmit={handleSubmit}>
         {/* Title */}
         <div className="form-group">
@@ -61,19 +83,21 @@ const CreateBanner = ({ onClose, onCreateSuccess }) => {
             className="form-control"
           />
         </div>
-        {/* Position */}
+        {/* Position với dropdown */}
         <div className="form-group">
           <label htmlFor="position">Position:</label>
-          <input
-            type="text"
+          <select
             id="position"
             name="position"
             value={form.position}
             onChange={handleChange}
             className="form-control"
-          />
+          >
+            <option value="header-banner">Header</option>
+            <option value="line-banner">Body</option>
+          </select>
         </div>
-        {/* Có hoạt động hay không */}
+        {/* Active checkbox */}
         <div className="form-group">
           <label htmlFor="is_active">
             <input

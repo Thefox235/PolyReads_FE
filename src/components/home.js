@@ -3,9 +3,14 @@ import '../asset/css/header.css';
 import '../asset/css/sanpham.css';
 
 import React, { useState, useEffect } from 'react';
-import { getImages, getAllProduct, getProductHot, getProductByCate, getAuthor } from '../api/server';
+import { getImages, getAllProduct, getProductHot, getProductByCate, getAuthor, getBanners } from '../api/server';
 import { Link, useNavigate } from 'react-router-dom';
 const Home = () => {
+  //banner
+  const [activeBanners, setActiveBanners] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  //product
   const [products, setProducts] = useState([]);
   const [productHot, setProductHot] = useState([]);
   const [mangas, setManga] = useState([]);
@@ -85,6 +90,21 @@ const Home = () => {
     };
     fecthAuthor();
 
+    const fetchBanners = async () => {
+      try {
+        const banners = await getBanners();
+        const active = banners.filter(
+          banner => banner.is_active === true && banner.position === 'line-banner'
+        );
+        setActiveBanners(active);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Lỗi khi lấy banner:", error);
+        setIsLoading(false);
+      }
+    };
+    fetchBanners();
+
     const wrapper = document.querySelector('.products-wrapper');
     const wrapper2 = document.querySelector('.products-wrapper2');
     const wrapper3 = document.querySelector('.products-wrapper3');
@@ -130,6 +150,22 @@ const Home = () => {
       wrapper3.style.transform = `translateX(-${scrollAmount}px)`;
     });
   }, []);
+
+  useEffect(() => {
+    const lineBanner = document.querySelector(".line-banner");
+    const changeBackground = () => {
+      if (lineBanner && activeBanners.length > 0) {
+        lineBanner.style.backgroundImage = `url(${activeBanners[currentIndex].image_url})`;
+        setCurrentIndex(prev => (prev + 1) % activeBanners.length);
+      }
+    };
+  
+    let intervalId;
+    if (!isLoading && activeBanners.length > 0) {
+      intervalId = setInterval(changeBackground, 3000);
+    }
+    return () => { if (intervalId) clearInterval(intervalId); };
+  }, [activeBanners, currentIndex, isLoading]);  
 
   // const handleLogout = () => {
   //   sessionStorage.removeItem('user');
@@ -206,10 +242,10 @@ const Home = () => {
 
         </div>
         <div className="line-banner">
-          <img
+          {/* <img
             src="https://media-hosting.imagekit.io//bcbb496d533e4d00/line-banner.png?Expires=1835165149&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=237bRo-L05FiJfg31Mz0CXoJKe0l3uDh9EiuKT6eNa8SwpNkfyf9Hoj4CC2eNlV27nq8YCaF6kKAJ~PL1vrleBlENBR0eZBCFr~HvhJoOrReZSFBkzUQg~2nQXYDux9lx99yBLnI-uZ4LxvVGNKuLVwfyHDjQ2agthAaQN4BegbKw-QFoy5fn94yjLTO-UEt1PZESQgD3ZxPWhQKOE98ot0jEgVGDBuvLm5jS4n3zCYSKTokY2fv5V7z7lUBb6Hs7XCsu72D7qKaGg~p8Ca2whu8AGO6mjzBTZ2RVC99up30jUMUCHRMiFZxEGMAO7gou5cP4O4vUaxtCjCtUofcOQ__"
             alt=""
-          />
+          /> */}
         </div>
         <div
           className="d-flex justify-content-between align-items-center"

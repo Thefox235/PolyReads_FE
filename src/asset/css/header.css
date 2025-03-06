@@ -3,7 +3,7 @@
     padding: 0;
     box-sizing: border-box;
 }
-/* Container cho dropdown */
+
 /* Container của dropdown */
 .user-dropdown-menu {
     background: none;
@@ -460,14 +460,17 @@ a {
 
 .line-banner {
     width: 100%;
-    background: #f7f7f7;
     margin: 50px 0;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
-
-}
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    transition: background-image 1s ease-in-out;
+    height: 171px; /* thay đổi theo thiết kế */
+  }  
 
 .line-banner img {
     padding: 15px 0;

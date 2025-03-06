@@ -28,7 +28,7 @@ export const createBanner = async (bannerData) => {
 export const updateBanner = async (id, bannerData) => {
   try {
     const response = await axios.put(`${BASE_URL}/banner/${id}`, bannerData);
-    return response.data.banners;
+    return response.data.NewBanner;
   } catch (error) {
     console.error("Error updating banner:", error);
     throw error;

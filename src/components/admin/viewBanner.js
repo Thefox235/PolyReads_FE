@@ -57,7 +57,7 @@ const ViewBanner = () => {
       prev.map(banner => (banner._id === updatedBanner._id ? updatedBanner : banner))
     );
   };
-  console.log(banners);
+  // console.log(banners);
   return (
     <div className="admin-product">
       <div className="admin-product__action">
@@ -75,7 +75,7 @@ const ViewBanner = () => {
       <table className="admin-product__table">
         <thead>
           <tr>
-            <th>Title</th>
+            <th>STT</th>
             <th>Image</th>
             {/* <th>Position</th> */}
             <th>Active</th>
@@ -86,7 +86,7 @@ const ViewBanner = () => {
           {banners && banners.length > 0 ? (
             banners.map((banner, index) => (
               <tr key={banner._id || index}>
-                <td>{banner.title}</td>
+                <td>{index+1}</td>
                 <td className='banner-image'>
                   {banner.image_url && (
                     <img

@@ -1,28 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { updateBanner } from '../../api/server';
 
 const EditBanner = ({ initialData, onClose, onEditSuccess }) => {
   const [form, setForm] = useState({
     title: '',
     image_url: '',
-    position: '',
+    position: 'line-banner',
     is_active: true
   });
   const [error, setError] = useState('');
+  
+  // Sử dụng ref để tránh setForm lại khi re-render
+  const isInitialized = useRef(false);
 
   useEffect(() => {
-    if (initialData) {
+    if (initialData && !isInitialized.current) {
       setForm({
         title: initialData.title || '',
         image_url: initialData.image_url || '',
-        position: initialData.position || '',
+        position: initialData.position || 'line-banner',
         is_active: initialData.is_active
       });
+      isInitialized.current = true;
     }
   }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (name === 'position') {
+      console.log("New position selected:", value);
+    }
     setForm(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -33,9 +40,11 @@ const EditBanner = ({ initialData, onClose, onEditSuccess }) => {
     e.preventDefault();
     try {
       const updatedBanner = await updateBanner(initialData._id, form);
+      console.log("Updated banner:", updatedBanner);
       alert('Banner đã được cập nhật thành công!');
       if (onEditSuccess) onEditSuccess(updatedBanner);
-      window.location.reload();
+      // Thay vì reload trang, hãy đóng modal và để parent cập nhật state
+      if (onClose) onClose();
     } catch (err) {
       console.error('Lỗi cập nhật banner:', err);
       setError('Có lỗi xảy ra khi cập nhật banner');
@@ -71,19 +80,21 @@ const EditBanner = ({ initialData, onClose, onEditSuccess }) => {
             className="form-control"
           />
         </div>
-        {/* Position */}
+        {/* Position: Dropdown */}
         <div className="form-group">
           <label htmlFor="position">Position:</label>
-          <input
-            type="text"
+          <select
             id="position"
             name="position"
             value={form.position}
             onChange={handleChange}
             className="form-control"
-          />
+          >
+            <option value="header-banner">Header</option>
+            <option value="line-banner">Body</option>
+          </select>
         </div>
-        {/* is_active */}
+        {/* Active Checkbox */}
         <div className="form-group">
           <label htmlFor="is_active">
             <input

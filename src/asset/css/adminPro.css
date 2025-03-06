@@ -11,8 +11,10 @@
   font-family: "Inter-Light", Helvetica, sans-serif;
 }
 .admin-product__table td.banner-image .banner-img {
-  width: 880px;
-  height: 450px;
+  max-width: 880px;
+  width: 100%;
+  max-height: 450px;
+  height: 100%;
   object-fit: cover;
 }
 .action-button
