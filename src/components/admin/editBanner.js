@@ -107,7 +107,7 @@ const EditBanner = ({ initialData, onClose, onEditSuccess }) => {
             Active
           </label>
         </div>
-        <button type="submit" className="btn btn-primary">Submit</button>
+        <button type="submit" className="btn btn-primary">Sửa Banner</button>
       </form>
     </div>
   );

@@ -67,7 +67,7 @@ const EditCate = ({ initialData, onClose }) => {
             className="form-control"
           ></textarea>
         </div>
-        <button type="submit" className="btn btn-primary">Submit</button>
+        <button type="submit" className="btn btn-primary">Sửa Danh Mục</button>
       </form>
     </div>
   );

@@ -60,7 +60,7 @@ const CreateAuthor = () => {
           ></textarea>
         </div>
 
-        <button type="submit" className="btn btn-primary">Submit</button>
+        <button type="submit" className="btn btn-primary">Thêm Tác Giả</button>
       </form>
     </div>
   );

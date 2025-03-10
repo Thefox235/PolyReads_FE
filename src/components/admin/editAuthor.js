@@ -66,7 +66,7 @@ const EditAuthor = ({ initialData, onClose, onEditSuccess }) => {
             className="form-control"
           ></textarea>
         </div>
-        <button type="submit" className="btn btn-primary">Submit</button>
+        <button type="submit" className="btn btn-primary">Sửa Tác Giả</button>
       </form>
     </div>
   );

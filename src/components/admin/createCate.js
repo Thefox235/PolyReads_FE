@@ -61,7 +61,7 @@ const CreateCate = () => {
           ></textarea>
         </div>
 
-        <button type="submit" className="btn btn-primary">Submit</button>
+        <button type="submit" className="btn btn-primary">Thêm Danh Mục</button>
       </form>
     </div>
   );

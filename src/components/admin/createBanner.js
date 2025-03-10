@@ -110,7 +110,7 @@ const CreateBanner = ({ onClose, onCreateSuccess }) => {
             Active
           </label>
         </div>
-        <button type="submit" className="btn btn-primary">Submit</button>
+        <button type="submit" className="btn btn-primary">Thêm Banner</button>
       </form>
     </div>
   );
