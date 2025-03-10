@@ -52,9 +52,9 @@ const AuthForm = () => {
         <>
             <section className="banner">
                 <div className="banner-overlay">
-                    <h1>Đăng nhập</h1>
+                    <h1>Đăng ký</h1>
                     <p style={{ fontSize: 20, fontWeight: 400 }}>
-                        <a href="/">Trang chủ</a> &gt; Đăng nhập
+                        <a href="/">Trang chủ</a> &gt; Đăng ký
                     </p>
                 </div>
             </section>
@@ -112,7 +112,7 @@ const AuthForm = () => {
                     </form>
                     <div className="links">
                         <p>
-                            Bạn đã có tài khoản, đăng nhập <a href="login.html">tại đây</a>
+                            Bạn đã có tài khoản, đăng nhập <a href="/login">tại đây</a>
                         </p>
                     </div>
                 </div>
