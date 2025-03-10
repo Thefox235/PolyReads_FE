@@ -339,10 +339,11 @@ const Home = () => {
                     <img
                       src={productImage.url}
                       alt={product.name}
+                      
                     />
-                    <div className="sach-title">
+                    <Link to={`/product/${product._id}`} className="sach-title">
                       {product.name}
-                    </div>
+                    </Link>
                     <div className="price-current">
                       {Number(product.price).toLocaleString("vi-VN", {
                         style: "currency",
@@ -398,9 +399,9 @@ const Home = () => {
                       src={productImage.url}
                       alt={product.name}
                     />
-                    <div className="sach-title">
+                    <Link to={`/product/${product._id}`} className="sach-title">
                       {product.name}
-                    </div>
+                    </Link>
                     <div className="price-current">
                       {Number(product.price).toLocaleString("vi-VN", {
                         style: "currency",

@@ -1,0 +1,200 @@
+footer {
+    background: #2A2F4F;
+    color: #fff;
+    text-align: center;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:30px;
+    padding: 40px 208px;
+
+
+}
+
+@media screen and (max-width: 1080px) {
+    footer {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 50px;
+        padding: 40px 20px;
+    }
+
+}
+
+@media screen and (max-width: 768px) {
+    footer {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 50px;
+        padding: 40px 20px;
+    }
+
+    .blog {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .line-banner {
+        flex-direction: column;
+        display: none;
+    }
+
+
+    .menu {
+        flex-wrap: wrap;
+    }
+}
+
+.footer-logo h5 {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.footer-logo h6 {
+    margin-top: 10px;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.icon-mxh i {
+
+    margin: 0 5px;
+
+}
+
+.icon-mxh i:first-child {
+    font-size: 2rem;
+    color: #2e69e7;
+}
+
+.icon-mxh i:nth-child(2) {
+    font-size: 1.2rem;
+    padding: 2px 8px;
+    color: #ffffff;
+    background-color: #03A9F4;
+    border-radius: 50%;
+}
+
+.icon-mxh i:nth-child(3) {
+    font-size: 1.2rem;
+    padding: 2px 8px;
+    color: #ffffff;
+    background-color: #000000;
+    border-radius: 50%;
+}
+
+.icon-mxh img:nth-child(4) {
+    max-width: 2.3rem;
+    height: 32px;
+    padding: 2px 8px;
+    color: #ffffff;
+    background-color: #000000;
+    border-radius: 50%;
+}
+
+.containers {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* margin-top: -15px; */
+}
+
+.outer-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 3.5px solid #ffffff;
+    /* Màu xanh dương */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tag-text {
+    font-weight: bold;
+}
+
+.inner-circle {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    /* Màu đỏ */
+}
+
+.image-container {
+    width: 170px;
+    /* Chiều rộng của khung ảnh */
+    height: 260px;
+    /* Chiều cao của khung ảnh */
+    overflow: hidden;
+    /* Ẩn phần hình ảnh vượt quá khung */
+    position: relative;
+    border-radius: 5px
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Đảm bảo ảnh vừa khung mà không bị biến dạng */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.image-blog-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Đảm bảo ảnh vừa khung mà không bị biến dạng */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.image-blog-container {
+    width: 200px;
+    /* Chiều rộng của khung ảnh */
+    height: 120px;
+    /* Chiều cao của khung ảnh */
+    overflow: hidden;
+    /* Ẩn phần hình ảnh vượt quá khung */
+    position: relative;
+    border-radius: 10%;
+}
+
+.ts {
+
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 20px;
+    max-width: 120px;
+}
+
+.ts {
+
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 20px;
+    max-width: 120px;
+}
+
+
+
+.dm p,
+.dm h5,
+.lh p,
+.lh h5 {
+    text-align: left;
+}
+
+.btn-lh {
+    background: #917FB3;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 10px;
+}
