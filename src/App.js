@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/home';
 import Detail from './components/detail';
@@ -24,6 +24,7 @@ import Cart from './components/cart';
 import ViewBanner from './components/admin/viewBanner';
 import { createBanner } from './api/server';
 import EditBanner from './components/admin/editBanner';
+import ViewPublisher from './components/admin/viewPublisher';
 
 function App() {
 
@@ -58,6 +59,8 @@ function App() {
             <Route path="/viewCate" element={<PrivateRoute element={ViewCate} roles={['1']} />} />
             <Route path="/viewAuthor" element={<PrivateRoute element={ViewAuthor} roles={['1']} />} />
             <Route path="/viewBanner" element={<PrivateRoute element={ViewBanner} roles={['1']} />} />
+            <Route path="/viewPublisher" element={<PrivateRoute element={ViewPublisher} roles={['1']} />} />
+
 
             <Route path="/createPro" element={<PrivateRoute element={CreatePro} roles={['1']} />} />
             <Route path="/createCate" element={<PrivateRoute element={CreateCate} roles={['1']} />} />

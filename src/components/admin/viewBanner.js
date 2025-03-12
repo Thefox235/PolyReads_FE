@@ -16,6 +16,7 @@ const ViewBanner = () => {
   // State quản lý modal sửa banner và banner được chọn
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState(null);
+  
   const openEditModal = (banner) => {
     setSelectedBanner(banner);
     setShowEditModal(true);

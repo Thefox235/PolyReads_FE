@@ -3,10 +3,11 @@ import {
   getCategories,
   getAuthor,
   getImagesByProductId,
-  updateProduct
+  updateProduct,
+  getPublishers
 } from '../../api/server';
-
-const EditPro = ({ initialData, onClose }) => {
+import CustomSelect from './customSelect'; // import component vừa tạo
+const EditPro = ({ initialData, onClose, onEditSuccess }) => {
   // Sử dụng dữ liệu ban đầu được truyền từ component cha
   const [form, setForm] = useState(initialData || {
     name: '',
@@ -27,6 +28,7 @@ const EditPro = ({ initialData, onClose }) => {
 
   const [categories, setCategories] = useState([]);
   const [authors, setAuthors] = useState([]);
+  const [publishers, setPublishers] = useState([]);
   const [error, setError] = useState('');
   // State cho danh sách hình ảnh
   const [images, setImages] = useState([]);
@@ -40,6 +42,8 @@ const EditPro = ({ initialData, onClose }) => {
         setCategories(catData);
         const authData = await getAuthor();
         setAuthors(authData);
+        const nxbData = await getPublishers();
+        setPublishers(nxbData);
         // Nếu bạn có API để lấy hình ảnh theo product id:
         const imagesData = await getImagesByProductId(initialData._id);
         if (imagesData && imagesData.length > 0) {
@@ -80,10 +84,11 @@ const EditPro = ({ initialData, onClose }) => {
     e.preventDefault();
     try {
       // Gọi API cập nhật sản phẩm với id từ initialData
-      await updateProduct(initialData._id, form, images);
+      const updatedProduct = await updateProduct(initialData._id, form, images);
       alert('Cập nhật sản phẩm thành công!');
+      if (onEditSuccess) onEditSuccess(updatedProduct);
       // Đóng modal sau khi thành công
-      window.location.reload();
+      // window.location.reload();
 
     } catch (err) {
       console.error('Có lỗi xảy ra khi cập nhật sản phẩm:', err);
@@ -227,19 +232,17 @@ const EditPro = ({ initialData, onClose }) => {
           </div>
         </div>
 
-        {/* Row 6: Nhà xuất bản (full-width) */}
+        {/* Row 6: Nhà xuất bản */}
         <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="publisher">Nhà xuất bản:</label>
-            <input
-              type="text"
-              id="publisher"
-              name="publisher"
-              value={form.publisher}
-              onChange={handleChange}
-              className="form-control"
-            />
-          </div>
+          <CustomSelect
+            label="Nhà xuất bản"
+            options={publishers.map(pub => ({ value: pub._id, label: pub.name }))}
+            value={form.publisher}
+            onChange={(selectedValue) =>
+              setForm(prev => ({ ...prev, publisher: selectedValue }))
+            }
+            placeholder="Chọn NXB"
+          />
           <div className="form-group">
             <label htmlFor="description">Mô tả:</label>
             <textarea
@@ -255,37 +258,26 @@ const EditPro = ({ initialData, onClose }) => {
 
         {/* Row 8: Danh mục và Tác giả */}
         <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="category">Danh mục:</label>
-            <select
-              id="category"
-              name="category"
-              value={form.category}
-              onChange={handleChange}
-              className="form-control"
-            >
-              <option value="">Chọn danh mục</option>
-              {categories.map(dm => (
-                <option key={dm._id} value={dm._id}>{dm.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="author">Tác giả:</label>
-            <select
-              id="author"
-              name="author"
-              value={form.author}
-              onChange={handleChange}
-              className="form-control"
-            >
-              <option value="">Chọn tác giả</option>
-              {authors.map(au => (
-                <option key={au._id} value={au._id}>{au.name}</option>
-              ))}
-            </select>
-          </div>
+          <CustomSelect
+            label="Danh mục"
+            options={categories.map(cat => ({ value: cat._id, label: cat.name }))}
+            value={form.category}
+            onChange={(selectedValue) =>
+              setForm(prev => ({ ...prev, category: selectedValue }))
+            }
+            placeholder="Chọn danh mục"
+          />
+          <CustomSelect
+            label="Tác giả"
+            options={authors.map(auth => ({ value: auth._id, label: auth.name }))}
+            value={form.author}
+            onChange={(selectedValue) =>
+              setForm(prev => ({ ...prev, author: selectedValue }))
+            }
+            placeholder="Chọn tác giả"
+          />
         </div>
+
 
         {/* Row 9: Hình ảnh sản phẩm (full-width) */}
         <div className="form-group full-width">

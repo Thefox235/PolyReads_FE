@@ -40,7 +40,7 @@ const EditBanner = ({ initialData, onClose, onEditSuccess }) => {
     e.preventDefault();
     try {
       const updatedBanner = await updateBanner(initialData._id, form);
-      console.log("Updated banner:", updatedBanner);
+      // console.log("Updated banner:", updatedBanner);
       alert('Banner đã được cập nhật thành công!');
       if (onEditSuccess) onEditSuccess(updatedBanner);
       // Thay vì reload trang, hãy đóng modal và để parent cập nhật state

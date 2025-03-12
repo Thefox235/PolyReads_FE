@@ -2,6 +2,59 @@
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:3000'; 
+// Hàm tạo nxb
+export const createPublisher = async (publisherData) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/publisher/add`, publisherData);
+    return response.data.newNXB;
+  } catch (error) {
+    console.error('Có lỗi xảy ra khi thêm nxb:', error);
+    throw error;
+  }
+};
+// Hàm lấy danh sách nxb
+export const getPublishers = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/publisher`);
+    return response.data.result;
+  } catch (error) {
+    console.error('Có lỗi xảy ra khi lấy nxb:', error);
+    throw error;
+  }
+};
+// Hàm cập nhật nxb
+export const updatePublisher = async (id, publisherData) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/publisher/${id}`, publisherData);
+    // Trả về trực tiếp đối tượng publisher cập nhật
+    return response.data.NXB.data;
+  } catch (error) {
+    console.error('Có lỗi xảy ra khi cập nhật NXB:', error);
+    throw error;
+  }
+};
+
+
+// Hàm lấy danh mục theo ID
+export const getPublisherById = async (id) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/publisher/${id}`);
+    return response.data.NXB;
+  } catch (error) {
+    console.error('Có lỗi xảy ra khi lấy NXB:', error);
+    throw error;
+  }
+};
+//hàm xóa nxb
+export const deletePublisher = async (id) => {
+  try {
+    const response = await axios.delete(`${BASE_URL}/publisher/delete/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Có lỗi xảy ra khi xóa nxb:', error);
+    throw error;
+  }
+}
 //hàm lấy banner
 export const getBanners = async () => {
   try {
@@ -86,7 +139,6 @@ export const getOrderByIdUser = async (id) => {
   try {
     const response = await axios.get(`${BASE_URL}/order/user/${id}`);
     return response.data;
-    console.log(response.data);
   } catch (error) {
     console.error('Có lỗi xảy ra khi lấy sản phẩm:', error);
     throw error;
@@ -97,7 +149,6 @@ export const getOrder = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/order`);
     return response.data;
-    console.log(response.data);
   } catch (error) {
     console.error('Có lỗi xảy ra khi lấy sản phẩm:', error);
     throw error;
@@ -123,18 +174,19 @@ export const deleteAuthor = async (id) => {
     throw error;
   }
 }
-// Hàm cập nhật danh mục
+// Hàm cập nhật tác giả
 export const updateAuthor = async (id, categoryData) => {
   try {
     const response = await axios.put(`${BASE_URL}/author/${id}`, categoryData);
-    return response.data.Products;
+    console.log(response.data.Products);
+    return response.data.Products.data;
   } catch (error) {
     console.error('Có lỗi xảy ra khi cập nhật tác giả:', error);
     throw error;
   }
 };
 
-// Hàm lấy danh mục theo ID
+// Hàm lấy tác giả theo ID
 export const getAuthorById = async (id) => {
   try {
     const response = await axios.get(`${BASE_URL}/author/${id}`);
@@ -158,6 +210,7 @@ export const deleteCategory = async (id) => {
 export const updateCategory = async (id, categoryData) => {
   try {
     const response = await axios.put(`${BASE_URL}/category/${id}`, categoryData);
+    console.log(response.data.Products);
     return response.data.Products;
   } catch (error) {
     console.error('Có lỗi xảy ra khi cập nhật danh mục:', error);
@@ -204,7 +257,6 @@ export const getCategories = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/category`);
     return response.data.result;
-    console.log(response.data);
   } catch (error) {
     console.error('Có lỗi xảy ra khi lấy danh mục:', error);
     throw error;
@@ -226,6 +278,7 @@ export const createProduct = async (productData, images) => {
   try {
     // Đóng gói cả productData và images vào một object gửi đi
     const response = await axios.post(`${BASE_URL}/product/add`, { productData, images });
+    console.log(response.data.productNew);
     // Lưu ý chỉnh sửa key nếu cần, ví dụ: "productNew" thay vì "prodcutNew"
     return response.data.productNew;
   } catch (error) {
@@ -238,7 +291,8 @@ export const createProduct = async (productData, images) => {
 export const createAuthor = async (authorData) => {
   try {
     const response = await axios.post(`${BASE_URL}/author/add`, authorData);
-    return response.data.result;
+    // console.log(response.data.newAuthor);
+    return response.data.newAuthor;
   } catch (error) {
     console.error('Có lỗi xảy ra khi thêm tác giả:', error);
     throw error;

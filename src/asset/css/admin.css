@@ -74,7 +74,7 @@
 }
 /* Giãn cách dưới mỗi nhóm */
 .addPro-container .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 25px;
 }
 
 /* Style cho label */
@@ -103,7 +103,7 @@
 
 /* Mỗi form-group trong hàng chiếm khoảng 45% để tạo khoảng trắng giữa các cột */
 .form-row .form-group {
-  flex: 1 1 45%;
+  flex: 1 1;
 }
 
 /* Các form-group full-width chiếm cả hàng */
