@@ -14,6 +14,7 @@ import { getImages } from "../api/server";
 const Detail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState({});
+  const [productByCate, setProductByCate] = useState({});
   const [productCate, setProductCate] = useState([]);
   const { addToCart } = useCart();
   const [productImages, setProductImages] = useState([]);
@@ -89,6 +90,15 @@ const Detail = () => {
     }
   }, [product]);
 
+  const fetchProductByCate = async () => {
+    try {
+      const mangadata = await getProductByCate(idCate);
+      setProductByCate(mangadata);
+    } catch (error) {
+      console.error('Có lỗi xảy ra khi lấy sản phẩm hot:', error);
+    }
+  };
+  fetchProductByCate();
   //chuyển tab
   const [activeTab, setActiveTab] = useState("motasp");
 
@@ -397,7 +407,7 @@ const Detail = () => {
                 </div>
                 <button className="btn-dg">
                   <img
-                    src="https://s3-alpha-sig.figma.com/img/b6aa/f657/1978c185a7f2282d0ed1795e3d590d94?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=lq9~A-EVpEjUyfZ2NB3O8C23vM2J0qDRJOg3ARxLHp3hbmfTksjZqbrueTTDLn3LBCGV1Txgy67YRkDbbOP1VaGpE8QdJigiEkAHCBSkmzpxN5RfZxfWYtqinc2ot895VRittCp9HlxaKBWjTE2~BZ0jM6YbkWtbbHoQjOIc8UGC~M5rgxeFKhyTUGxBqgJgc6W54XHIXTjHSRZyigP87y~7loQVCZR~n7Ci1earH5On7gFl60sK7TWWZ56XrQNMbFJ9F3w~cQjDDesAyQTGaxXDocxc0fbpcWaIFQY2S7q8kPBaaFhtSRxPM-sde6aSGOpKZuUkmkm7Jv-EKPyOug__"
+                    src="https://media-hosting.imagekit.io//e53ddc3e6be34a6a/Hand%20With%20Pen.png?Expires=1835791964&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=PJC2u5WFpYM5ORSBexftdgeTtsCwdBwfnJwvlVOwvE-4MY8f8XIJUGcFa7Eyf8DD0HNW72RTGUponK7XVxUy5kZORgWfUssFzodQEXds0XcWBgozC1e9zfZ-GpzUbiZSjvRtqKni2Id6xz1YSQHeqbAKNm-aQnvuiEl0alOJEcoktpR2XUjh~cWF5cPQmBxAt7YoUT8hv5T0fOpLJ2LQsmp75-mS32ePvV0kvheoXxMrxNMD3ql-KS9xvwVd~ATa2WUcYxWKwYO1T0a9jwmXef~5bX3~L3lsUjn~A3NjSV2td7N0YK7RECrqIQ6-WEAq8CkEwRfoRoWJHTJuKIsfwQ__"
                     alt="Viết đánh giá"
                     width={30}
                   />
@@ -433,7 +443,7 @@ const Detail = () => {
                   <div className="review-footer d-flex align-items-center gap-4">
                     <div className="review-helpful d-flex align-items-center gap-2">
                       <img
-                        src="https://s3-alpha-sig.figma.com/img/7ef3/8b5f/9f5710eaf5f5df53922b0e53b62def82?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=P5LEdOC2I9oVefCxo6lAN~au9f4v2eI7i5gXKbap8-Wgxo-xA-G~leotfnS9rMe7zLGaTgOEbGzP85SHF3Kv16JkTPu6NS~gOyXdNTwbcnIDiXyLlYBev3fF8ZrMxPH5Eg-7KZXQmGERCw4JGXPOwaFvPWbRqHE4mmduNyzf8~niXglbl0e1NdHZs-bh1WFHxodm5dMRdr3nZXkMLSisrvp~44hxwN1aBnfIiimgOGgS4cohejGA1HHWnI2i-yDs4Q8-e8G3MW3uZcQdT5jiZ8kSE3gKFyYK3nhJVE-XM1EX1vk~7LcePbf-z4aR1VlS4x0286e5DPRgUy6AAlI~zg__"
+                        src="https://media-hosting.imagekit.io//da4de5807dfd47de/Facebook%20Like.png?Expires=1835791963&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=t7-46AdUsTOXIE0Cg7IiRQoWmEZY-~zS4UTkftE6X49wXu5dnBuHE4bBLHAJ7QneCpXBoznqrUvYVxXRNpUMOkF9McmwRXL3WzFqJgSdZ9uMlC2rlQMLqcSQNtE3c9gp49w8SFi1On4Or6ogcl4Ez52NblC-ZOnprHCIH3JudlH3WxmEFichJcfvH4WbzJRDQr6vl4ExjRYzGPtE1q8nt8coo8VDgcC4Tb0eXvhhJUJAwnH2Wdv074SyIJlVUKVdj1PeltUgclKm6cpKzvgnI5Lu~lw4LrNpqHcUjeqS5pPADVAjQ39AZCNwU4MiGuVitbVd8RNWVDeECLTA2UAeMg__"
                         width={18}
                         alt="Hữu ích"
                       />
@@ -484,191 +494,38 @@ const Detail = () => {
             {/* product start */}
             <div className="list-product">
               <div className="products-wrapper">
-                <div className="mobile-product">
-                  <div className="product-image">
-                    <img src="https://media-hosting.imagekit.io//ddc5d5ae6cfd4056/rectangle-888.png?Expires=1835166017&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=dqFSgMl30xuxvQVoqqXJm~5ebnK7hVOEBYFkFIkkKw1owRh9CYmA0zlUpMjGYIvVncum2O3TpEWJSLUf7iOG9IIgmA0GmrGwaU9qr5hm5iW1m1aPoBsgfbc~ZRuQoHUi2xR0ISnPZu8bA9U43CdAeE8wJjbE-XYnn0TxBfxp7ngzyG7j3jbh2vIPMf0MFkgRdlipEm2a0gwiqCE4txxClMjCG4H4N60oZRw6pBq155Y9r7O9bvsbbJdTKeQE~5-Ha54JgMtkoAlQsbEI0WGhoxD9AGz1I7nSiUdMcKRDgxngqI2Ql2n9UFGpmFKz8zN8S-Av~5-oc2SjHhDisoX78w__" />
-                  </div>
-                  <div className="product-details">
-                    <div className="product-name">
-                      Dược sư tự sự Light Novel Tập 2
-                    </div>
-                    <div className="price-container">
-                      <div className="product-price">73.000đ</div>
-                      <div className="sale-badge">-50%</div>
-                    </div>
-                    <div className="price-sold-container">
-                      <div className="product-old-price">73.000đ</div>
-                      <div className="product-sold">Đã bán 123</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mobile-product">
-                  <div className="product-image">
-                    <img src="https://media-hosting.imagekit.io//ddc5d5ae6cfd4056/rectangle-888.png?Expires=1835166017&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=dqFSgMl30xuxvQVoqqXJm~5ebnK7hVOEBYFkFIkkKw1owRh9CYmA0zlUpMjGYIvVncum2O3TpEWJSLUf7iOG9IIgmA0GmrGwaU9qr5hm5iW1m1aPoBsgfbc~ZRuQoHUi2xR0ISnPZu8bA9U43CdAeE8wJjbE-XYnn0TxBfxp7ngzyG7j3jbh2vIPMf0MFkgRdlipEm2a0gwiqCE4txxClMjCG4H4N60oZRw6pBq155Y9r7O9bvsbbJdTKeQE~5-Ha54JgMtkoAlQsbEI0WGhoxD9AGz1I7nSiUdMcKRDgxngqI2Ql2n9UFGpmFKz8zN8S-Av~5-oc2SjHhDisoX78w__" />
-                  </div>
-                  <div className="product-details">
-                    <div className="product-name">
-                      Dược sư tự sự Light Novel Tập 2
-                    </div>
-                    <div className="price-container">
-                      <div className="product-price">73.000đ</div>
-                      <div className="sale-badge">-50%</div>
-                    </div>
-                    <div className="price-sold-container">
-                      <div className="product-old-price">73.000đ</div>
-                      <div className="product-sold">Đã bán 123</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mobile-product">
-                  <div className="product-image">
-                    <img src="https://media-hosting.imagekit.io//ddc5d5ae6cfd4056/rectangle-888.png?Expires=1835166017&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=dqFSgMl30xuxvQVoqqXJm~5ebnK7hVOEBYFkFIkkKw1owRh9CYmA0zlUpMjGYIvVncum2O3TpEWJSLUf7iOG9IIgmA0GmrGwaU9qr5hm5iW1m1aPoBsgfbc~ZRuQoHUi2xR0ISnPZu8bA9U43CdAeE8wJjbE-XYnn0TxBfxp7ngzyG7j3jbh2vIPMf0MFkgRdlipEm2a0gwiqCE4txxClMjCG4H4N60oZRw6pBq155Y9r7O9bvsbbJdTKeQE~5-Ha54JgMtkoAlQsbEI0WGhoxD9AGz1I7nSiUdMcKRDgxngqI2Ql2n9UFGpmFKz8zN8S-Av~5-oc2SjHhDisoX78w__" />
-                  </div>
-                  <div className="product-details">
-                    <div className="product-name">
-                      Dược sư tự sự Light Novel Tập 2
-                    </div>
-                    <div className="price-container">
-                      <div className="product-price">73.000đ</div>
-                      <div className="sale-badge">-50%</div>
-                    </div>
-                    <div className="price-sold-container">
-                      <div className="product-old-price">73.000đ</div>
-                      <div className="product-sold">Đã bán 123</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mobile-product">
-                  <div className="product-image">
-                    <img src="https://media-hosting.imagekit.io//ddc5d5ae6cfd4056/rectangle-888.png?Expires=1835166017&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=dqFSgMl30xuxvQVoqqXJm~5ebnK7hVOEBYFkFIkkKw1owRh9CYmA0zlUpMjGYIvVncum2O3TpEWJSLUf7iOG9IIgmA0GmrGwaU9qr5hm5iW1m1aPoBsgfbc~ZRuQoHUi2xR0ISnPZu8bA9U43CdAeE8wJjbE-XYnn0TxBfxp7ngzyG7j3jbh2vIPMf0MFkgRdlipEm2a0gwiqCE4txxClMjCG4H4N60oZRw6pBq155Y9r7O9bvsbbJdTKeQE~5-Ha54JgMtkoAlQsbEI0WGhoxD9AGz1I7nSiUdMcKRDgxngqI2Ql2n9UFGpmFKz8zN8S-Av~5-oc2SjHhDisoX78w__" />
-                  </div>
-                  <div className="product-details">
-                    <div className="product-name">
-                      Dược sư tự sự Light Novel Tập 2
-                    </div>
-                    <div className="price-container">
-                      <div className="product-price">73.000đ</div>
-                      <div className="sale-badge">-50%</div>
-                    </div>
-                    <div className="price-sold-container">
-                      <div className="product-old-price">73.000đ</div>
-                      <div className="product-sold">Đã bán 123</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mobile-product">
-                  <div className="product-image">
-                    <img src="https://media-hosting.imagekit.io//ddc5d5ae6cfd4056/rectangle-888.png?Expires=1835166017&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=dqFSgMl30xuxvQVoqqXJm~5ebnK7hVOEBYFkFIkkKw1owRh9CYmA0zlUpMjGYIvVncum2O3TpEWJSLUf7iOG9IIgmA0GmrGwaU9qr5hm5iW1m1aPoBsgfbc~ZRuQoHUi2xR0ISnPZu8bA9U43CdAeE8wJjbE-XYnn0TxBfxp7ngzyG7j3jbh2vIPMf0MFkgRdlipEm2a0gwiqCE4txxClMjCG4H4N60oZRw6pBq155Y9r7O9bvsbbJdTKeQE~5-Ha54JgMtkoAlQsbEI0WGhoxD9AGz1I7nSiUdMcKRDgxngqI2Ql2n9UFGpmFKz8zN8S-Av~5-oc2SjHhDisoX78w__" />
-                  </div>
-                  <div className="product-details">
-                    <div className="product-name">
-                      Dược sư tự sự Light Novel Tập 2
-                    </div>
-                    <div className="price-container">
-                      <div className="product-price">73.000đ</div>
-                      <div className="sale-badge">-50%</div>
-                    </div>
-                    <div className="price-sold-container">
-                      <div className="product-old-price">73.000đ</div>
-                      <div className="product-sold">Đã bán 123</div>
-                    </div>
-                  </div>
-                </div>
-                {/* Repeat the above structure for each product, removing unique classes */}
-                <div className="mobile-product">
-                  <div className="product-image">
-                    <img src="https://media-hosting.imagekit.io//ddc5d5ae6cfd4056/rectangle-888.png?Expires=1835166017&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=dqFSgMl30xuxvQVoqqXJm~5ebnK7hVOEBYFkFIkkKw1owRh9CYmA0zlUpMjGYIvVncum2O3TpEWJSLUf7iOG9IIgmA0GmrGwaU9qr5hm5iW1m1aPoBsgfbc~ZRuQoHUi2xR0ISnPZu8bA9U43CdAeE8wJjbE-XYnn0TxBfxp7ngzyG7j3jbh2vIPMf0MFkgRdlipEm2a0gwiqCE4txxClMjCG4H4N60oZRw6pBq155Y9r7O9bvsbbJdTKeQE~5-Ha54JgMtkoAlQsbEI0WGhoxD9AGz1I7nSiUdMcKRDgxngqI2Ql2n9UFGpmFKz8zN8S-Av~5-oc2SjHhDisoX78w__" />
-                  </div>
-                  <div className="product-details">
-                    <div className="product-name">
-                      Dược sư tự sự Light Novel Tập 2
-                    </div>
-                    <div className="price-container">
-                      <div className="product-price">73.000đ</div>
-                      <div className="sale-badge">-50%</div>
-                    </div>
-                    <div className="price-sold-container">
-                      <div className="product-old-price">73.000đ</div>
-                      <div className="product-sold">Đã bán 123</div>
-                    </div>
-                  </div>
-                </div>
-                {/* Repeat the above structure for each product, removing unique classes */}
-                <div className="mobile-product">
-                  <div className="product-image">
-                    <img src="https://media-hosting.imagekit.io//ddc5d5ae6cfd4056/rectangle-888.png?Expires=1835166017&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=dqFSgMl30xuxvQVoqqXJm~5ebnK7hVOEBYFkFIkkKw1owRh9CYmA0zlUpMjGYIvVncum2O3TpEWJSLUf7iOG9IIgmA0GmrGwaU9qr5hm5iW1m1aPoBsgfbc~ZRuQoHUi2xR0ISnPZu8bA9U43CdAeE8wJjbE-XYnn0TxBfxp7ngzyG7j3jbh2vIPMf0MFkgRdlipEm2a0gwiqCE4txxClMjCG4H4N60oZRw6pBq155Y9r7O9bvsbbJdTKeQE~5-Ha54JgMtkoAlQsbEI0WGhoxD9AGz1I7nSiUdMcKRDgxngqI2Ql2n9UFGpmFKz8zN8S-Av~5-oc2SjHhDisoX78w__" />
-                  </div>
-                  <div className="product-details">
-                    <div className="product-name">
-                      Dược sư tự sự Light Novel Tập 2
-                    </div>
-                    <div className="price-container">
-                      <div className="product-price">73.000đ</div>
-                      <div className="sale-badge">-50%</div>
-                    </div>
-                    <div className="price-sold-container">
-                      <div className="product-old-price">73.000đ</div>
-                      <div className="product-sold">Đã bán 123</div>
-                    </div>
-                  </div>
-                </div>
-                {/* Repeat the above structure for each product, removing unique classes */}
-                <div className="mobile-product">
-                  <div className="product-image">
-                    <img src="https://media-hosting.imagekit.io//ddc5d5ae6cfd4056/rectangle-888.png?Expires=1835166017&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=dqFSgMl30xuxvQVoqqXJm~5ebnK7hVOEBYFkFIkkKw1owRh9CYmA0zlUpMjGYIvVncum2O3TpEWJSLUf7iOG9IIgmA0GmrGwaU9qr5hm5iW1m1aPoBsgfbc~ZRuQoHUi2xR0ISnPZu8bA9U43CdAeE8wJjbE-XYnn0TxBfxp7ngzyG7j3jbh2vIPMf0MFkgRdlipEm2a0gwiqCE4txxClMjCG4H4N60oZRw6pBq155Y9r7O9bvsbbJdTKeQE~5-Ha54JgMtkoAlQsbEI0WGhoxD9AGz1I7nSiUdMcKRDgxngqI2Ql2n9UFGpmFKz8zN8S-Av~5-oc2SjHhDisoX78w__" />
-                  </div>
-                  <div className="product-details">
-                    <div className="product-name">
-                      Dược sư tự sự Light Novel Tập 2
-                    </div>
-                    <div className="price-container">
-                      <div className="product-price">73.000đ</div>
-                      <div className="sale-badge">-50%</div>
-                    </div>
-                    <div className="price-sold-container">
-                      <div className="product-old-price">73.000đ</div>
-                      <div className="product-sold">Đã bán 123</div>
-                    </div>
-                  </div>
-                </div>
-                {/* Repeat the above structure for each product, removing unique classes */}
-                <div className="mobile-product">
-                  <div className="product-image">
-                    <img src="https://media-hosting.imagekit.io//ddc5d5ae6cfd4056/rectangle-888.png?Expires=1835166017&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=dqFSgMl30xuxvQVoqqXJm~5ebnK7hVOEBYFkFIkkKw1owRh9CYmA0zlUpMjGYIvVncum2O3TpEWJSLUf7iOG9IIgmA0GmrGwaU9qr5hm5iW1m1aPoBsgfbc~ZRuQoHUi2xR0ISnPZu8bA9U43CdAeE8wJjbE-XYnn0TxBfxp7ngzyG7j3jbh2vIPMf0MFkgRdlipEm2a0gwiqCE4txxClMjCG4H4N60oZRw6pBq155Y9r7O9bvsbbJdTKeQE~5-Ha54JgMtkoAlQsbEI0WGhoxD9AGz1I7nSiUdMcKRDgxngqI2Ql2n9UFGpmFKz8zN8S-Av~5-oc2SjHhDisoX78w__" />
-                  </div>
-                  <div className="product-details">
-                    <div className="product-name">
-                      Dược sư tự sự Light Novel Tập 2
-                    </div>
-                    <div className="price-container">
-                      <div className="product-price">73.000đ</div>
-                      <div className="sale-badge">-50%</div>
-                    </div>
-                    <div className="price-sold-container">
-                      <div className="product-old-price">73.000đ</div>
-                      <div className="product-sold">Đã bán 123</div>
-                    </div>
-                  </div>
-                </div>
-                {/* Repeat the above structure for each product, removing unique classes */}
-                <div className="mobile-product">
-                  <div className="product-image">
-                    <img src="https://media-hosting.imagekit.io//ddc5d5ae6cfd4056/rectangle-888.png?Expires=1835166017&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=dqFSgMl30xuxvQVoqqXJm~5ebnK7hVOEBYFkFIkkKw1owRh9CYmA0zlUpMjGYIvVncum2O3TpEWJSLUf7iOG9IIgmA0GmrGwaU9qr5hm5iW1m1aPoBsgfbc~ZRuQoHUi2xR0ISnPZu8bA9U43CdAeE8wJjbE-XYnn0TxBfxp7ngzyG7j3jbh2vIPMf0MFkgRdlipEm2a0gwiqCE4txxClMjCG4H4N60oZRw6pBq155Y9r7O9bvsbbJdTKeQE~5-Ha54JgMtkoAlQsbEI0WGhoxD9AGz1I7nSiUdMcKRDgxngqI2Ql2n9UFGpmFKz8zN8S-Av~5-oc2SjHhDisoX78w__" />
-                  </div>
-                  <div className="product-details">
-                    <div className="product-name">
-                      Dược sư tự sự Light Novel Tập 2
-                    </div>
-                    <div className="price-container">
-                      <div className="product-price">73.000đ</div>
-                      <div className="sale-badge">-50%</div>
-                    </div>
-                    <div className="price-sold-container">
-                      <div className="product-old-price">73.000đ</div>
-                      <div className="product-sold">Đã bán 123</div>
-                    </div>
-                  </div>
-                </div>
+
+                {productByCate && productByCate.length > 0 && images && images.length > 0 ? (
+                  productByCate.map(product => {
+                    const productImage = images.find(image => image.productId === product._id);
+                    return (
+                      <div className="mobile-product" key={product._id}>
+                        <div className="product-image">
+                          <img src={productImage ? productImage.url : ''} alt={product.name} />
+                        </div>
+                        <div className="product-details">
+                          <Link className="product-name" to={`/product/${product._id}`}>{product.name}</Link>
+                          <div className="price-container">
+                            <div className="product-price">
+                              {Number(product.price).toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND"
+                              })}
+                            </div>
+                            <div className="sale-badge">-50%</div>
+                          </div>
+                          <div className="price-sold-container">
+                            <div className="product-old-price">100,000đ</div>
+                            <div className="product-sold">Đã bán {product.sale_count}</div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p>Đang tải sản phẩm...</p>
+                )}
+
               </div>
               {/* Repeat the above structure for each product, removing unique classes */}
             </div>

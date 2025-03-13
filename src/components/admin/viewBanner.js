@@ -16,6 +16,10 @@ const ViewBanner = () => {
   // State quản lý modal sửa banner và banner được chọn
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState(null);
+<<<<<<< HEAD
+=======
+  
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   const openEditModal = (banner) => {
     setSelectedBanner(banner);
     setShowEditModal(true);
@@ -57,15 +61,24 @@ const ViewBanner = () => {
       prev.map(banner => (banner._id === updatedBanner._id ? updatedBanner : banner))
     );
   };
+<<<<<<< HEAD
 
+=======
+  // console.log(banners);
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   return (
     <div className="admin-product">
       <div className="admin-product__action">
         <span className="admin-product__category-title">
           Banner: {banners.length} banner hiện có
         </span>
+<<<<<<< HEAD
         <button 
           className="admin-product__btn-add-category" 
+=======
+        <button
+          className="admin-product__btn-add-category"
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
           onClick={openCreateModal}
         >
           Thêm Banner
@@ -75,9 +88,15 @@ const ViewBanner = () => {
       <table className="admin-product__table">
         <thead>
           <tr>
+<<<<<<< HEAD
             <th>Title</th>
             <th>Image</th>
             <th>Position</th>
+=======
+            <th>STT</th>
+            <th>Image</th>
+            {/* <th>Position</th> */}
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
             <th>Active</th>
             <th>Thao tác</th>
           </tr>
@@ -86,12 +105,18 @@ const ViewBanner = () => {
           {banners && banners.length > 0 ? (
             banners.map((banner, index) => (
               <tr key={banner._id || index}>
+<<<<<<< HEAD
                 <td>{banner.title}</td>
                 <td>
+=======
+                <td>{index+1}</td>
+                <td className='banner-image'>
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                   {banner.image_url && (
                     <img
                       src={banner.image_url}
                       alt={banner.title}
+<<<<<<< HEAD
                       style={{ width: '150px', height: '80px', objectFit: 'cover' }}
                     />
                   )}
@@ -100,6 +125,17 @@ const ViewBanner = () => {
                 <td>{banner.is_active ? 'Active' : 'Inactive'}</td>
                 <td>
                   <button 
+=======
+                      className="banner-img"  // thêm class riêng
+                    />
+                  )}
+                </td>
+
+                {/* <td>{banner.position}</td> */}
+                <td>{banner.is_active ? 'Active' : 'Inactive'}</td>
+                <td>
+                  <button
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                     onClick={() => {
                       if (window.confirm("Bạn có chắc chắn muốn xóa banner này không?")) {
                         handleDelete(banner._id);
@@ -109,7 +145,11 @@ const ViewBanner = () => {
                   >
                     <i className="bi bi-trash"></i>
                   </button>
+<<<<<<< HEAD
                   <button 
+=======
+                  <button
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                     onClick={() => openEditModal(banner)}
                     className="fix"
                     style={{ marginLeft: '5px' }}
@@ -130,7 +170,11 @@ const ViewBanner = () => {
       {/* Modal CreateBanner */}
       {showCreateModal && (
         <Modal onClose={closeCreateModal}>
+<<<<<<< HEAD
           <CreateBanner 
+=======
+          <CreateBanner
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
             onClose={closeCreateModal}
             onCreateSuccess={handleCreateSuccess}
           />
@@ -140,7 +184,11 @@ const ViewBanner = () => {
       {/* Modal EditBanner */}
       {showEditModal && selectedBanner && (
         <Modal onClose={closeEditModal}>
+<<<<<<< HEAD
           <EditBanner 
+=======
+          <EditBanner
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
             initialData={selectedBanner}
             onClose={closeEditModal}
             onEditSuccess={handleEditSuccess}

@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { getAllProduct, deleteProduct, getImages, getCategory, getAuthor } from '../../api/server';
 import '../../asset/css/adminPro.css';
 // Giả sử CreatePro đã được dùng cho modal thêm sản phẩm
 import CreatePro from './createPro'; 
 // Giả sử EditPro là phiên bản form sửa sản phẩm
 import EditPro from './editPro'; 
+=======
+import { getAllProduct, deleteProduct, getImages, getCategory, getAuthor, getPublishers } from '../../api/server';
+import '../../asset/css/adminPro.css';
+// Giả sử CreatePro đã được dùng cho modal thêm sản phẩm
+import CreatePro from './createPro';
+// Giả sử EditPro là phiên bản form sửa sản phẩm
+import EditPro from './editPro';
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
 import Modal from '../model';
 
 const ViewPro = () => {
@@ -31,7 +40,13 @@ const ViewPro = () => {
   const [images, setImages] = useState([]);
   const [categoryName, setCategoryName] = useState([]);
   const [authorName, setAuthorName] = useState([]);
+<<<<<<< HEAD
   
+=======
+  const [publisherName, setPublisherName] = useState([]);
+
+
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -74,8 +89,58 @@ const ViewPro = () => {
       }
     };
     fetchAuthor();
+
+    const fetchPublisher = async () => {
+      try {
+        const publisherData = await getPublishers();
+        setPublisherName(publisherData);
+      } catch (error) {
+        console.error('Có lỗi xảy ra khi lấy NXB:', error);
+      }
+    };
+    fetchPublisher();
+
   }, []);
 
+<<<<<<< HEAD
+=======
+  const handleCreateSuccess = async (newProduct) => {
+    // Thêm sản phẩm mới vào state tạm thời, nếu cần hiển thị ngay
+    setProducts(prev => [...prev, newProduct]);
+    
+    // Re-fetch lại các dữ liệu để đảm bảo toàn bộ thông tin, kể cả danh mục, tác giả và NXB
+    const freshProducts = await getAllProduct();
+    setProducts(freshProducts);
+  
+    const freshImages = await getImages();
+    setImages(freshImages);
+  
+    // Re-fetch lại danh mục, vì có thể danh mục mới đã được tạo hoặc đã được add trước đó
+    const freshCategories = await getCategory();
+    setCategoryName(freshCategories);
+  
+    // Re-fetch lại tác giả
+    const freshAuthors = await getAuthor();
+    setAuthorName(freshAuthors);
+  
+    // Re-fetch lại nhà xuất bản (NXB)
+    const freshPublishers = await getPublishers();
+    setPublisherName(freshPublishers);
+  };
+  
+  
+  // Khi sửa sản phẩm thành công
+  const handleEditSuccess = (updatedProduct) => {
+    setProducts(prev =>
+      prev.map(product =>
+        product._id === updatedProduct._id ? updatedProduct : product
+      )
+    );
+  };
+
+
+
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   // Hàm xóa sản phẩm
   const handleDelete = async (id) => {
     try {
@@ -96,8 +161,13 @@ const ViewPro = () => {
             Sách: {products.length} Quyển Hiện Có
           </span>
           {/* Nút mở modal thêm sản phẩm */}
+<<<<<<< HEAD
           <button 
             className="admin-product__btn-add-category" 
+=======
+          <button
+            className="admin-product__btn-add-category"
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
             onClick={openCreateModal}
           >
             Thêm Sản Phẩm
@@ -121,9 +191,16 @@ const ViewPro = () => {
           <tbody>
             {products && products.length > 0 && images && images.length > 0 ? (
               products.map((product, index) => {
+<<<<<<< HEAD
                 const productImage = images.find((img) => img.productId === product._id);
                 const productCate = categoryName.find((cate) => cate._id === product.category);
                 const productAuthor = authorName.find((auth) => auth._id === product.author);
+=======
+                const productCate = categoryName.filter(cate => cate).find((cate) => cate._id === product.category);
+                const productAuthor = authorName.filter(auth => auth).find((auth) => auth._id === product.author);
+                const productPublisher = publisherName.filter(pub => pub).find((pub) => pub._id === product.publisher);
+                const productImage = images.find((img) => img.productId === product._id);
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                 return (
                   <tr key={product._id || index}>
                     <td>{index + 1}</td>
@@ -134,7 +211,11 @@ const ViewPro = () => {
                       />
                     </td>
                     <td className="book-name">{product.name}</td>
+<<<<<<< HEAD
                     <td>{product.publisher}</td>
+=======
+                    <td>{productPublisher ? productPublisher.name : ''}</td>
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                     <td>
                       {product.price.toLocaleString("vi-VN", {
                         style: "currency",
@@ -154,7 +235,10 @@ const ViewPro = () => {
                       >
                         <i className="bi bi-trash"></i>
                       </button>
+<<<<<<< HEAD
                       {/* Nút Edit mở modal chứa EditPro, truyền sản phẩm được chọn */}
+=======
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                       <button onClick={() => openEditModal(product)} className="fix">
                         <i className="bi bi-pen"></i>
                       </button>
@@ -168,13 +252,23 @@ const ViewPro = () => {
               </tr>
             )}
           </tbody>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
         </table>
       </div>
 
       {/* Modal CreatePro */}
       {showCreateModal && (
         <Modal onClose={closeCreateModal}>
+<<<<<<< HEAD
           <CreatePro />
+=======
+          <CreatePro
+            onClose={closeCreateModal}
+            onCreateSuccess={handleCreateSuccess} />
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
         </Modal>
       )}
 
@@ -182,7 +276,15 @@ const ViewPro = () => {
       {showEditModal && selectedProduct && (
         <Modal onClose={closeEditModal}>
           {/* EditPro nhận dữ liệu ban đầu qua props (initialData) */}
+<<<<<<< HEAD
           <EditPro initialData={selectedProduct} onClose={closeEditModal} />
+=======
+          <EditPro
+            initialData={selectedProduct}
+            onClose={closeEditModal}
+            onEditSuccess={handleEditSuccess}
+          />
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
         </Modal>
       )}
     </div>

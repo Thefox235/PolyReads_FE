@@ -1,12 +1,175 @@
 // api.js
 import axios from 'axios';
-
 const BASE_URL = 'http://localhost:3000'; 
+<<<<<<< HEAD
+=======
+
+// Lấy danh sách discount
+export const getDiscounts = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/discount/`);
+    // Giả sử API trả về: { discounts: [...] }
+    return response.data.discounts;
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách discount:', error);
+    throw error;
+  }
+};
+
+// Tạo mới discount
+export const createDiscount = async (discountData) => {
+  try {
+    const response = await axios.post(BASE_URL, discountData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    // Giả sử API trả về: { discount: {...} }
+    return response.data.discount;
+  } catch (error) {
+    console.error('Lỗi khi tạo discount:', error);
+    throw error;
+  }
+};
+
+// Cập nhật discount
+export const updateDiscount = async (id, discountData) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/${id}`, discountData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    // Giả sử API trả về: { discount: {...} }
+    return response.data.discount;
+  } catch (error) {
+    console.error('Lỗi khi cập nhật discount:', error);
+    throw error;
+  }
+};
+
+// Xóa discount
+export const deleteDiscount = async (id) => {
+  try {
+    const response = await axios.delete(`${BASE_URL}/${id}`);
+    // API có thể trả về thông báo thành công
+    return response.data;
+  } catch (error) {
+    console.error('Lỗi khi xóa discount:', error);
+    throw error;
+  }
+};
+
+export const uploadImageToCloudinary = async (file) => {
+  // Tạo FormData để gửi file
+  const formData = new FormData();
+  formData.append('file', file);
+  // Thêm upload preset mà bạn đã tạo trên Cloudinary
+  formData.append('upload_preset', 'PolyReads'); // Thay YOUR_UPLOAD_PRESET bằng preset của bạn
+
+  try {
+    // Gọi API upload Cloudinary. Thay YOUR_CLOUD_NAME bằng Cloud Name của bạn.
+    const response = await axios.post(
+      `https://api.cloudinary.com/v1_1/dxwda4hfn/upload`,
+      formData
+    );
+    // Trả về URL an toàn (secure_url) của ảnh sau khi upload
+    return response.data.secure_url;
+  } catch (error) {
+    console.error('Lỗi upload ảnh lên Cloudinary:', error);
+    throw error;
+  }
+};
+
+// Hàm upload ảnh lên Imgur
+export const uploadImageToImgur = async (file) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  try {
+    const response = await fetch('https://api.imgur.com/3/image', {
+      method: 'POST',
+      headers: {
+        // Hãy nhớ rằng với FormData, chúng ta không nên thiết lập "Content-Type" thủ công
+        Authorization: 'Client-ID 6c11fde85d8f55e'
+      },
+      body: formData
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.data.error || "Upload failed");
+    }
+    const data = await response.json();
+    return data.data.link;
+  } catch (error) {
+    console.error('Lỗi upload ảnh lên Imgur:', error);
+    throw error;
+  }
+};
+
+
+// Hàm tạo nxb
+export const createPublisher = async (publisherData) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/publisher/add`, publisherData);
+    return response.data.newNXB;
+  } catch (error) {
+    console.error('Có lỗi xảy ra khi thêm nxb:', error);
+    throw error;
+  }
+};
+// Hàm lấy danh sách nxb
+export const getPublishers = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/publisher`);
+    return response.data.result;
+  } catch (error) {
+    console.error('Có lỗi xảy ra khi lấy nxb:', error);
+    throw error;
+  }
+};
+// Hàm cập nhật nxb
+export const updatePublisher = async (id, publisherData) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/publisher/${id}`, publisherData);
+    // Trả về trực tiếp đối tượng publisher cập nhật
+    return response.data.NXB.data;
+  } catch (error) {
+    console.error('Có lỗi xảy ra khi cập nhật NXB:', error);
+    throw error;
+  }
+};
+
+
+// Hàm lấy danh mục theo ID
+export const getPublisherById = async (id) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/publisher/${id}`);
+    return response.data.NXB;
+  } catch (error) {
+    console.error('Có lỗi xảy ra khi lấy NXB:', error);
+    throw error;
+  }
+};
+//hàm xóa nxb
+export const deletePublisher = async (id) => {
+  try {
+    const response = await axios.delete(`${BASE_URL}/publisher/delete/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Có lỗi xảy ra khi xóa nxb:', error);
+    throw error;
+  }
+}
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
 //hàm lấy banner
 export const getBanners = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/banner`);
+<<<<<<< HEAD
     return response.data;
+=======
+    return response.data.banners;
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   } catch (error) {
     console.error("Error getting banners:", error);
     throw error;
@@ -28,7 +191,11 @@ export const createBanner = async (bannerData) => {
 export const updateBanner = async (id, bannerData) => {
   try {
     const response = await axios.put(`${BASE_URL}/banner/${id}`, bannerData);
+<<<<<<< HEAD
     return response.data;
+=======
+    return response.data.NewBanner;
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   } catch (error) {
     console.error("Error updating banner:", error);
     throw error;
@@ -86,7 +253,6 @@ export const getOrderByIdUser = async (id) => {
   try {
     const response = await axios.get(`${BASE_URL}/order/user/${id}`);
     return response.data;
-    console.log(response.data);
   } catch (error) {
     console.error('Có lỗi xảy ra khi lấy sản phẩm:', error);
     throw error;
@@ -97,7 +263,6 @@ export const getOrder = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/order`);
     return response.data;
-    console.log(response.data);
   } catch (error) {
     console.error('Có lỗi xảy ra khi lấy sản phẩm:', error);
     throw error;
@@ -123,18 +288,19 @@ export const deleteAuthor = async (id) => {
     throw error;
   }
 }
-// Hàm cập nhật danh mục
+// Hàm cập nhật tác giả
 export const updateAuthor = async (id, categoryData) => {
   try {
     const response = await axios.put(`${BASE_URL}/author/${id}`, categoryData);
-    return response.data.Products;
+    console.log(response.data.Products);
+    return response.data.Products.data;
   } catch (error) {
     console.error('Có lỗi xảy ra khi cập nhật tác giả:', error);
     throw error;
   }
 };
 
-// Hàm lấy danh mục theo ID
+// Hàm lấy tác giả theo ID
 export const getAuthorById = async (id) => {
   try {
     const response = await axios.get(`${BASE_URL}/author/${id}`);
@@ -158,6 +324,7 @@ export const deleteCategory = async (id) => {
 export const updateCategory = async (id, categoryData) => {
   try {
     const response = await axios.put(`${BASE_URL}/category/${id}`, categoryData);
+    console.log(response.data.Products);
     return response.data.Products;
   } catch (error) {
     console.error('Có lỗi xảy ra khi cập nhật danh mục:', error);
@@ -204,7 +371,6 @@ export const getCategories = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/category`);
     return response.data.result;
-    console.log(response.data);
   } catch (error) {
     console.error('Có lỗi xảy ra khi lấy danh mục:', error);
     throw error;
@@ -226,7 +392,9 @@ export const createProduct = async (productData, images) => {
   try {
     // Đóng gói cả productData và images vào một object gửi đi
     const response = await axios.post(`${BASE_URL}/product/add`, { productData, images });
-    // Lưu ý chỉnh sửa key nếu cần, ví dụ: "productNew" thay vì "prodcutNew"
+    console.log(response.data.productNew);
+    // Trả về đối tượng sản phẩm (chỉ chứa thông tin cơ bản)
+    // Bạn có thể không có dữ liệu ảnh trong response
     return response.data.productNew;
   } catch (error) {
     console.error('Có lỗi xảy ra khi thêm sản phẩm:', error);
@@ -234,11 +402,13 @@ export const createProduct = async (productData, images) => {
   }
 };
 
+
 // Hàm tạo brand
 export const createAuthor = async (authorData) => {
   try {
     const response = await axios.post(`${BASE_URL}/author/add`, authorData);
-    return response.data.result;
+    // console.log(response.data.newAuthor);
+    return response.data.newAuthor;
   } catch (error) {
     console.error('Có lỗi xảy ra khi thêm tác giả:', error);
     throw error;

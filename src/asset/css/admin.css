@@ -5,6 +5,10 @@
   justify-content: space-between;
   width: 100%;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
 .btn-primary
 {
   background-color: #917fb3;
@@ -73,7 +77,11 @@
 }
 /* Giãn cách dưới mỗi nhóm */
 .addPro-container .form-group {
+<<<<<<< HEAD
   margin-bottom: 15px;
+=======
+  margin-bottom: 25px;
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
 }
 
 /* Style cho label */
@@ -102,7 +110,11 @@
 
 /* Mỗi form-group trong hàng chiếm khoảng 45% để tạo khoảng trắng giữa các cột */
 .form-row .form-group {
+<<<<<<< HEAD
   flex: 1 1 45%;
+=======
+  flex: 1 1;
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
 }
 
 /* Các form-group full-width chiếm cả hàng */
@@ -472,5 +484,13 @@
   width: 232px;
   height: 51px;
   top: 472px;
+  left: 25px;
+}
+
+.dashboard .div-9 {
+  position: absolute;
+  width: 232px;
+  height: 51px;
+  top: 525px;
   left: 25px;
 }

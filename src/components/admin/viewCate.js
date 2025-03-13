@@ -7,13 +7,21 @@ import Modal from '../model';           // Component Modal chung
 
 const ViewCate = () => {
   const [categories, setCategories] = useState([]);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   // State cho modal thêm danh mục
   const [showCreateModal, setShowCreateModal] = useState(false);
   // State cho modal sửa danh mục
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   // Fetch danh mục khi component mount
   useEffect(() => {
     const fetchCategories = async () => {
@@ -70,7 +78,11 @@ const ViewCate = () => {
         <span className="admin-product__category-title">
           Danh Mục: {categories.length} Danh Mục Hiện Có
         </span>
+<<<<<<< HEAD
         <button 
+=======
+        <button
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
           className="admin-product__btn-add-category"
           onClick={openCreateModal}
         >
@@ -82,8 +94,14 @@ const ViewCate = () => {
       <table className="admin-product__table">
         <thead>
           <tr>
+            <th>STT</th>
             <th>Tên danh mục</th>
+<<<<<<< HEAD
             {/* <th>Mô tả</th> */}
+=======
+            <th>Type</th>
+            <th>Active</th>
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
             <th>Thao tác</th>
           </tr>
         </thead>
@@ -91,10 +109,16 @@ const ViewCate = () => {
           {categories && categories.length > 0 ? (
             categories.map((dm, index) => (
               <tr key={dm._id || index}>
+                <td>{index+1}</td>
                 <td>{dm.name}</td>
+<<<<<<< HEAD
                 {/* <td className="book-description">
                   {dm.description}
                 </td> */}
+=======
+                <td>{dm.type}</td>
+                <td>{dm.is_active ? 'Active' : 'Inactive'}</td>
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                 <td>
                   <button
                     onClick={() => {
@@ -106,8 +130,13 @@ const ViewCate = () => {
                   >
                     <i className="bi bi-trash"></i>
                   </button>
+<<<<<<< HEAD
                   <button 
                     onClick={() => openEditModal(dm)} 
+=======
+                  <button
+                    onClick={() => openEditModal(dm)}
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                     className="fix"
                     style={{ marginLeft: '5px' }}
                   >
@@ -127,8 +156,13 @@ const ViewCate = () => {
       {/* Modal CreateCate */}
       {showCreateModal && (
         <Modal onClose={closeCreateModal}>
+<<<<<<< HEAD
           <CreateCate 
             onClose={closeCreateModal} 
+=======
+          <CreateCate
+            onClose={closeCreateModal}
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
             onCreateSuccess={handleCreateSuccess}
           />
         </Modal>
@@ -137,10 +171,18 @@ const ViewCate = () => {
       {/* Modal EditCate */}
       {showEditModal && selectedCategory && (
         <Modal onClose={closeEditModal}>
+<<<<<<< HEAD
           <EditCate 
             initialData={selectedCategory} 
             onClose={closeEditModal}
             /* Nếu bạn có callback sau khi edit thành công: onEditSuccess={handleEditSuccess} */
+=======
+          <EditCate
+            initialData={selectedCategory}
+            onClose={closeEditModal}
+            onEditSuccess={handleEditSuccess}
+          /* Nếu bạn có callback sau khi edit thành công: onEditSuccess={handleEditSuccess} */
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
           />
         </Modal>
       )}

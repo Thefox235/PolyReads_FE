@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { createProduct, getCategories, getAuthors } from '../../api/server';
+import { createProduct, getCategories, getAuthors, getPublishers, uploadImageToCloudinary } from '../../api/server';
+import CustomSelect from './customSelect';
+import Modal from '../model';
+import CreatePublisher from './createPublisher';   // Nếu cần tạo NXB inline
+import CreateCate from './createCate';   // Nếu cần tạo danh mục inline
+import CreateAuthor from './createAuthor';     // Nếu cần tạo tác giả inline
 
-const CreatePro = () => {
+const CreatePro = ({ onClose, onCreateSuccess }) => {
   const [form, setForm] = useState({
     name: '',
     title: '',
@@ -20,13 +25,48 @@ const CreatePro = () => {
   });
   const [categories, setCategories] = useState([]);
   const [authors, setAuthors] = useState([]);
+  const [publishers, setPublishers] = useState([]);
   const [error, setError] = useState('');
 
+<<<<<<< HEAD
   // State dùng để xử lý hình ảnh
   const [imageUrl, setImageUrl] = useState('');
   const [images, setImages] = useState([]);
 
   // Lấy danh mục và tác giả khi component mount
+=======
+  // State dùng xử lý hình ảnh
+  // const [imageUrl, setImageUrl] = useState('');
+  const [images, setImages] = useState([]);
+
+  // Hàm xử lý khi người dùng chọn file
+  const handleFileChange = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    try {
+      const uploadedResults = await Promise.all(
+        Array.from(files).map(async (file) => {
+          try {
+            const uploadedUrl = await uploadImageToCloudinary(file);
+            return { url: uploadedUrl };
+          } catch (error) {
+            console.error("Lỗi upload ảnh:", error);
+            return null;
+          }
+        })
+      );
+      const validResults = uploadedResults.filter(item => item !== null);
+      setImages(prev => [...prev, ...validResults]);
+    } catch (err) {
+      alert('Có lỗi khi upload ảnh');
+    }
+  };
+  // State hiển thị modal tạo mới
+  const [showCreateCateModal, setShowCreateCateModal] = useState(false);
+  const [showCreateAuthorModal, setShowCreateAuthorModal] = useState(false);
+  const [showCreatePublisherModal, setShowCreatePublisherModal] = useState(false);
+
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,13 +74,16 @@ const CreatePro = () => {
         setCategories(categoriesData);
         const authorsData = await getAuthors();
         setAuthors(authorsData);
+        const pubData = await getPublishers();
+        setPublishers(pubData);
       } catch (err) {
-        setError('Có lỗi xảy ra khi lấy danh sách danh mục hoặc tác giả');
+        setError('Có lỗi xảy ra khi lấy danh sách');
       }
     };
     fetchData();
   }, []);
 
+<<<<<<< HEAD
   // Xử lý thay đổi ở input
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,16 +101,31 @@ const CreatePro = () => {
       setImages(prev => [...prev, { url: imageUrl.trim() }]);
       setImageUrl('');
     }
+=======
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+<<<<<<< HEAD
       // Gọi API tạo sản phẩm, truyền dữ liệu form và images
+=======
+      // Gọi API tạo sản phẩm
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
       const newProduct = await createProduct(form, images);
-      console.log('Sản phẩm mới:', newProduct);
+      // Nếu newProduct không có trường images, ghép images từ state vào đối tượng
+      const completeProduct = { ...newProduct, images };
+      console.log('Sản phẩm mới đầy đủ:', completeProduct);
       alert('Tạo sản phẩm thành công!');
+<<<<<<< HEAD
       // Reset lại form và images sau khi submit thành công
+=======
+      // Reset form và images
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
       setForm({
         name: '',
         title: '',
@@ -85,18 +143,30 @@ const CreatePro = () => {
         author: ''
       });
       setImages([]);
+<<<<<<< HEAD
       window.location.reload();
+=======
+      if (onCreateSuccess) onCreateSuccess(completeProduct);
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
     } catch (err) {
       setError('Có lỗi xảy ra khi thêm sản phẩm');
       alert('Có lỗi xảy ra khi thêm sản phẩm');
     }
   };
+<<<<<<< HEAD
 
   // Xóa hình ảnh khỏi danh sách
   const handleDeleteImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
+=======
+  
+  const handleDeleteImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+  
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   return (
     <div className="addPro-container">
       <h1>Thêm sản phẩm:</h1>
@@ -232,6 +302,7 @@ const CreatePro = () => {
           </div>
         </div>
 
+<<<<<<< HEAD
         {/* Row 6: Nhà xuất bản (full-width) */}
         <div className='form-row'>
           <div className="form-group">
@@ -247,6 +318,29 @@ const CreatePro = () => {
           </div>
 
           {/* Row 7: Mô tả (full-width) */}
+=======
+        {/* Row 6: Nhà xuất bản và Mô tả */}
+        <div className="form-row">
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+            <CustomSelect
+              label="Nhà xuất bản"
+              options={publishers.map(pub => ({ value: pub._id, label: pub.name }))}
+              value={form.publisher}
+              onChange={(selectedValue) =>
+                setForm(prev => ({ ...prev, publisher: selectedValue }))
+              }
+              placeholder="Chọn NXB"
+            />
+            <button
+              type="button"
+              onClick={() => setShowCreatePublisherModal(true)}
+              className="btn btn-secondary"
+              style={{ marginLeft: '10px' }}
+            >
+              Tạo mới
+            </button>
+          </div>
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
           <div className="form-group">
             <label htmlFor="description">Mô tả:</label>
             <textarea
@@ -259,6 +353,7 @@ const CreatePro = () => {
             ></textarea>
           </div>
         </div>
+<<<<<<< HEAD
         
         {/* Row 8: Danh mục và Tác giả */}
         <div className="form-row">
@@ -317,6 +412,62 @@ const CreatePro = () => {
           >
             Thêm ảnh
           </button>
+=======
+
+        {/* Row 8: Danh mục và Tác giả */}
+        <div className="form-row">
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+            <CustomSelect
+              label="Danh mục"
+              options={categories.map(cat => ({ value: cat._id, label: cat.name }))}
+              value={form.category}
+              onChange={(selectedValue) =>
+                setForm(prev => ({ ...prev, category: selectedValue }))
+              }
+              placeholder="Chọn danh mục"
+            />
+            <button
+              type="button"
+              onClick={() => setShowCreateCateModal(true)}
+              className="btn btn-secondary"
+              style={{ marginLeft: '10px' }}
+            >
+              Tạo mới
+            </button>
+          </div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+            <CustomSelect
+              label="Tác giả"
+              options={authors.map(auth => ({ value: auth._id, label: auth.name }))}
+              value={form.author}
+              onChange={(selectedValue) =>
+                setForm(prev => ({ ...prev, author: selectedValue }))
+              }
+              placeholder="Chọn tác giả"
+            />
+            <button
+              type="button"
+              onClick={() => setShowCreateAuthorModal(true)}
+              className="btn btn-secondary"
+              style={{ marginLeft: '10px' }}
+            >
+              Tạo mới
+            </button>
+          </div>
+        </div>
+
+        {/* Phần chọn hình ảnh */}
+        <div className="form-group">
+          <label htmlFor="imageFile">Chọn ảnh sản phẩm:</label>
+          <input
+            type="file"
+            id="imageFile"
+            name="imageFile"
+            multiple
+            onChange={handleFileChange}
+            className="form-control"
+          />
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
           {images.length > 0 && (
             <div
               className="images-preview"
@@ -359,10 +510,53 @@ const CreatePro = () => {
         </div>
 
         {/* Nút Submit */}
+<<<<<<< HEAD
         <button type="submit" className="btn btn-primary"  style={{ backgroundColor: '#917fb3'}} >
+=======
+        <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#917fb3' }}>
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
           Thêm sản phẩm
         </button>
       </form>
+
+      {/* Modal cho Tạo mới Danh mục */}
+      {showCreateCateModal && (
+        <Modal onClose={() => setShowCreateCateModal(false)}>
+          <CreateCate
+            onClose={() => setShowCreateCateModal(false)}
+            onCreateSuccess={(newCate) => {
+              setCategories(prev => [...prev, newCate]);
+              setForm(prev => ({ ...prev, category: newCate._id }));
+            }}
+          />
+        </Modal>
+      )}
+
+      {/* Modal cho Tạo mới Tác giả */}
+      {showCreateAuthorModal && (
+        <Modal onClose={() => setShowCreateAuthorModal(false)}>
+          <CreateAuthor
+            onClose={() => setShowCreateAuthorModal(false)}
+            onCreateSuccess={(newAuthor) => {
+              setAuthors(prev => [...prev, newAuthor]);
+              setForm(prev => ({ ...prev, author: newAuthor._id }));
+            }}
+          />
+        </Modal>
+      )}
+
+      {/* Modal cho Tạo mới Nhà xuất bản */}
+      {showCreatePublisherModal && (
+        <Modal onClose={() => setShowCreatePublisherModal(false)}>
+          <CreatePublisher
+            onClose={() => setShowCreatePublisherModal(false)}
+            onCreateSuccess={(newPublisher) => {
+              setPublishers(prev => [...prev, newPublisher]);
+              setForm(prev => ({ ...prev, publisher: newPublisher._id }));
+            }}
+          />
+        </Modal>
+      )}
     </div>
   );
 };

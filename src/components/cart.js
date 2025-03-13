@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import "../asset/css/cart.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,12 +8,24 @@ import {
   faRectangleList,
 } from "@fortawesome/free-solid-svg-icons";
 import { useCart } from "./context/cartContext";
+=======
+import React, { useState } from 'react';
+import '../asset/css/cart.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight, faTrashCan, faRectangleList } from '@fortawesome/free-solid-svg-icons';
+
+// Hàm changeQuantity chỉ là dummy để tránh lỗi, bạn có thể thay bằng logic cụ thể của bạn.
+const changeQuantity = (delta) => {
+  console.log("Change quantity by", delta);
+};
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
 
 // Hàm changeQuantity chỉ là dummy để tránh lỗi, bạn có thể thay bằng logic cụ thể của bạn.
 const changeQuantity = (delta) => {
   console.log("Change quantity by", delta);
 };
 const Cart = () => {
+<<<<<<< HEAD
   const { cart, increaseQuantity, decreaseQuantity, clearCart,removeFromCart } = useCart();
   const [product, setProduct] = useState();
   useEffect(() => {
@@ -20,6 +33,8 @@ const Cart = () => {
     setProduct(item);
   }, [cart]);
   console.log(product);
+=======
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   return (
     <>
       <section className="banner">
@@ -44,6 +59,7 @@ const Cart = () => {
                 <div className="cart-header-item">Thành tiền</div>
               </div>
               {/* Cart item */}
+<<<<<<< HEAD
               {product &&
                 product.map((item, index) => (
                   <div className={`cart-item`} key={item._id}>
@@ -85,6 +101,88 @@ const Cart = () => {
                     </button>
                   </div>
                 ))}
+=======
+              <div className="cart-item">
+                <input type="checkbox" className="checkbox" />
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/vi/9/97/Tantei_wa_M%C5%8D%2C_Shindeiru_b%C3%ACa_t%E1%BA%ADp_1.jpg"
+                  alt="Sách 1"
+                  className="cart-img"
+                />
+                <div className="cart-info">
+                  <h6 className="book-title">
+                    Sách Thám tử đã chết - Lẻ tập 1 2 3 4 5 6
+                  </h6>
+                  <p className="price">
+                    <span className="discount-price">145,000₫</span>
+                    <span className="original-price">145,000₫</span>
+                  </p>
+                </div>
+                <div className="quantity">
+                  <button onClick={() => changeQuantity(-1)}>-</button>
+                  <input type="number" id="quantity" defaultValue={1} min={1} />
+                  <button onClick={() => changeQuantity(1)}>+</button>
+                </div>
+                <span className="cart-price">145,000₫</span>
+                <button className="delete-btn">
+                  <FontAwesomeIcon icon={faTrashCan} />
+                </button>
+              </div>
+              {/* Cart item */}
+              <div className="cart-item">
+                <input type="checkbox" className="checkbox" />
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/vi/9/97/Tantei_wa_M%C5%8D%2C_Shindeiru_b%C3%ACa_t%E1%BA%ADp_1.jpg"
+                  alt="Sách 1"
+                  className="cart-img"
+                />
+                <div className="cart-info">
+                  <h6 className="book-title">
+                    Sách Thám tử đã chết - Lẻ tập 1 2 3 4 5 6
+                  </h6>
+                  <p className="price">
+                    <span className="discount-price">145,000₫</span>
+                    <span className="original-price">145,000₫</span>
+                  </p>
+                </div>
+                <div className="quantity">
+                  <button onClick={() => changeQuantity(-1)}>-</button>
+                  <input type="number" id="quantity" defaultValue={1} min={1} />
+                  <button onClick={() => changeQuantity(1)}>+</button>
+                </div>
+                <span className="cart-price">145,000₫</span>
+                <button className="delete-btn">
+                  <FontAwesomeIcon icon={faTrashCan} />
+                </button>
+              </div>
+              {/* Cart item */}
+              <div className="cart-item">
+                <input type="checkbox" className="checkbox" />
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/vi/9/97/Tantei_wa_M%C5%8D%2C_Shindeiru_b%C3%ACa_t%E1%BA%ADp_1.jpg"
+                  alt="Sách 1"
+                  className="cart-img"
+                />
+                <div className="cart-info">
+                  <h6 className="book-title">
+                    Sách Thám tử đã chết - Lẻ tập 1 2 3 4 5 6
+                  </h6>
+                  <p className="price">
+                    <span className="discount-price">145,000₫</span>
+                    <span className="original-price">145,000₫</span>
+                  </p>
+                </div>
+                <div className="quantity">
+                  <button onClick={() => changeQuantity(-1)}>-</button>
+                  <input type="number" id="quantity" defaultValue={1} min={1} />
+                  <button onClick={() => changeQuantity(1)}>+</button>
+                </div>
+                <span className="cart-price">145,000₫</span>
+                <button className="delete-btn">
+                  <FontAwesomeIcon icon={faTrashCan} />
+                </button>
+              </div>
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
             </div>
           </div>
           <div className="col-lg-4">
@@ -98,22 +196,34 @@ const Cart = () => {
                 </span>
               </div>
               <div className="title-discount">
+<<<<<<< HEAD
                 <h5 className="text-uppercase fw-bold">
                   Mã giảm 50k - toàn sàn
                 </h5>
+=======
+                <h5 className="text-uppercase fw-bold">Mã giảm 50k - toàn sàn</h5>
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                 <span className="text-decoration-underline">
                   <a href="#">Chi tiết</a>
                 </span>
               </div>
               <p>
+<<<<<<< HEAD
                 Đơn hàng từ 550k - Xem chi tiết để biết thêm về thể lệ chương
                 trình
+=======
+                Đơn hàng từ 550k - Xem chi tiết để biết thêm về thể lệ chương trình
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
               </p>
               <div className="progress-container">
                 <div className="row align-items-center">
                   <div className="col-9">
                     <div className="progress">
+<<<<<<< HEAD
                       <div className="progress-bar" style={{ width: "80%" }} />
+=======
+                      <div className="progress-bar" style={{ width: '80%' }} />
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                     </div>
                     <div className="progress-info d-flex justify-content-between mt-2">
                       <span>Mua thêm 115,000đ để nhận mã </span>
@@ -121,9 +231,13 @@ const Cart = () => {
                     </div>
                   </div>
                   <div className="col-3 text-end">
+<<<<<<< HEAD
                     <button className="btn btn-primary btn-sm w-100">
                       Mua Thêm
                     </button>
+=======
+                    <button className="btn btn-primary btn-sm w-100">Mua Thêm</button>
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                   </div>
                 </div>
               </div>

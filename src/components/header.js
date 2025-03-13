@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { getBanners } from '../api/server'; // API lấy banner
 import '../asset/css/header.css';
+<<<<<<< HEAD
 import React, { useEffect } from 'react';
 const Header = ({ user, handleLogout }) => {
     // console.log(user);
@@ -36,6 +38,59 @@ const Header = ({ user, handleLogout }) => {
         const element = document.querySelector(".moblie");
         if (element) element.classList.toggle("open");
     };
+=======
+import { Link } from 'react-router-dom';
+
+const Header = ({ user, handleLogout }) => {
+  const [activeBanners, setActiveBanners] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch banner: Lọc ra những banner có trạng thái active và có position là 'header-banner'
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const banners = await getBanners();
+        const active = banners.filter(
+          banner => banner.is_active === true && banner.position === 'header-banner'
+        );
+        setActiveBanners(active);
+      } catch (error) {
+        console.error("Lỗi khi lấy banner:", error);
+
+      }
+    };
+    fetchBanners();
+  }, []);
+
+  // Thay đổi background của .bg-header theo chu kỳ nếu có banner active
+  useEffect(() => {
+    const bgHeader = document.querySelector(".bg-header");
+    const changeBackground = () => {
+      if (bgHeader && activeBanners.length > 0) {
+        bgHeader.style.backgroundImage = `url(${activeBanners[currentIndex].image_url})`;
+        setCurrentIndex(prev => (prev + 1) % activeBanners.length);
+      }
+    };
+
+    let intervalId;
+    if (activeBanners.length > 0) {
+      intervalId = setInterval(changeBackground, 3000);
+    }
+    return () => { if (intervalId) clearInterval(intervalId); };
+  }, [activeBanners, currentIndex, isLoading]);
+
+    // Functions to handle open and close elements
+    // const closeElement = () => {
+    //     const element = document.querySelector(".moblie");
+    //     if (element) element.classList.remove("open");
+    // };
+
+    // const openElement = () => {
+    //     const element = document.querySelector(".moblie");
+    //     if (element) element.classList.toggle("open");
+    // };
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
     return (
         <>
             <header>
@@ -79,9 +134,12 @@ const Header = ({ user, handleLogout }) => {
                                                         <a href="/viewPro">
                                                             <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Quản lý sản phẩm
                                                         </a>
+<<<<<<< HEAD
                                                         <a href="/admin/users">
                                                             <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Quản lý người dùng
                                                         </a>
+=======
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                                                         <hr className="user-dropdown-divider" />
                                                     </>
                                                 )}

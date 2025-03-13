@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
 import { createCategory } from '../../api/server';
 
-const CreateCate = () => {
-  const [form, setForm] = useState({ name: '', description: '' });
+const CreateCate = ({ onClose, onCreateSuccess }) => {
+  const [form, setForm] = useState({ name: '', type: 'line-banner', is_active: true });
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-    // Khi người dùng thay đổi input, reset lỗi nếu đã nhập
+    const { name, type, value, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+    // Reset lỗi khi có thay đổi input
     setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Kiểm tra validate: yêu cầu cả trường name và description phải không rỗng
-    if (!form.name.trim() || !form.description.trim()) {
-      setError('Vui lòng điền đầy đủ Tên danh mục và Mô tả.');
+    // Kiểm tra validate: yêu cầu cả trường name và type phải không rỗng
+    if (!form.name.trim()) {
+      setError('Vui lòng điền Tên danh mục.');
       return;
     }
     try {
@@ -24,8 +27,14 @@ const CreateCate = () => {
       console.log('Danh mục mới:', newCategory);
       alert('Thêm danh mục thành công');
       // Reset form sau khi submit thành công
+<<<<<<< HEAD
       window.location.reload(); // Reload lại trang sau khi thêm danh mục thành công
       // setForm({ name: '', description: '' });
+=======
+      if (onCreateSuccess) onCreateSuccess(newCategory);
+      // window.location.reload(); // Reload lại trang sau khi thêm danh mục thành công
+      // setForm({ name: '', type: '' });
+>>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
       setError('');
     } catch (error) {
       setError('Có lỗi xảy ra khi thêm danh mục');
@@ -50,18 +59,32 @@ const CreateCate = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="description">Mô tả:</label>
-          <textarea
-            id="description"
-            name="description"
-            value={form.description}
+          <label htmlFor="type">Type:</label>
+          <select
+            id="type"
+            name="type"
+            value={form.type}
             onChange={handleChange}
-            placeholder="Nhập mô tả"
             className="form-control"
-          ></textarea>
+          >
+            <option value="Product">Product</option>
+            <option value="Blog">Blog</option>
+          </select>
         </div>
-
-        <button type="submit" className="btn btn-primary">Submit</button>
+        {/* Active checkbox */}
+        <div className="form-group">
+          <label htmlFor="is_active">
+            <input
+              type="checkbox"
+              id="is_active"
+              name="is_active"
+              checked={form.is_active}
+              onChange={handleChange}
+            />{' '}
+            Active
+          </label>
+        </div>
+        <button type="submit" className="btn btn-primary">Thêm Danh Mục</button>
       </form>
     </div>
   );

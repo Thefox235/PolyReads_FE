@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
 import { createAuthor } from '../../api/server';
 
-const CreateAuthor = () => {
+const CreateAuthor = ({ onClose, onCreateSuccess }) => {
   const [form, setForm] = useState({ name: '', bio: '' });
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-    // Reset lỗi khi có thay đổi input
+    setForm((prev) => ({ ...prev, [name]: value }));
     setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validate: bắt buộc nhập cả name và bio
     if (!form.name.trim() || !form.bio.trim()) {
       setError('Vui lòng nhập đầy đủ Tên Tác Giả và Bio.');
       return;
@@ -23,7 +21,10 @@ const CreateAuthor = () => {
       const newAuthor = await createAuthor(form);
       console.log('Tác giả mới:', newAuthor);
       alert('Thêm tác giả thành công');
-      // Reset form sau khi submit thành công
+      // Gọi callback cập nhật state ở component cha
+      if (onCreateSuccess) onCreateSuccess(newAuthor);
+      // Đóng modal sau khi tạo thành công
+      if (onClose) onClose();
       setForm({ name: '', bio: '' });
       setError('');
     } catch (error) {
@@ -47,7 +48,6 @@ const CreateAuthor = () => {
             className="form-control"
           />
         </div>
-
         <div className="form-group">
           <label htmlFor="bio">Bio:</label>
           <textarea
@@ -59,8 +59,9 @@ const CreateAuthor = () => {
             className="form-control"
           ></textarea>
         </div>
-
-        <button type="submit" className="btn btn-primary">Submit</button>
+        <button type="submit" className="btn btn-primary">
+          Thêm Tác Giả
+        </button>
       </form>
     </div>
   );
