@@ -196,26 +196,6 @@ main {
         );
 }
 
-.sptt {
-    text-transform: uppercase;
-    background: #917FB3;
-    color: #fff;
-    font-size: 20px;
-    padding: 0px 50px;
-    clip-path: polygon(10px 0%,
-            /* Góc trên bên trái */
-            calc(100% - 25px) 0%,
-            /* Góc trên bên phải */
-            100% 100px,
-            /* Cắt góc trên bên phải */
-            100% 100px,
-            /* Góc dưới bên phải */
-            0% 100px,
-            /* Góc dưới bên trái */
-            100% 600px
-            /* Cắt góc trên bên trái */
-        );
-}
 
 .detail img {
     max-width: 270px;

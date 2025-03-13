@@ -1,14 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { getAllProduct, deleteProduct, getImages, getCategory, getAuthor } from '../../api/server';
 import '../../asset/css/adminPro.css';
+// Giả sử CreatePro đã được dùng cho modal thêm sản phẩm
+import CreatePro from './createPro'; 
+// Giả sử EditPro là phiên bản form sửa sản phẩm
+import EditPro from './editPro'; 
+import Modal from '../model';
 
 const ViewPro = () => {
+  // State cho modal thêm sản phẩm
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const openCreateModal = () => setShowCreateModal(true);
+  const closeCreateModal = () => setShowCreateModal(false);
+
+  // State cho modal sửa sản phẩm
+  const [showEditModal, setShowEditModal] = useState(false);
+  // Sản phẩm đang được chọn để sửa
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const openEditModal = (product) => {
+    setSelectedProduct(product);
+    setShowEditModal(true);
+  };
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setSelectedProduct(null);
+  };
+
+  // Các state khác:
   const [products, setProducts] = useState([]);
   const [images, setImages] = useState([]);
-  const [categoryName, setCategoryName] = useState([]); // sửa từ '' thành []
-  const [authorName, setAuthorName] = useState([]);     // sửa từ '' thành []
-
+  const [categoryName, setCategoryName] = useState([]);
+  const [authorName, setAuthorName] = useState([]);
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -53,13 +76,11 @@ const ViewPro = () => {
     fetchAuthor();
   }, []);
 
-  // hàm xóa
+  // Hàm xóa sản phẩm
   const handleDelete = async (id) => {
     try {
       await deleteProduct(id);
-      console.log('Sản phẩm đã được xóa');
       alert('Sản phẩm đã được xóa');
-      // Cập nhật lại danh sách sản phẩm sau khi xóa
       setProducts(prev => prev.filter(sp => sp._id !== id));
     } catch (error) {
       console.error('Có lỗi xảy ra khi xóa sản phẩm:', error);
@@ -71,13 +92,16 @@ const ViewPro = () => {
       <div className="admin-product">
         {/* Phần Thêm Sản Phẩm & tiêu đề */}
         <div className="admin-product__action">
-          {/* Hiển thị số lượng sản phẩm */}
           <span className="admin-product__category-title">
             Sách: {products.length} Quyển Hiện Có
           </span>
-          <a className="admin-product__btn-add-category" href="/createPro">
+          {/* Nút mở modal thêm sản phẩm */}
+          <button 
+            className="admin-product__btn-add-category" 
+            onClick={openCreateModal}
+          >
             Thêm Sản Phẩm
-          </a>
+          </button>
         </div>
 
         {/* Bảng sản phẩm */}
@@ -85,9 +109,9 @@ const ViewPro = () => {
           <thead>
             <tr>
               <th>STT</th>
-              <th>HÌnh Ảnh</th>
+              <th>Hình Ảnh</th>
               <th>Tên Sách</th>
-              <th>Mô Tả Sách</th>
+              <th>Nhà NXB</th>
               <th>Giá</th>
               <th>Danh Mục</th>
               <th>Tác Giả</th>
@@ -97,16 +121,9 @@ const ViewPro = () => {
           <tbody>
             {products && products.length > 0 && images && images.length > 0 ? (
               products.map((product, index) => {
-                const productImage = images.find(
-                  (image) => image.productId === product._id
-                );
-                const productCate = categoryName.find(
-                  (cate) => cate._id === product.category
-                );
-                const productAuthor = authorName.find(
-                  (author) => author._id === product.author
-                );
-
+                const productImage = images.find((img) => img.productId === product._id);
+                const productCate = categoryName.find((cate) => cate._id === product.category);
+                const productAuthor = authorName.find((auth) => auth._id === product.author);
                 return (
                   <tr key={product._id || index}>
                     <td>{index + 1}</td>
@@ -117,7 +134,7 @@ const ViewPro = () => {
                       />
                     </td>
                     <td className="book-name">{product.name}</td>
-                    <td className="book-description">{product.description}</td>
+                    <td>{product.publisher}</td>
                     <td>
                       {product.price.toLocaleString("vi-VN", {
                         style: "currency",
@@ -129,11 +146,7 @@ const ViewPro = () => {
                     <td className="action-button">
                       <button
                         onClick={() => {
-                          if (
-                            window.confirm(
-                              "Bạn có chắc chắn muốn xóa sản phẩm này không?"
-                            )
-                          ) {
+                          if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
                             handleDelete(product._id);
                           }
                         }}
@@ -141,9 +154,10 @@ const ViewPro = () => {
                       >
                         <i className="bi bi-trash"></i>
                       </button>
-                      <Link to={`/editSp/${product._id}`} className="fix">
+                      {/* Nút Edit mở modal chứa EditPro, truyền sản phẩm được chọn */}
+                      <button onClick={() => openEditModal(product)} className="fix">
                         <i className="bi bi-pen"></i>
-                      </Link>
+                      </button>
                     </td>
                   </tr>
                 );
@@ -155,17 +169,22 @@ const ViewPro = () => {
             )}
           </tbody>
         </table>
-
-        {/* Phân trang: nếu có */}
-        {/* <div className="admin-product__pagination">
-          <button className="admin-product__pagination-btn">«</button>
-          <button className="admin-product__pagination-btn admin-product__pagination-btn--active">
-            1
-          </button>
-          <button className="admin-product__pagination-btn">2</button>
-          <button className="admin-product__pagination-btn">»</button>
-        </div> */}
       </div>
+
+      {/* Modal CreatePro */}
+      {showCreateModal && (
+        <Modal onClose={closeCreateModal}>
+          <CreatePro />
+        </Modal>
+      )}
+
+      {/* Modal EditPro */}
+      {showEditModal && selectedProduct && (
+        <Modal onClose={closeEditModal}>
+          {/* EditPro nhận dữ liệu ban đầu qua props (initialData) */}
+          <EditPro initialData={selectedProduct} onClose={closeEditModal} />
+        </Modal>
+      )}
     </div>
   );
 };

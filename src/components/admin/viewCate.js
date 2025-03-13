@@ -1,22 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { getCategory, deleteCategory } from '../../api/server';
 import '../../asset/css/adminPro.css';
+import CreateCate from './createCate'; // Component tạo danh mục dưới dạng popup
+import EditCate from './editCate';     // Component sửa danh mục dưới dạng popup
+import Modal from '../model';           // Component Modal chung
 
 const ViewCate = () => {
   const [categories, setCategories] = useState([]);
-
+  
+  // State cho modal thêm danh mục
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  // State cho modal sửa danh mục
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  
   // Fetch danh mục khi component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await getCategory(); // Giả sử hàm này trả về mảng đối tượng danh mục
+        const data = await getCategory();
         setCategories(data);
       } catch (error) {
         console.error('Có lỗi xảy ra khi lấy danh mục:', error);
       }
     };
-
     fetchCategories();
   }, []);
 
@@ -24,7 +31,6 @@ const ViewCate = () => {
   const handleDelete = async (id) => {
     try {
       await deleteCategory(id);
-      console.log('Danh mục đã được xóa');
       alert('Danh mục đã được xóa');
       setCategories(prev => prev.filter(category => category._id !== id));
     } catch (error) {
@@ -33,14 +39,43 @@ const ViewCate = () => {
     }
   };
 
+  // Mở modal tạo danh mục
+  const openCreateModal = () => setShowCreateModal(true);
+  const closeCreateModal = () => setShowCreateModal(false);
+
+  // Mở modal sửa danh mục
+  const openEditModal = (category) => {
+    setSelectedCategory(category);
+    setShowEditModal(true);
+  };
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setSelectedCategory(null);
+  };
+
+  // Callback sau khi tạo danh mục thành công để cập nhật danh sách
+  const handleCreateSuccess = (newCate) => {
+    setCategories(prev => [...prev, newCate]);
+  };
+
+  // Nếu cần callback cập nhật sau khi chỉnh sửa, bạn có thể cập nhật danh sách ở đây.
+  const handleEditSuccess = (updatedCate) => {
+    setCategories(prev => prev.map(cat => cat._id === updatedCate._id ? updatedCate : cat));
+  };
+
   return (
     <div className="admin-product">
-      {/* Action: tiêu đề + nút thêm danh mục */}
+      {/* Action: Tiêu đề + Thêm Danh Mục */}
       <div className="admin-product__action">
-        <span className="admin-product__category-title">Danh Mục: {categories.length} Danh Mục Hiện Có</span>
-        <Link to="/createCate" className="admin-product__btn-add-category">
+        <span className="admin-product__category-title">
+          Danh Mục: {categories.length} Danh Mục Hiện Có
+        </span>
+        <button 
+          className="admin-product__btn-add-category"
+          onClick={openCreateModal}
+        >
           Thêm Danh Mục
-        </Link>
+        </button>
       </div>
 
       {/* Bảng hiển thị danh mục */}
@@ -48,7 +83,7 @@ const ViewCate = () => {
         <thead>
           <tr>
             <th>Tên danh mục</th>
-            <th>Mô tả</th>
+            {/* <th>Mô tả</th> */}
             <th>Thao tác</th>
           </tr>
         </thead>
@@ -57,10 +92,10 @@ const ViewCate = () => {
             categories.map((dm, index) => (
               <tr key={dm._id || index}>
                 <td>{dm.name}</td>
-                <td className='book-description'>
+                {/* <td className="book-description">
                   {dm.description}
-                </td>
-                <td >
+                </td> */}
+                <td>
                   <button
                     onClick={() => {
                       if (window.confirm("Bạn có chắc chắn muốn xóa danh mục này không?")) {
@@ -71,27 +106,44 @@ const ViewCate = () => {
                   >
                     <i className="bi bi-trash"></i>
                   </button>
-                  <Link to={`/editCate/${dm._id}`} className="fix"><i className="bi bi-pen"></i></Link>
+                  <button 
+                    onClick={() => openEditModal(dm)} 
+                    className="fix"
+                    style={{ marginLeft: '5px' }}
+                  >
+                    <i className="bi bi-pen"></i>
+                  </button>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4">Đang tải danh mục...</td>
+              <td colSpan="3">Đang tải danh mục...</td>
             </tr>
           )}
         </tbody>
       </table>
 
-      {/* Nếu cần tích hợp phân trang, bạn có thể thêm phần này */}
-      {/* 
-      <div className="admin-product__pagination">
-        <button className="admin-product__pagination-btn">«</button>
-        <button className="admin-product__pagination-btn admin-product__pagination-btn--active">1</button>
-        <button className="admin-product__pagination-btn">2</button>
-        <button className="admin-product__pagination-btn">»</button>
-      </div> 
-      */}
+      {/* Modal CreateCate */}
+      {showCreateModal && (
+        <Modal onClose={closeCreateModal}>
+          <CreateCate 
+            onClose={closeCreateModal} 
+            onCreateSuccess={handleCreateSuccess}
+          />
+        </Modal>
+      )}
+
+      {/* Modal EditCate */}
+      {showEditModal && selectedCategory && (
+        <Modal onClose={closeEditModal}>
+          <EditCate 
+            initialData={selectedCategory} 
+            onClose={closeEditModal}
+            /* Nếu bạn có callback sau khi edit thành công: onEditSuccess={handleEditSuccess} */
+          />
+        </Modal>
+      )}
     </div>
   );
 };

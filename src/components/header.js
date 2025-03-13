@@ -1,40 +1,41 @@
 import { Link } from 'react-router-dom';
 import '../asset/css/header.css';
 import React, { useEffect } from 'react';
-const Header = () => {
+const Header = ({ user, handleLogout }) => {
+    // console.log(user);
     const images = [
         "https://media-hosting.imagekit.io//1671484bdb114629/banner-2.png?Expires=1835161637&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=ZYZAgsu-Zll1X7Amec~71fJlXSChHpspeigeTCGhmE3IDr6f0N8bbZeJoKieLaPGX7LajArUbvPBwhNrx-bEHqEvf2UYYmk5D2fFCI4uNk8EFfr4u73nGbV3rNfe~Po0J4Bd9iC3C-SRMIu8xe8aCgZgowaOGJwi8P~ZNefRnwiTjUTfb-~t0WvGoRMu0BibEdbhyzOSEFQbI3n53xMIZEyXyEeyJ9g1ykNxOnLpryObN7BMMv6Nayh4CYnhA5WZ2RVpSJdCtrA3eKe6O9qjNZ6EjXPa4trWoSsUaMDR6bnBX7jctOHPlHzSnasaCE0rP24HtRpCny-bLOeuPN3Cyg__",
         "https://media-hosting.imagekit.io//4fb50c3afeb84d25/banner-3.png?Expires=1835161637&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=XJVHVGaEJe8jbxiwS2SYUvIj-BlCwGjqlvf6ZTHLKz5qLwKK8mJqeZ1ult8pVL1Q96aidxJ8eePPjkf7oKabaSJKPgJcyXLFCYRb-VLixH7ycpuqljZRWBgg6Yt~FhHZL3tVCTsk4V~3RxCrKnEqfl9oTs7JS~2zdMHCOTC0U3VHGeU4KFWa1FfSWue~DPCR7CtJe9kHtE32emvB6YltGJ9dBukSq-nAQxMDOobrcHhSrOBkkgb3VJrEYeUGuQxVsKn4oJ7X8xQX6OENqsbyUA14E0CrZWfbcGNdfLu9Te5z1wD2iSLGPg5i4j0s45KClbqZrQbLHrGKOY4gM6kf8A__",
         "https://s3-alpha-sig.figma.com/img/2a97/651f/0dc597b8a16ab0b502b1e83fd759962a?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=dJ0j4AebaZwNvi8LWlQZDo-U~3y79mO~3Vd6YcepAdZ-NXfGSDXc0t3kjvGNbKQ4LObNQzp-dTqqnolVfTEUwJv8bndRWhVjB3D6YB3FKGdaKKtz2o4XU1tEXbt4Iohth~hazLdJa6M8R-PaK8tumcMUEW4EV3iVtIX8p1eIqQtCZ6ysOVnDPjjyTdYFdVLy1L8SW3PT88CyI04tEb9fxfLE083Hx1JbO7U1ksuBqpWetS5yHNP222KrRPwu2fQGlJHW9rH1j-kAfDW1KUKOrjhztiWcfSQP7jbilsuxgSSIdU-H9hq7aqt3zT3aYdhdTtswmUkke-apX63HIUUnFA__"
-      ];
-      
-      let currentIndex = 0;
-      
-      useEffect(() => {
+    ];
+
+    let currentIndex = 0;
+
+    useEffect(() => {
         const bgHeader = document.querySelector(".bg-header");
         const changeBackground = () => {
-          if (bgHeader) {
-            bgHeader.style.backgroundImage = `url(${images[currentIndex]})`;
-            currentIndex = (currentIndex + 1) % images.length;
-          }
+            if (bgHeader) {
+                bgHeader.style.backgroundImage = `url(${images[currentIndex]})`;
+                currentIndex = (currentIndex + 1) % images.length;
+            }
         };
-    
+
         const intervalId = setInterval(changeBackground, 3000);
-    
+
         return () => clearInterval(intervalId); // Cleanup interval on component unmount
-    
-      }, []); // Only run once on component mount
-    
-      // Functions to handle open and close elements
-      const closeElement = () => {
+
+    }, []); // Only run once on component mount
+
+    // Functions to handle open and close elements
+    const closeElement = () => {
         const element = document.querySelector(".moblie");
         if (element) element.classList.remove("open");
-      };
-    
-      const openElement = () => {
+    };
+
+    const openElement = () => {
         const element = document.querySelector(".moblie");
         if (element) element.classList.toggle("open");
-      };
+    };
     return (
         <>
             <header>
@@ -63,8 +64,48 @@ const Header = () => {
                             </div>
                             <nav className="d-flex align-items-center custom-nav">
                                 <li>Tiếng Việt</li>
-                                <li className="border-start p-2"><a href='/register' style={{color:"#212529"}}>ĐĂNG KÝ</a></li>
-                                <li className="border-start p-2"> <a href='/login' style={{color:"#212529"}}>ĐĂNG NHẬP</a></li>
+                                <>
+                                    {user ? (
+                                        <li className="user-dropdown-menu">
+                                            <button className="user-dropdown-btn">
+                                                {user.name}
+                                            </button>
+                                            <div className="user-dropdown-content">
+                                                {user.role === "1" && (
+                                                    <>
+                                                        <a href="/dashboard">
+                                                            <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Dashboard
+                                                        </a>
+                                                        <a href="/viewPro">
+                                                            <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Quản lý sản phẩm
+                                                        </a>
+                                                        <a href="/admin/users">
+                                                            <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Quản lý người dùng
+                                                        </a>
+                                                        <hr className="user-dropdown-divider" />
+                                                    </>
+                                                )}
+                                                <a href="#" onClick={handleLogout}>
+                                                    ĐĂNG XUẤT
+                                                </a>
+                                            </div>
+                                        </li>
+                                    ) : (
+                                        <>
+                                            <li className="border-start p-2">
+                                                <Link to="/register" style={{ color: "#212529" }}>
+                                                    ĐĂNG KÝ
+                                                </Link>
+                                            </li>
+                                            <li className="border-start p-2">
+                                                <Link to="/login" style={{ color: "#212529" }}>
+                                                    ĐĂNG NHẬP
+                                                </Link>
+                                            </li>
+                                        </>
+                                    )}
+                                </>
+
                                 <li className="border-start p-2">
                                     <img
                                         src="https://media-hosting.imagekit.io//c2caec833b6e46b1/heart0.png?Expires=1835161260&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=ECcmFiPc25rbl0Ua6OVmPhaGXj9bv48u7DJ8WIHciHUxydXUxwlSoqdw4AdC~gB53Cd89-aCTQA0T9J-Oo6gyV5UMEUPOf3oarUUO3yWii47mhIDpBoddhkZ94GvkN9s~WkQbiyqJlrJzXNUrgLLOy8lOQvn8uCB3ZL39e6x4s~2b06sSG2~plFdvQC2tBHYyqXst7J1rXRRhtIDybKKQI28vuQVwogOBL6v-SLHeIve30qQ64bMS6KBx7JPTyqkkmf93yfez076uPj489G83T4fXAPCAboBqnT8S1XETXtfQZjL-Y2WsQz3BVM9vZ9HyShpbENHzuZVlT~tdjS6EQ__"
@@ -87,6 +128,7 @@ const Header = () => {
                                         </span>
                                     </div>
                                 </li>
+
                             </nav>
                         </div>
                         <div className="responsive-mobile">
@@ -101,7 +143,7 @@ const Header = () => {
                                 />
                             </div>
                             <div>
-                                <button type="button" className="position-relative bg-transparent">
+                                <div type="button" className="position-relative bg-transparent">
                                     <img
                                         src="https://s3-alpha-sig.figma.com/img/86b4/b45c/31ba89cf4af5edcd2445279bbde80ed8?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=euFCrS6DWh4fOLrJW8OBkE4YHMFNCEinv9CiN63vvKx-KLMwK7dHrgomI~udpbmbej6OkhO2psbtfCmhQ0pk-DPErEsx3sQg5~W~KQUTFM1Q75Utd~6m3g-51p342r-QuNaD4WHUQtezbMnRqSBwkXRayybhx7Ri7a8vyUK7c~~IyHX7o7PslEIRDU-6GOg~iu0ZB-OcDSOk3yF6nX3WNfkaU-TAPRgGA9ETzXBWnuHL4EJ~1r6UJm0AsgsS9PqHU87IBj2ModiScFcPiAlbC2V0Ya1bSgyPsFyo01DT5qk9getmONyf2~JMpR061RN5yOUrax83g8ovwmkcRpPW-A__"
                                         width={20}
@@ -114,7 +156,7 @@ const Header = () => {
                                     >
                                         0 <span className="visually-hidden">unread messages</span>
                                     </span>
-                                </button>
+                                </div>
                             </div>
                         </div>
                         <div className="nav-moblie ">

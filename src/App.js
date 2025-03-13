@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/home';
 import Detail from './components/detail';
@@ -23,6 +23,8 @@ import Register from './components/register';
 import Cart from './components/cart';
 
 function App() {
+
+  // console.log(user);
   return (
     <div className="App">
       <Router>

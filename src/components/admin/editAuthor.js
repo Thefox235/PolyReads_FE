@@ -1,40 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { updateAuthor, getAuthorById } from '../../api/server';
+import { updateAuthor } from '../../api/server';
 
-const EditAuthor = () => {
-  const { id } = useParams();
+const EditAuthor = ({ initialData, onClose, onEditSuccess }) => {
   const [form, setForm] = useState({
     name: '',
     bio: ''
   });
   const [error, setError] = useState('');
 
+  // Prefill form với dữ liệu từ initialData khi modal được mở
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const authorData = await getAuthorById(id);
-        setForm(authorData);
-      } catch (error) {
-        setError('Có lỗi xảy ra khi lấy dữ liệu tác giả');
-      }
-    };
-    fetchData();
-  }, [id]);
+    if (initialData) {
+      setForm({
+        name: initialData.name || '',
+        bio: initialData.bio || ''
+      });
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const updatedAuthor = await updateAuthor(id, form);
-      alert('tác  giả đã được cập nhật thành công!');
-      console.log('tác  giả đã cập nhật:', updatedAuthor);
-      // Xử lý sau khi cập nhật tác  giả thành công (ví dụ: thông báo thành công, chuyển hướng, v.v.)
-    } catch (error) {
+      // Cập nhật tác giả sử dụng id từ initialData
+      const updatedAuthor = await updateAuthor(initialData._id, form);
+      alert('Tác giả đã được cập nhật thành công!');
+      console.log('Tác giả cập nhật thành công:', updatedAuthor);
+      // Nếu có callback cập nhật danh sách ở component cha, gọi nó
+      if (onEditSuccess) onEditSuccess(updatedAuthor);
+      // Đóng modal
+      if (onClose) onClose();
+    } catch (err) {
+      console.error('Có lỗi xảy ra khi cập nhật tác giả:', err);
       setError('Có lỗi xảy ra khi cập nhật tác giả');
     }
   };
@@ -42,6 +43,7 @@ const EditAuthor = () => {
   return (
     <div className="editPro-container">
       <h1>Chỉnh sửa tác giả</h1>
+      {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="name">Tên tác giả:</label>
@@ -53,22 +55,17 @@ const EditAuthor = () => {
             onChange={handleChange}
             className="form-control"
           />
-          {error && <div className="alert alert-danger">{error}</div>}
         </div>
-
         <div className="form-group">
-          <label htmlFor="bio">Mô tả tác  giả</label>
+          <label htmlFor="bio">Mô tả tác giả:</label>
           <textarea
-            type="text"
             id="bio"
             name="bio"
             value={form.bio}
             onChange={handleChange}
             className="form-control"
-          />
-          {error && <div className="alert alert-danger">{error}</div>}
+          ></textarea>
         </div>
-
         <button type="submit" className="btn btn-primary">Submit</button>
       </form>
     </div>

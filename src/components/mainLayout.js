@@ -1,9 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import HeaderNoBan from './headerNoBan';
 import Footer from './footer';
 
 function MainLayout() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = sessionStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+  const handleLogout = () => {
+    sessionStorage.removeItem("user");
+    setUser(null);
+  };
+
   const location = useLocation();
 
   // Danh sách các đường dẫn mà bạn không muốn hiển thị header
@@ -16,7 +29,7 @@ function MainLayout() {
 
   return (
     <>
-      {shouldShowHeader && <HeaderNoBan />}
+      {shouldShowHeader && <HeaderNoBan user={user} handleLogout={handleLogout} />}
       {/* Hiển thị nội dung route con */}
       <Outlet />
       {/* Tương tự, nếu muốn ẩn footer trong một số route, có thể làm như header */}

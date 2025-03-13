@@ -25,7 +25,7 @@
 .fix
 {
   padding: 10px;
-
+  border: none;
   background-color: #D3EADD;
 }
 /* Header */
@@ -114,8 +114,9 @@
 
 .admin-product__category-title {
   font-family: "Inter-Medium", Helvetica, sans-serif;
-  font-size: 24px;
+  font-size: 16px;
   color: #333;
+  font-weight: bold;
 }
 
 /* Bảng sản phẩm */
