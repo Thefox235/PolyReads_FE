@@ -1,44 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getBanners } from '../api/server'; // API lấy banner
 import '../asset/css/header.css';
-<<<<<<< HEAD
-import React, { useEffect } from 'react';
-const Header = ({ user, handleLogout }) => {
-    // console.log(user);
-    const images = [
-        "https://media-hosting.imagekit.io//1671484bdb114629/banner-2.png?Expires=1835161637&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=ZYZAgsu-Zll1X7Amec~71fJlXSChHpspeigeTCGhmE3IDr6f0N8bbZeJoKieLaPGX7LajArUbvPBwhNrx-bEHqEvf2UYYmk5D2fFCI4uNk8EFfr4u73nGbV3rNfe~Po0J4Bd9iC3C-SRMIu8xe8aCgZgowaOGJwi8P~ZNefRnwiTjUTfb-~t0WvGoRMu0BibEdbhyzOSEFQbI3n53xMIZEyXyEeyJ9g1ykNxOnLpryObN7BMMv6Nayh4CYnhA5WZ2RVpSJdCtrA3eKe6O9qjNZ6EjXPa4trWoSsUaMDR6bnBX7jctOHPlHzSnasaCE0rP24HtRpCny-bLOeuPN3Cyg__",
-        "https://media-hosting.imagekit.io//4fb50c3afeb84d25/banner-3.png?Expires=1835161637&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=XJVHVGaEJe8jbxiwS2SYUvIj-BlCwGjqlvf6ZTHLKz5qLwKK8mJqeZ1ult8pVL1Q96aidxJ8eePPjkf7oKabaSJKPgJcyXLFCYRb-VLixH7ycpuqljZRWBgg6Yt~FhHZL3tVCTsk4V~3RxCrKnEqfl9oTs7JS~2zdMHCOTC0U3VHGeU4KFWa1FfSWue~DPCR7CtJe9kHtE32emvB6YltGJ9dBukSq-nAQxMDOobrcHhSrOBkkgb3VJrEYeUGuQxVsKn4oJ7X8xQX6OENqsbyUA14E0CrZWfbcGNdfLu9Te5z1wD2iSLGPg5i4j0s45KClbqZrQbLHrGKOY4gM6kf8A__",
-        "https://s3-alpha-sig.figma.com/img/2a97/651f/0dc597b8a16ab0b502b1e83fd759962a?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=dJ0j4AebaZwNvi8LWlQZDo-U~3y79mO~3Vd6YcepAdZ-NXfGSDXc0t3kjvGNbKQ4LObNQzp-dTqqnolVfTEUwJv8bndRWhVjB3D6YB3FKGdaKKtz2o4XU1tEXbt4Iohth~hazLdJa6M8R-PaK8tumcMUEW4EV3iVtIX8p1eIqQtCZ6ysOVnDPjjyTdYFdVLy1L8SW3PT88CyI04tEb9fxfLE083Hx1JbO7U1ksuBqpWetS5yHNP222KrRPwu2fQGlJHW9rH1j-kAfDW1KUKOrjhztiWcfSQP7jbilsuxgSSIdU-H9hq7aqt3zT3aYdhdTtswmUkke-apX63HIUUnFA__"
-    ];
-
-    let currentIndex = 0;
-
-    useEffect(() => {
-        const bgHeader = document.querySelector(".bg-header");
-        const changeBackground = () => {
-            if (bgHeader) {
-                bgHeader.style.backgroundImage = `url(${images[currentIndex]})`;
-                currentIndex = (currentIndex + 1) % images.length;
-            }
-        };
-
-        const intervalId = setInterval(changeBackground, 3000);
-
-        return () => clearInterval(intervalId); // Cleanup interval on component unmount
-
-    }, []); // Only run once on component mount
-
-    // Functions to handle open and close elements
-    const closeElement = () => {
-        const element = document.querySelector(".moblie");
-        if (element) element.classList.remove("open");
-    };
-
-    const openElement = () => {
-        const element = document.querySelector(".moblie");
-        if (element) element.classList.toggle("open");
-    };
-=======
 import { Link } from 'react-router-dom';
 
 const Header = ({ user, handleLogout }) => {
@@ -90,7 +52,6 @@ const Header = ({ user, handleLogout }) => {
     //     const element = document.querySelector(".moblie");
     //     if (element) element.classList.toggle("open");
     // };
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
     return (
         <>
             <header>
@@ -134,12 +95,6 @@ const Header = ({ user, handleLogout }) => {
                                                         <a href="/viewPro">
                                                             <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Quản lý sản phẩm
                                                         </a>
-<<<<<<< HEAD
-                                                        <a href="/admin/users">
-                                                            <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Quản lý người dùng
-                                                        </a>
-=======
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
                                                         <hr className="user-dropdown-divider" />
                                                     </>
                                                 )}

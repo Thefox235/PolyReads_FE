@@ -1,8 +1,6 @@
 // api.js
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000'; 
-<<<<<<< HEAD
-=======
 
 // Lấy danh sách discount
 export const getDiscounts = async () => {
@@ -160,16 +158,11 @@ export const deletePublisher = async (id) => {
     throw error;
   }
 }
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
 //hàm lấy banner
 export const getBanners = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/banner`);
-<<<<<<< HEAD
-    return response.data;
-=======
     return response.data.banners;
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   } catch (error) {
     console.error("Error getting banners:", error);
     throw error;
@@ -191,11 +184,7 @@ export const createBanner = async (bannerData) => {
 export const updateBanner = async (id, bannerData) => {
   try {
     const response = await axios.put(`${BASE_URL}/banner/${id}`, bannerData);
-<<<<<<< HEAD
-    return response.data;
-=======
     return response.data.NewBanner;
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   } catch (error) {
     console.error("Error updating banner:", error);
     throw error;

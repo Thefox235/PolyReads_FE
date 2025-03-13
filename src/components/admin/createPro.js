@@ -28,13 +28,6 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
   const [publishers, setPublishers] = useState([]);
   const [error, setError] = useState('');
 
-<<<<<<< HEAD
-  // State dùng để xử lý hình ảnh
-  const [imageUrl, setImageUrl] = useState('');
-  const [images, setImages] = useState([]);
-
-  // Lấy danh mục và tác giả khi component mount
-=======
   // State dùng xử lý hình ảnh
   // const [imageUrl, setImageUrl] = useState('');
   const [images, setImages] = useState([]);
@@ -66,7 +59,6 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
   const [showCreateAuthorModal, setShowCreateAuthorModal] = useState(false);
   const [showCreatePublisherModal, setShowCreatePublisherModal] = useState(false);
 
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -83,49 +75,21 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
     fetchData();
   }, []);
 
-<<<<<<< HEAD
-  // Xử lý thay đổi ở input
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(prevState => ({ ...prevState, [name]: value }));
-  };
-
-  // Xử lý thay đổi input hình ảnh (URL)
-  const handleImageChange = (e) => {
-    setImageUrl(e.target.value);
-  };
-
-  // Thêm ảnh vào mảng images
-  const handleAddImage = () => {
-    if (imageUrl.trim()) {
-      setImages(prev => [...prev, { url: imageUrl.trim() }]);
-      setImageUrl('');
-    }
-=======
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-<<<<<<< HEAD
-      // Gọi API tạo sản phẩm, truyền dữ liệu form và images
-=======
       // Gọi API tạo sản phẩm
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
       const newProduct = await createProduct(form, images);
       // Nếu newProduct không có trường images, ghép images từ state vào đối tượng
       const completeProduct = { ...newProduct, images };
       console.log('Sản phẩm mới đầy đủ:', completeProduct);
       alert('Tạo sản phẩm thành công!');
-<<<<<<< HEAD
-      // Reset lại form và images sau khi submit thành công
-=======
       // Reset form và images
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
       setForm({
         name: '',
         title: '',
@@ -143,30 +107,17 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
         author: ''
       });
       setImages([]);
-<<<<<<< HEAD
-      window.location.reload();
-=======
       if (onCreateSuccess) onCreateSuccess(completeProduct);
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
     } catch (err) {
       setError('Có lỗi xảy ra khi thêm sản phẩm');
       alert('Có lỗi xảy ra khi thêm sản phẩm');
     }
   };
-<<<<<<< HEAD
-
-  // Xóa hình ảnh khỏi danh sách
-  const handleDeleteImage = (index) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
-  };
-
-=======
   
   const handleDeleteImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
   
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   return (
     <div className="addPro-container">
       <h1>Thêm sản phẩm:</h1>
@@ -302,23 +253,6 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
           </div>
         </div>
 
-<<<<<<< HEAD
-        {/* Row 6: Nhà xuất bản (full-width) */}
-        <div className='form-row'>
-          <div className="form-group">
-            <label htmlFor="publisher">Nhà xuất bản:</label>
-            <input
-              type="text"
-              id="publisher"
-              name="publisher"
-              value={form.publisher}
-              onChange={handleChange}
-              className="form-control"
-            />
-          </div>
-
-          {/* Row 7: Mô tả (full-width) */}
-=======
         {/* Row 6: Nhà xuất bản và Mô tả */}
         <div className="form-row">
           <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
@@ -340,7 +274,6 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
               Tạo mới
             </button>
           </div>
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
           <div className="form-group">
             <label htmlFor="description">Mô tả:</label>
             <textarea
@@ -353,66 +286,6 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
             ></textarea>
           </div>
         </div>
-<<<<<<< HEAD
-        
-        {/* Row 8: Danh mục và Tác giả */}
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="category">Danh mục:</label>
-            <select
-              id="category"
-              name="category"
-              value={form.category}
-              onChange={handleChange}
-              className="form-control"
-            >
-              <option value="">Chọn danh mục</option>
-              {categories.map((cate) => (
-                <option key={cate._id} value={cate._id}>
-                  {cate.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="author">Tác giả:</label>
-            <select
-              id="author"
-              name="author"
-              value={form.author}
-              onChange={handleChange}
-              className="form-control"
-            >
-              <option value="">Chọn tác giả</option>
-              {authors.map((author) => (
-                <option key={author._id} value={author._id}>
-                  {author.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Row 9: Phần hình ảnh sản phẩm (full-width) */}
-        <div className="form-group full-width">
-          <label htmlFor="imageUrl">Hình ảnh sản phẩm (URL):</label>
-          <input
-            type="text"
-            id="imageUrl"
-            name="imageUrl"
-            value={imageUrl}
-            onChange={handleImageChange}
-            className="form-control"
-          />
-          <button
-            type="button"
-            onClick={handleAddImage}
-            className="btn btn-secondary"
-            style={{ marginTop: '10px', backgroundColor: '#917fb3'}}
-          >
-            Thêm ảnh
-          </button>
-=======
 
         {/* Row 8: Danh mục và Tác giả */}
         <div className="form-row">
@@ -467,7 +340,6 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
             onChange={handleFileChange}
             className="form-control"
           />
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
           {images.length > 0 && (
             <div
               className="images-preview"
@@ -510,11 +382,7 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
         </div>
 
         {/* Nút Submit */}
-<<<<<<< HEAD
-        <button type="submit" className="btn btn-primary"  style={{ backgroundColor: '#917fb3'}} >
-=======
         <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#917fb3' }}>
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
           Thêm sản phẩm
         </button>
       </form>

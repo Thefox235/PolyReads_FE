@@ -27,14 +27,9 @@ const CreateCate = ({ onClose, onCreateSuccess }) => {
       console.log('Danh mục mới:', newCategory);
       alert('Thêm danh mục thành công');
       // Reset form sau khi submit thành công
-<<<<<<< HEAD
-      window.location.reload(); // Reload lại trang sau khi thêm danh mục thành công
-      // setForm({ name: '', description: '' });
-=======
       if (onCreateSuccess) onCreateSuccess(newCategory);
       // window.location.reload(); // Reload lại trang sau khi thêm danh mục thành công
       // setForm({ name: '', type: '' });
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
       setError('');
     } catch (error) {
       setError('Có lỗi xảy ra khi thêm danh mục');

@@ -9,15 +9,9 @@ import {
 } from '../../api/server';
 import CustomSelect from './customSelect';
 
-<<<<<<< HEAD
-const EditPro = ({ initialData, onClose }) => {
-  // Sử dụng dữ liệu ban đầu được truyền từ component cha
-  const [form, setForm] = useState(initialData || {
-=======
 const EditPro = ({ initialData, onClose, onEditSuccess }) => {
   // Khởi tạo form từ dữ liệu ban đầu (initialData)
   const [form, setForm] = useState({
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
     name: '',
     title: '',
     description: '',
@@ -39,11 +33,6 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
   const [error, setError] = useState('');
   // State cho danh sách hình ảnh
   const [images, setImages] = useState([]);
-<<<<<<< HEAD
-  const [imageUrlInput, setImageUrlInput] = useState('');
-
-  // Load thông tin danh mục và tác giả
-=======
   
   // Khi mở EditPro, prefill thông tin từ initialData
   useEffect(() => {
@@ -72,7 +61,6 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
   }, [initialData]);
   
   // Fetch danh mục, tác giả, NXB và ảnh từ API
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -80,12 +68,6 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
         setCategories(catData);
         const authData = await getAuthor();
         setAuthors(authData);
-<<<<<<< HEAD
-        // Nếu bạn có API để lấy hình ảnh theo product id:
-        const imagesData = await getImagesByProductId(initialData._id);
-        if (imagesData && imagesData.length > 0) {
-          setImages(imagesData);
-=======
         const nxbData = await getPublishers();
         setPublishers(nxbData);
         // Nếu API có trả về hình ảnh dựa trên product id
@@ -94,58 +76,21 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
           if (imagesData && imagesData.length > 0) {
             setImages(imagesData);
           }
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
         }
       } catch (err) {
         console.error('Có lỗi xảy ra khi lấy dữ liệu:', err);
         setError('Có lỗi xảy ra khi lấy danh mục hoặc tác giả');
       }
     };
-<<<<<<< HEAD
-    if (initialData) {
-      fetchData();
-    }
-  }, [initialData]);
-
-  // Handler cho các input
-=======
     
     fetchData();
   }, [initialData]);
   
   // Handler cho các input văn bản
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
-<<<<<<< HEAD
-
-  const handleImageInputChange = (e) => {
-    setImageUrlInput(e.target.value);
-  };
-
-  const handleAddImage = () => {
-    if (imageUrlInput.trim()) {
-      setImages(prev => [...prev, { url: imageUrlInput.trim() }]);
-      setImageUrlInput('');
-    }
-  };
-
-  const handleDeleteImage = (index) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      // Gọi API cập nhật sản phẩm với id từ initialData
-      await updateProduct(initialData._id, form, images);
-      alert('Cập nhật sản phẩm thành công!');
-      // Đóng modal sau khi thành công
-      window.location.reload();
-
-=======
   
   // Handler upload file ảnh (cho phép nhiều file)
   const handleFileChange = async (e) => {
@@ -186,17 +131,13 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
       alert('Sản phẩm đã được cập nhật thành công!');
       if (onEditSuccess) onEditSuccess(completeProduct);
       if (onClose) onClose();
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
     } catch (err) {
       console.error('Có lỗi xảy ra khi cập nhật sản phẩm:', err);
       setError('Có lỗi xảy ra khi cập nhật sản phẩm');
       alert('Có lỗi xảy ra khi cập nhật sản phẩm');
     }
   };
-<<<<<<< HEAD
-=======
   
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
 
   return (
     <div className="editPro-container">
@@ -333,21 +274,6 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
           </div>
         </div>
 
-<<<<<<< HEAD
-        {/* Row 6: Nhà xuất bản (full-width) */}
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="publisher">Nhà xuất bản:</label>
-            <input
-              type="text"
-              id="publisher"
-              name="publisher"
-              value={form.publisher}
-              onChange={handleChange}
-              className="form-control"
-            />
-          </div>
-=======
         {/* Row 6: Nhà xuất bản */}
         <div className="form-row">
           <CustomSelect
@@ -359,7 +285,6 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
             }
             placeholder="Chọn NXB"
           />
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
           <div className="form-group">
             <label htmlFor="description">Mô tả:</label>
             <textarea
@@ -375,43 +300,6 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
 
         {/* Row 8: Danh mục và Tác giả */}
         <div className="form-row">
-<<<<<<< HEAD
-          <div className="form-group">
-            <label htmlFor="category">Danh mục:</label>
-            <select
-              id="category"
-              name="category"
-              value={form.category}
-              onChange={handleChange}
-              className="form-control"
-            >
-              <option value="">Chọn danh mục</option>
-              {categories.map(dm => (
-                <option key={dm._id} value={dm._id}>{dm.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="author">Tác giả:</label>
-            <select
-              id="author"
-              name="author"
-              value={form.author}
-              onChange={handleChange}
-              className="form-control"
-            >
-              <option value="">Chọn tác giả</option>
-              {authors.map(au => (
-                <option key={au._id} value={au._id}>{au.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Row 9: Hình ảnh sản phẩm (full-width) */}
-        <div className="form-group full-width">
-          <label htmlFor="imageUrl">Hình ảnh sản phẩm (URL):</label>
-=======
           <CustomSelect
             label="Danh mục"
             options={categories.map(cat => ({ value: cat._id, label: cat.name }))}
@@ -436,7 +324,6 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
         {/* Row 9: Hình ảnh sản phẩm (full-width) */}
         <div className="form-group full-width">
         <label htmlFor="imageFile">Chọn ảnh mới (có thể chọn nhiều):</label>
->>>>>>> 34cf7eacab846c910a33805fbcd77c54f1520869
           <input
             type="file"
             id="imageFile"
