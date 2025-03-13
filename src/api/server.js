@@ -1,7 +1,110 @@
 // api.js
 import axios from 'axios';
-
 const BASE_URL = 'http://localhost:3000'; 
+
+// Lấy danh sách discount
+export const getDiscounts = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/discount/`);
+    // Giả sử API trả về: { discounts: [...] }
+    return response.data.discounts;
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách discount:', error);
+    throw error;
+  }
+};
+
+// Tạo mới discount
+export const createDiscount = async (discountData) => {
+  try {
+    const response = await axios.post(BASE_URL, discountData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    // Giả sử API trả về: { discount: {...} }
+    return response.data.discount;
+  } catch (error) {
+    console.error('Lỗi khi tạo discount:', error);
+    throw error;
+  }
+};
+
+// Cập nhật discount
+export const updateDiscount = async (id, discountData) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/${id}`, discountData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    // Giả sử API trả về: { discount: {...} }
+    return response.data.discount;
+  } catch (error) {
+    console.error('Lỗi khi cập nhật discount:', error);
+    throw error;
+  }
+};
+
+// Xóa discount
+export const deleteDiscount = async (id) => {
+  try {
+    const response = await axios.delete(`${BASE_URL}/${id}`);
+    // API có thể trả về thông báo thành công
+    return response.data;
+  } catch (error) {
+    console.error('Lỗi khi xóa discount:', error);
+    throw error;
+  }
+};
+
+export const uploadImageToCloudinary = async (file) => {
+  // Tạo FormData để gửi file
+  const formData = new FormData();
+  formData.append('file', file);
+  // Thêm upload preset mà bạn đã tạo trên Cloudinary
+  formData.append('upload_preset', 'PolyReads'); // Thay YOUR_UPLOAD_PRESET bằng preset của bạn
+
+  try {
+    // Gọi API upload Cloudinary. Thay YOUR_CLOUD_NAME bằng Cloud Name của bạn.
+    const response = await axios.post(
+      `https://api.cloudinary.com/v1_1/dxwda4hfn/upload`,
+      formData
+    );
+    // Trả về URL an toàn (secure_url) của ảnh sau khi upload
+    return response.data.secure_url;
+  } catch (error) {
+    console.error('Lỗi upload ảnh lên Cloudinary:', error);
+    throw error;
+  }
+};
+
+// Hàm upload ảnh lên Imgur
+export const uploadImageToImgur = async (file) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  try {
+    const response = await fetch('https://api.imgur.com/3/image', {
+      method: 'POST',
+      headers: {
+        // Hãy nhớ rằng với FormData, chúng ta không nên thiết lập "Content-Type" thủ công
+        Authorization: 'Client-ID 6c11fde85d8f55e'
+      },
+      body: formData
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.data.error || "Upload failed");
+    }
+    const data = await response.json();
+    return data.data.link;
+  } catch (error) {
+    console.error('Lỗi upload ảnh lên Imgur:', error);
+    throw error;
+  }
+};
+
+
 // Hàm tạo nxb
 export const createPublisher = async (publisherData) => {
   try {
@@ -279,13 +382,15 @@ export const createProduct = async (productData, images) => {
     // Đóng gói cả productData và images vào một object gửi đi
     const response = await axios.post(`${BASE_URL}/product/add`, { productData, images });
     console.log(response.data.productNew);
-    // Lưu ý chỉnh sửa key nếu cần, ví dụ: "productNew" thay vì "prodcutNew"
+    // Trả về đối tượng sản phẩm (chỉ chứa thông tin cơ bản)
+    // Bạn có thể không có dữ liệu ảnh trong response
     return response.data.productNew;
   } catch (error) {
     console.error('Có lỗi xảy ra khi thêm sản phẩm:', error);
     throw error;
   }
 };
+
 
 // Hàm tạo brand
 export const createAuthor = async (authorData) => {

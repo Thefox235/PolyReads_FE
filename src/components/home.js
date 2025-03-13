@@ -3,7 +3,15 @@ import '../asset/css/header.css';
 import '../asset/css/sanpham.css';
 
 import React, { useState, useEffect } from 'react';
-import { getImages, getAllProduct, getProductHot, getProductByCate, getAuthor, getBanners } from '../api/server';
+import {
+  getImages,
+  getAllProduct,
+  getProductHot,
+  getProductByCate,
+  getAuthor,
+  getBanners,
+  getDiscounts
+} from '../api/server';
 import { Link, useNavigate } from 'react-router-dom';
 const Home = () => {
   //banner
@@ -12,6 +20,7 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   //product
   const [products, setProducts] = useState([]);
+  const [discounts, setDiscounts] = useState([]);
   const [productHot, setProductHot] = useState([]);
   const [mangas, setManga] = useState([]);
   const [fantasys, setFantasy] = useState([]);
@@ -37,6 +46,16 @@ const Home = () => {
       }
     };
     fetchProducts();
+    //discount
+    const fetchDiscounts = async () => {
+      try {
+        const discountData = await getDiscounts();
+        setDiscounts(discountData);
+      } catch (error) {
+        console.error('Có lỗi xảy ra khi lấy mã giảm giá:', error);
+      }
+    };
+    fetchDiscounts();
     // sản phẩm hot
     const fetchProductHot = async () => {
       try {
@@ -159,13 +178,13 @@ const Home = () => {
         setCurrentIndex(prev => (prev + 1) % activeBanners.length);
       }
     };
-  
+
     let intervalId;
     if (!isLoading && activeBanners.length > 0) {
       intervalId = setInterval(changeBackground, 3000);
     }
     return () => { if (intervalId) clearInterval(intervalId); };
-  }, [activeBanners, currentIndex, isLoading]);  
+  }, [activeBanners, currentIndex, isLoading]);
 
   // const handleLogout = () => {
   //   sessionStorage.removeItem('user');
@@ -207,24 +226,40 @@ const Home = () => {
               {productHot && productHot.length > 0 && images && images.length > 0 ? (
                 productHot.map(product => {
                   const productImage = images.find(image => image.productId === product._id);
+                  const productDiscount = discounts.filter(dis => dis).find((dis) => dis._id === product.discount);
+                  // Tính current price nếu có discount
+                  const discountPercent = productDiscount ? Number(productDiscount.value) : 0;
+                  const currentPrice = Number(product.price) * ((100 - discountPercent) / 100);
+
                   return (
                     <div className="mobile-product" key={product._id}>
                       <div className="product-image">
                         <img src={productImage ? productImage.url : ''} alt={product.name} />
                       </div>
                       <div className="product-details">
-                        <Link className="product-name" to={`/product/${product._id}`}>{product.name}</Link>
+                        <Link className="product-name" to={`/product/${product._id}`}>
+                          {product.name}
+                        </Link>
                         <div className="price-container">
+                          {/* Giá sau giảm, tức là giá gốc trừ đi discount */}
                           <div className="product-price">
+                            {currentPrice.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND"
+                            })}
+                          </div>
+                          <div className="sale-badge">
+                            -{discountPercent > 0 ? discountPercent : ''}%
+                          </div>
+                        </div>
+                        <div className="price-sold-container">
+                          {/* Hiển thị giá gốc, ở đây lưu trong product.price */}
+                          <div className="product-old-price">
                             {Number(product.price).toLocaleString("vi-VN", {
                               style: "currency",
                               currency: "VND"
                             })}
                           </div>
-                          <div className="sale-badge">-50%</div>
-                        </div>
-                        <div className="price-sold-container">
-                          <div className="product-old-price">100,000đ</div>
                           <div className="product-sold">Đã bán {product.sale_count}</div>
                         </div>
                       </div>
@@ -234,6 +269,7 @@ const Home = () => {
               ) : (
                 <p>Đang tải sản phẩm...</p>
               )}
+
 
             </div>
             {/* Repeat the above structure for each product, removing unique classes */}
@@ -263,6 +299,9 @@ const Home = () => {
               {products && products.length > 0 && images && images.length > 0 ? (
                 products.slice(0, 10).map(product => {
                   const productImage = images.find(image => image.productId === product._id);
+                  const productDiscount = discounts.filter(dis => dis).find((dis) => dis._id === product.discount);
+                  const discountPercent = productDiscount ? Number(productDiscount.value) : 0;
+                  const currentPrice = Number(product.price) * ((100 - discountPercent) / 100);
                   return (
 
                     <div className="mobile-product" key={product._id}>
@@ -273,15 +312,22 @@ const Home = () => {
                         <Link className="product-name" to={`/product/${product._id}`}>{product.name}</Link>
                         <div className="price-container">
                           <div className="product-price">
+                            {currentPrice.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND"
+                            })}
+                          </div>
+                          <div className="sale-badge">
+                            -{discountPercent > 0 ? discountPercent : ''}%
+                          </div>
+                        </div>
+                        <div className="price-sold-container">
+                          <div className="product-old-price">
                             {Number(product.price).toLocaleString("vi-VN", {
                               style: "currency",
                               currency: "VND"
                             })}
                           </div>
-                          <div className="sale-badge">-50%</div>
-                        </div>
-                        <div className="price-sold-container">
-                          <div className="product-old-price">100,000đ</div>
                           <div className="product-sold">Đã bán {product.sale_count}</div>
                         </div>
                       </div>
@@ -330,6 +376,10 @@ const Home = () => {
             {mangas && mangas.length > 0 && images && images.length > 0 && authorName && authorName.length > 0 ? (
               mangas.map(product => {
                 const productImage = images.find(image => image.productId === product._id);
+                const productDiscount = discounts.filter(dis => dis).find((dis) => dis._id === product.discount);
+                // Tính current price nếu có discount
+                const discountPercent = productDiscount ? Number(productDiscount.value) : 0;
+                const currentPrice = Number(product.price) * ((100 - discountPercent) / 100);
                 const productAuthor = authorName.find(
                   (author) => author._id === product.author
                 );
@@ -339,19 +389,24 @@ const Home = () => {
                     <img
                       src={productImage.url}
                       alt={product.name}
-                      
+
                     />
                     <Link to={`/product/${product._id}`} className="sach-title">
                       {product.name}
                     </Link>
                     <div className="price-current">
-                      {Number(product.price).toLocaleString("vi-VN", {
+                      {currentPrice.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND"
                       })}
                     </div>
                     <div className="shop-name-price-old">
-                      <div className="price-old">98.000 đ</div>
+                      <div className="price-old">
+                        {Number(product.price).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND"
+                        })}
+                      </div>
                       <div className="shop-name">{productAuthor ? productAuthor.name : ''}</div>
                     </div>
                     <div className="add-to-cart">THÊM VÀO GIỎ</div>
@@ -389,6 +444,10 @@ const Home = () => {
             {fantasys && fantasys.length > 0 && images && images.length > 0 && authorName && authorName.length > 0 ? (
               fantasys.map(product => {
                 const productImage = images.find(image => image.productId === product._id);
+                const productDiscount = discounts.filter(dis => dis).find((dis) => dis._id === product.discount);
+                // Tính current price nếu có discount
+                const discountPercent = productDiscount ? Number(productDiscount.value) : 0;
+                const currentPrice = Number(product.price) * ((100 - discountPercent) / 100);
                 const productAuthor = authorName.find(
                   (author) => author._id === product.author
                 );
@@ -403,13 +462,18 @@ const Home = () => {
                       {product.name}
                     </Link>
                     <div className="price-current">
-                      {Number(product.price).toLocaleString("vi-VN", {
+                      {currentPrice.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND"
                       })}
                     </div>
                     <div className="shop-name-price-old">
-                      <div className="price-old">98.000 đ</div>
+                      <div className="price-old">
+                        {Number(product.price).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND"
+                        })}
+                      </div>
                       <div className="shop-name">{productAuthor ? productAuthor.name : ''}</div>
                     </div>
                     <div className="add-to-cart">THÊM VÀO GIỎ</div>

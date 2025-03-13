@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { createProduct, getCategories, getAuthors, getPublishers } from '../../api/server';
+import { createProduct, getCategories, getAuthors, getPublishers, uploadImageToCloudinary } from '../../api/server';
 import CustomSelect from './customSelect';
 import Modal from '../model';
 import CreatePublisher from './createPublisher';   // Nếu cần tạo NXB inline
@@ -29,9 +29,31 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
   const [error, setError] = useState('');
 
   // State dùng xử lý hình ảnh
-  const [imageUrl, setImageUrl] = useState('');
+  // const [imageUrl, setImageUrl] = useState('');
   const [images, setImages] = useState([]);
 
+  // Hàm xử lý khi người dùng chọn file
+  const handleFileChange = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    try {
+      const uploadedResults = await Promise.all(
+        Array.from(files).map(async (file) => {
+          try {
+            const uploadedUrl = await uploadImageToCloudinary(file);
+            return { url: uploadedUrl };
+          } catch (error) {
+            console.error("Lỗi upload ảnh:", error);
+            return null;
+          }
+        })
+      );
+      const validResults = uploadedResults.filter(item => item !== null);
+      setImages(prev => [...prev, ...validResults]);
+    } catch (err) {
+      alert('Có lỗi khi upload ảnh');
+    }
+  };
   // State hiển thị modal tạo mới
   const [showCreateCateModal, setShowCreateCateModal] = useState(false);
   const [showCreateAuthorModal, setShowCreateAuthorModal] = useState(false);
@@ -58,20 +80,16 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e) => {
-    setImageUrl(e.target.value);
-  };
-
-  const handleAddImage = () => {
-    if (imageUrl.trim()) {
-      setImages(prev => [...prev, { url: imageUrl.trim() }]);
-      setImageUrl('');
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Gọi API tạo sản phẩm
+      const newProduct = await createProduct(form, images);
+      // Nếu newProduct không có trường images, ghép images từ state vào đối tượng
+      const completeProduct = { ...newProduct, images };
+      console.log('Sản phẩm mới đầy đủ:', completeProduct);
+      alert('Tạo sản phẩm thành công!');
+      // Reset form và images
       setForm({
         name: '',
         title: '',
@@ -88,23 +106,18 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
         category: '',
         author: ''
       });
-      setImages([])
-      
-      const newProduct = await createProduct(form, images);
-      console.log('Sản phẩm mới:', newProduct);
-      if (onCreateSuccess) onCreateSuccess(newProduct);
-      alert('Tạo sản phẩm thành công!');
-
+      setImages([]);
+      if (onCreateSuccess) onCreateSuccess(completeProduct);
     } catch (err) {
       setError('Có lỗi xảy ra khi thêm sản phẩm');
       alert('Có lỗi xảy ra khi thêm sản phẩm');
     }
   };
-
+  
   const handleDeleteImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
-
+  
   return (
     <div className="addPro-container">
       <h1>Thêm sản phẩm:</h1>
@@ -273,7 +286,7 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
             ></textarea>
           </div>
         </div>
-        
+
         {/* Row 8: Danh mục và Tác giả */}
         <div className="form-row">
           <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
@@ -315,26 +328,18 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
             </button>
           </div>
         </div>
-        
-        {/* Row Hình ảnh: Input và Preview */}
-        <div className="form-group full-width">
-          <label htmlFor="imageUrl">Hình ảnh sản phẩm (URL):</label>
+
+        {/* Phần chọn hình ảnh */}
+        <div className="form-group">
+          <label htmlFor="imageFile">Chọn ảnh sản phẩm:</label>
           <input
-            type="text"
-            id="imageUrl"
-            name="imageUrl"
-            value={imageUrl}
-            onChange={handleImageChange}
+            type="file"
+            id="imageFile"
+            name="imageFile"
+            multiple
+            onChange={handleFileChange}
             className="form-control"
           />
-          <button
-            type="button"
-            onClick={handleAddImage}
-            className="btn btn-secondary"
-            style={{ marginTop: '10px', backgroundColor: '#917fb3' }}
-          >
-            Thêm ảnh
-          </button>
           {images.length > 0 && (
             <div className="images-preview" style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
               {images.map((img, index) => (

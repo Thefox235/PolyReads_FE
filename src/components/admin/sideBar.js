@@ -93,8 +93,13 @@ const SideBar = () => {
                             <div className="text-wrapper-70">
                                 <a style={{ color: "white" }} href="" /> Banner
                             </div>
-                            <img className="img-3" src="https://media-hosting.imagekit.io//481d9015f59a404b/banner1.png?Expires=1835257617&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=I4nExQItyiiA3YW0G5OInPU9QDRDsmv~xPpuTW8S3SBLXwSPbZeVUpE-tz7RDF9XMzP6ThBWVe0JYEatajkA4hRitA9AG6HB1-qGfD8XhhCG2bzwtjKRIVDMgCcBD3TBXxlL~e2Neyr5-HbPZOCwMPKwWR2GeeOM8Pv8Um32gY8tecmKoNSmgsxuFOFjZnQD9hiBZffI4maq5v1pYQ0soSrtn5X0yH6fI01z-WxcYDALgYEq0-A4~OHXHT2aCfYmJWuBZfo0TyXzYqp4xtGXLMV12ROlNfnfFP4nMe80aXvs-1cfhrHBAhvL3Sc6P6LikyL~qJ4LgybziZDczfg8HQ__
-" />
+                            <img className="img-3" src="https://media-hosting.imagekit.io//481d9015f59a404b/banner1.png?Expires=1835257617&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=I4nExQItyiiA3YW0G5OInPU9QDRDsmv~xPpuTW8S3SBLXwSPbZeVUpE-tz7RDF9XMzP6ThBWVe0JYEatajkA4hRitA9AG6HB1-qGfD8XhhCG2bzwtjKRIVDMgCcBD3TBXxlL~e2Neyr5-HbPZOCwMPKwWR2GeeOM8Pv8Um32gY8tecmKoNSmgsxuFOFjZnQD9hiBZffI4maq5v1pYQ0soSrtn5X0yH6fI01z-WxcYDALgYEq0-A4~OHXHT2aCfYmJWuBZfo0TyXzYqp4xtGXLMV12ROlNfnfFP4nMe80aXvs-1cfhrHBAhvL3Sc6P6LikyL~qJ4LgybziZDczfg8HQ__" />
+                        </Link>
+                        <Link to={'/viewPublisher'} className="div-9">
+                            <div className="text-wrapper-70">
+                                <a style={{ color: "white" }} href="" /> Nhà xuất bảng
+                            </div>
+                            <img className="img-3" src="https://media-hosting.imagekit.io//234d454134ff4465/publishing.png?Expires=1836360148&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=DhNFOSs6vsEYxtlfEuxrEbx4vPimzYINWJ-AetBG0FezX-7u-UDGmR94n5cPV8f79nhAtdKrE0yLCd8uYRuWvvuuWWiYUCY10cdZq3iIh1FUNjvGYAKrea55l~MQ2ODWplxlI4~r~T1NBE23DrSZXsFEELjwMSVjpKFdd1ZZQP1~jf1OzrSgmLpQKRTrs36kd8GfCHEmYaTfe0-mxYdKjN38eDGeiqYASpqtxKmQiwzYz7I-1YxhYzzqMSegAUWG7JSMYaHTW~ca0jZ1gci0o4O6uWwu2oVT7jvkxzaIGTgd2WzU74Hb8OInrMcHnWp17IWkIVxHgW4XMomA68xt7g__" />
                         </Link>
                     </div>
                 </div>

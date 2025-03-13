@@ -4,12 +4,14 @@ import {
   getAuthor,
   getImagesByProductId,
   updateProduct,
-  getPublishers
+  getPublishers,
+  uploadImageToCloudinary
 } from '../../api/server';
-import CustomSelect from './customSelect'; // import component vừa tạo
+import CustomSelect from './customSelect';
+
 const EditPro = ({ initialData, onClose, onEditSuccess }) => {
-  // Sử dụng dữ liệu ban đầu được truyền từ component cha
-  const [form, setForm] = useState(initialData || {
+  // Khởi tạo form từ dữ liệu ban đầu (initialData)
+  const [form, setForm] = useState({
     name: '',
     title: '',
     description: '',
@@ -25,16 +27,40 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
     category: '',
     author: ''
   });
-
   const [categories, setCategories] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [publishers, setPublishers] = useState([]);
   const [error, setError] = useState('');
   // State cho danh sách hình ảnh
   const [images, setImages] = useState([]);
-  const [imageUrlInput, setImageUrlInput] = useState('');
-
-  // Load thông tin danh mục và tác giả
+  
+  // Khi mở EditPro, prefill thông tin từ initialData
+  useEffect(() => {
+    if (initialData) {
+      setForm({
+        name: initialData.name || '',
+        title: initialData.title || '',
+        description: initialData.description || '',
+        price: initialData.price || '',
+        stock: initialData.stock || '',
+        weight: initialData.weight || '',
+        size: initialData.size || '',
+        pages: initialData.pages || '',
+        language: initialData.language || '',
+        format: initialData.format || '',
+        published_date: initialData.published_date || '',
+        publisher: initialData.publisher || '',
+        category: initialData.category || '',
+        author: initialData.author || ''
+      });
+      // Nếu sản phẩm đã có hình ảnh, load chúng
+      if (initialData.images) {
+        setImages(initialData.images);
+      }
+    }
+  }, [initialData]);
+  
+  // Fetch danh mục, tác giả, NXB và ảnh từ API
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,58 +70,73 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
         setAuthors(authData);
         const nxbData = await getPublishers();
         setPublishers(nxbData);
-        // Nếu bạn có API để lấy hình ảnh theo product id:
-        const imagesData = await getImagesByProductId(initialData._id);
-        if (imagesData && imagesData.length > 0) {
-          setImages(imagesData);
+        // Nếu API có trả về hình ảnh dựa trên product id
+        if (initialData && initialData._id) {
+          const imagesData = await getImagesByProductId(initialData._id);
+          if (imagesData && imagesData.length > 0) {
+            setImages(imagesData);
+          }
         }
       } catch (err) {
         console.error('Có lỗi xảy ra khi lấy dữ liệu:', err);
         setError('Có lỗi xảy ra khi lấy danh mục hoặc tác giả');
       }
     };
-    if (initialData) {
-      fetchData();
-    }
+    
+    fetchData();
   }, [initialData]);
-
-  // Handler cho các input
+  
+  // Handler cho các input văn bản
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
-
-  const handleImageInputChange = (e) => {
-    setImageUrlInput(e.target.value);
-  };
-
-  const handleAddImage = () => {
-    if (imageUrlInput.trim()) {
-      setImages(prev => [...prev, { url: imageUrlInput.trim() }]);
-      setImageUrlInput('');
+  
+  // Handler upload file ảnh (cho phép nhiều file)
+  const handleFileChange = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    try {
+      const uploadedResults = await Promise.all(
+        Array.from(files).map(async (file) => {
+          try {
+            const uploadedUrl = await uploadImageToCloudinary(file);
+            return { url: uploadedUrl };
+          } catch (error) {
+            console.error("Lỗi upload ảnh:", error);
+            return null;
+          }
+        })
+      );
+      const validResults = uploadedResults.filter(item => item !== null);
+      setImages(prev => [...prev, ...validResults]);
+    } catch (err) {
+      alert('Có lỗi khi upload ảnh');
     }
   };
-
+  
+  // Handler xoá ảnh khỏi state
   const handleDeleteImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
-
+  
+  // Submit form cập nhật sản phẩm
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Gọi API cập nhật sản phẩm với id từ initialData
       const updatedProduct = await updateProduct(initialData._id, form, images);
-      alert('Cập nhật sản phẩm thành công!');
-      if (onEditSuccess) onEditSuccess(updatedProduct);
-      // Đóng modal sau khi thành công
-      // window.location.reload();
-
+      // Re-fetch hình ảnh từ API để lấy dữ liệu mới nhất
+      const freshImages = await getImagesByProductId(initialData._id);
+      const completeProduct = { ...updatedProduct, images: (freshImages && freshImages.length > 0) ? freshImages : images };
+      alert('Sản phẩm đã được cập nhật thành công!');
+      if (onEditSuccess) onEditSuccess(completeProduct);
+      if (onClose) onClose();
     } catch (err) {
       console.error('Có lỗi xảy ra khi cập nhật sản phẩm:', err);
       setError('Có lỗi xảy ra khi cập nhật sản phẩm');
-      alert('Có lỗi xảy ra khi cập nhật sản phẩm');
     }
   };
+  
 
   return (
     <div className="editPro-container">
@@ -281,23 +322,15 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
 
         {/* Row 9: Hình ảnh sản phẩm (full-width) */}
         <div className="form-group full-width">
-          <label htmlFor="imageUrl">Hình ảnh sản phẩm (URL):</label>
+        <label htmlFor="imageFile">Chọn ảnh mới (có thể chọn nhiều):</label>
           <input
-            type="text"
-            id="imageUrl"
-            name="imageUrl"
-            value={imageUrlInput}
-            onChange={handleImageInputChange}
+            type="file"
+            id="imageFile"
+            name="imageFile"
+            multiple
+            onChange={handleFileChange}
             className="form-control"
           />
-          <button
-            type="button"
-            onClick={handleAddImage}
-            className="btn btn-secondary"
-            style={{ marginTop: '10px' }}
-          >
-            Thêm ảnh
-          </button>
           {images.length > 0 && (
             <div className="images-preview" style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
               {images.map((img, index) => (
