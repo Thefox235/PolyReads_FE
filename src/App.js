@@ -25,6 +25,7 @@ import ViewBanner from './components/admin/viewBanner';
 import { createBanner } from './api/server';
 import EditBanner from './components/admin/editBanner';
 import ViewPublisher from './components/admin/viewPublisher';
+import Blog from './components/blog';
 
 function App() {
 
@@ -45,6 +46,7 @@ function App() {
 
           {/* Các route không cần header (hoặc có layout khác) */}
           <Route element={<MainLayout />}>
+            <Route path="/blog" element={<Blog />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/register" element={<Register />} />
@@ -69,8 +71,8 @@ function App() {
 
             <Route path="/editSp/:id" element={<PrivateRoute element={EditPro} roles={['1']} />} />
             <Route path="/editCate/:id" element={<PrivateRoute element={EditCate} roles={['1']} />} />
-            <Route path="/editAuthor/:id" element={<PrivateRoute element={EditAuthor } roles={['1']} />} />
-            <Route path="/editBanner/:id" element={<PrivateRoute element={EditBanner } roles={['1']} />} />
+            <Route path="/editAuthor/:id" element={<PrivateRoute element={EditAuthor} roles={['1']} />} />
+            <Route path="/editBanner/:id" element={<PrivateRoute element={EditBanner} roles={['1']} />} />
 
           </Route>
           <Route path="/sideBar" element={<SideBar />} />
