@@ -318,7 +318,7 @@ const Home = () => {
                             })}
                           </div>
                           <div className="sale-badge">
-                            -{discountPercent > 0 ? discountPercent : ''}%
+                            -{discountPercent > 0 ? discountPercent : 0}%
                           </div>
                         </div>
                         <div className="price-sold-container">
