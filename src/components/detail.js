@@ -470,12 +470,14 @@ const Detail = () => {
         </div>
         {/** Tag end */}
         <div>
-          <div>
+          <div className="detail_product">
             <div
               className="d-flex justify-content-between align-items-center"
               style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
             >
-              <div className="sptt">Sản phẩm tương tự</div>
+              <div className="title_top_menu tab_link_module">
+              <h3><a href="new-arrivals" title="Sản phẩm tương tự">Sản phẩm tương tự</a></h3>
+                </div>
               <div className="d-flex align-items-center gap-3">
                 <div
                   style={{ color: "#917fb3", fontSize: 25, cursor: "pointer" }}

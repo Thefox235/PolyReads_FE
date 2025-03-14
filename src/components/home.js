@@ -199,11 +199,14 @@ const Home = () => {
 
       <main className="p-5">
         <div>
+
           <div
             className="d-flex justify-content-between align-items-center"
             style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
           >
-            <div className="sptt">Sản phẩm hot</div>
+            <div className="title_top_menu tab_link_module">
+              <h3><a href="new-arrivals" title="Sản phẩm hot">Sản phẩm hot</a></h3>
+            </div>
             <div className="d-flex align-items-center gap-3">
               <div
                 style={{ color: "#917fb3", fontSize: 25, cursor: "pointer" }}
@@ -287,7 +290,9 @@ const Home = () => {
           className="d-flex justify-content-between align-items-center"
           style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
         >
-          <div className="sptt">Sản phẩm mới</div>
+          <div className="title_top_menu tab_link_module">
+          <h3><a href="new-arrivals" title="Sản phẩm mới">Sản phẩm mới</a></h3>
+            </div>
         </div>
         <div className='NewProducts'>
           {/* product start */}
@@ -359,7 +364,10 @@ const Home = () => {
           className="d-flex justify-content-between align-items-center"
           style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
         >
-          <div className="sptt">Truyện tranh</div>
+          <div className="title_top_menu tab_link_module">
+          <h3><a href="new-arrivals" title="Truyện Tranh">Truyện Tranh</a></h3>
+
+          </div>
           <div className="d-flex align-items-center gap-3">
             <div style={{ color: "#917fb3", fontSize: 25 }} id="pre2">
               &lt;
@@ -427,7 +435,9 @@ const Home = () => {
           className="d-flex justify-content-between align-items-center"
           style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
         >
-          <div className="sptt">Viễn tưởng</div>
+          <div className="title_top_menu tab_link_module">
+          <h3><a href="new-arrivals" title="Viễn Tưởng">Viễn Tưởng</a></h3>
+          </div>
           <div className="d-flex align-items-center gap-3">
             <div style={{ color: "#917fb3", fontSize: 25 }} id="pre3">
               &lt;
@@ -494,7 +504,9 @@ const Home = () => {
           className="d-flex justify-content-between align-items-center"
           style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
         >
-          <div className="sptt">Blog</div>
+          <div className="title_top_menu tab_link_module">
+          <h3><a href="new-arrivals" title="Blog">Blog</a></h3>
+          </div>
           <div className="d-flex align-items-center gap-3">
             <div style={{ color: "#917fb3", fontSize: 25 }}>&lt;</div>
             <div style={{ color: "#917fb3", fontSize: 25 }}>&gt;</div>
