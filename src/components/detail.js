@@ -1,23 +1,28 @@
-import '../asset/css/detail.css';
+import "../asset/css/detail.css";
 
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { getProductByCate, getCategory, getProductById, getAuthor } from '../api/server';
-import { Link } from 'react-router-dom';
-import { useCart } from './context/cartContext';
-import { getImages } from '../api/server';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import {
+  getProductByCate,
+  getCategory,
+  getProductById,
+  getAuthor,
+} from "../api/server";
+import { Link } from "react-router-dom";
+import { useCart } from "./context/cartContext";
+import { getImages } from "../api/server";
 const Detail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState({});
   const [productCate, setProductCate] = useState([]);
   const { addToCart } = useCart();
+  const [productImages, setProductImages] = useState([]);
   const [images, setImages] = useState([]);
-  const [categoryName, setCategoryName] = useState('');
-  const [authorName, setAuthorName] = useState('');
-  // console.log(product.category);
+  const [categoryName, setCategoryName] = useState("");
+  const [authorName, setAuthorName] = useState("");
+  const [number, setNumber] = useState(1);
 
   useEffect(() => {
-
     const fetchData = async () => {
       try {
         const productData = await getProductById(id);
@@ -28,36 +33,38 @@ const Detail = () => {
         // console.log('Fetched images:', imagesData);
         setImages(imagesData);
       } catch (error) {
-        console.error('Có lỗi xảy ra khi lấy dữ liệu:', error);
+        console.error("Có lỗi xảy ra khi lấy dữ liệu:", error);
       }
     };
 
     fetchData();
-
   }, [id]);
   // Lọc ra các hình ảnh phù hợp với sản phẩm hiện tại dựa trên product._id
-  const productImages = images.filter(image => image.productId === product._id);
+  useEffect(() => {
+    const filteredImages = images.filter(
+      (image) => image.productId === product._id
+    );
+    setProductImages(filteredImages);
+  }, [images, product._id]);
 
   // useEffect để kiểm tra giá trị của product ngay sau khi nó được gán vào state
   useEffect(() => {
     // console.log('Product state updated:', product);
   }, [product]);
 
-  const idCate = product.category ? product.category : 'N/A';
-  const idAuthor = product.ahutor ? product.author : 'N/A';
-
-  // console.log(idCate);
+  const idCate = product.category ? product.category : "N/A";
+  const idAuthor = product.ahutor ? product.author : "N/A";
   useEffect(() => {
     const fetchProductCate = async () => {
       try {
         const data = await getProductByCate(idCate);
         setProductCate(data);
       } catch (error) {
-        console.error('Có lỗi xảy ra khi lấy chi tiết sản phẩm:', error);
+        console.error("Có lỗi xảy ra khi lấy chi tiết sản phẩm:", error);
       }
     };
 
-    if (idCate !== 'N/A') {
+    if (idCate !== "N/A") {
       fetchProductCate();
     }
   }, [idCate]);
@@ -72,7 +79,7 @@ const Detail = () => {
         setAuthorName(dataAuthor[0].name);
         // console.log(data[0].name);
       } catch (error) {
-        console.error('Có lỗi khi lấy danh mục:', error);
+        console.error("Có lỗi khi lấy danh mục:", error);
       }
     };
 
@@ -83,44 +90,65 @@ const Detail = () => {
   }, [product]);
 
   //chuyển tab
-  const [activeTab, setActiveTab] = useState('motasp');
+  const [activeTab, setActiveTab] = useState("motasp");
 
   const handleTabClick = (target) => {
     setActiveTab(target);
+  };
+  const pre = () => {
+    if (number >= 2) {
+      setNumber(number - 1);
+    } else {
+      setNumber(1);
+    }
   };
   // Kiểm tra nếu product là một object rỗng
   if (!product) {
     return <p>Loading...</p>;
   }
-  const wrapper = document.querySelector('.products-wrapper');
-  const prevBtn = document.getElementById('prev');
-  const nextBtn = document.getElementById('next');
+  const wrapper = document.querySelector(".products-wrapper");
+  const prevBtn = document.getElementById("prev");
+  const nextBtn = document.getElementById("next");
   let scrollAmount = 0;
   const step = 220;
 
-  nextBtn?.addEventListener('click', () => {
+  nextBtn?.addEventListener("click", () => {
     scrollAmount += step;
     wrapper.style.transform = `translateX(-${scrollAmount}px)`;
   });
 
-  prevBtn?.addEventListener('click', () => {
+  prevBtn?.addEventListener("click", () => {
     scrollAmount -= step;
     if (scrollAmount < 0) scrollAmount = 0;
     wrapper.style.transform = `translateX(-${scrollAmount}px)`;
   });
-  // console.log(productCate);
+  const addCart = () => {
+    const data = {
+      product: product,
+      img: productImages[0].url,
+      quantity: number,
+    };
+    addToCart(data);
+  };
 
-  const formattedPrice = product.price ? product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND', currencyDisplay: "code" }).replace("VND", "VNĐ") : 'N/A';
+  const formattedPrice = product.price
+    ? product.price
+        .toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
+          currencyDisplay: "code",
+        })
+        .replace("VND", "VNĐ")
+    : "N/A";
   return (
     <>
-
       <main>
         <div className="duongdan">
-          <a href='/'>Trang chủ </a> &gt; {categoryName} &gt; {product.name}
+          <a href="/">Trang chủ </a> &gt; {categoryName} &gt; {product.name}
         </div>
         <div className="detail">
           {productImages.length > 0 ? (
-            productImages.map(img => (
+            productImages.map((img) => (
               <img key={img._id} src={img.url} alt={product.name} />
             ))
           ) : (
@@ -184,7 +212,9 @@ const Detail = () => {
                     />
                   </div>
                   <div className="delivery-details">
-                    <div className="delivery-title fw-bold">Giao hàng tiêu chuẩn</div>
+                    <div className="delivery-title fw-bold">
+                      Giao hàng tiêu chuẩn
+                    </div>
                     <div className="delivery-date">
                       Dự kiến giao hàng{" "}
                       <span className="fw-bolder">Thứ 2 - 06/01</span>
@@ -192,7 +222,7 @@ const Detail = () => {
                   </div>
                 </div>
                 <div className="fw-bold">
-                  Ưu đãi liên quan 
+                  Ưu đãi liên quan
                   <span className="fw-normal text-primary"> Xem thêm&gt;</span>
                 </div>
                 <div className="d-flex gap-1 mt-3">
@@ -228,11 +258,17 @@ const Detail = () => {
                 </div>
                 <div className="quantity">
                   <div className="fs-6">Số lượng</div>
-                  <button>-</button>
-                  <input type="text" placeholder={1} className="text-center" />
-                  <button>+</button>
+                  <button onClick={pre}>-</button>
+                  <input
+                    type="text"
+                    placeholder={number}
+                    className="text-center"
+                  />
+                  <button onClick={() => setNumber(number + 1)}>+</button>
                 </div>
-                <button className="addcart">Thêm vào giỏ hàng</button>
+                <button className="addcart" onClick={addCart}>
+                  Thêm vào giỏ hàng
+                </button>
               </div>
             </div>
           </div>
@@ -244,36 +280,38 @@ const Detail = () => {
             style={{ color: "#898989" }}
           >
             <div
-              className={`tab ${activeTab === 'motasp' ? 'active' : ''}`}
-              onClick={() => handleTabClick('motasp')}
+              className={`tab ${activeTab === "motasp" ? "active" : ""}`}
+              onClick={() => handleTabClick("motasp")}
               data-target="motasp"
             >
               MÔ TẢ
             </div>
             <div
-              className={`tab ${activeTab === 'thongtin' ? 'active' : ''}`}
-              onClick={() => handleTabClick('thongtin')}
+              className={`tab ${activeTab === "thongtin" ? "active" : ""}`}
+              onClick={() => handleTabClick("thongtin")}
               data-target="thongtin"
             >
               THÔNG TIN
             </div>
             <div
-              className={`tab ${activeTab === 'feedback' ? 'active' : ''}`}
-              onClick={() => handleTabClick('feedback')}
+              className={`tab ${activeTab === "feedback" ? "active" : ""}`}
+              onClick={() => handleTabClick("feedback")}
               data-target="feedback"
             >
               ĐÁNH GIÁ
             </div>
           </div>
           <div className="chitiet">
-            <div className={`motasp ${activeTab === 'motasp' ? 'active' : ''}`}>
+            <div className={`motasp ${activeTab === "motasp" ? "active" : ""}`}>
               <div>Mô tả sản phẩm</div>
-              <p>
-                {product.description}
-              </p>
+              <p>{product.description}</p>
             </div>
-            <div className={`thongtin ${activeTab === 'thongtin' ? 'active' : ''}`}>
-              <div style={{ fontSize: "2rem", fontWeight: 500, marginBottom: 20 }}>
+            <div
+              className={`thongtin ${activeTab === "thongtin" ? "active" : ""}`}
+            >
+              <div
+                style={{ fontSize: "2rem", fontWeight: 500, marginBottom: 20 }}
+              >
                 Thông tin sản phẩm
               </div>
               <div className="tt">
@@ -319,8 +357,12 @@ const Detail = () => {
                 </div>
               </div>
             </div>
-            <div className={`feedback ${activeTab === 'feedback' ? 'active' : ''}`}>
-              <div style={{ fontSize: "2rem", fontWeight: 500, marginBottom: 20 }}>
+            <div
+              className={`feedback ${activeTab === "feedback" ? "active" : ""}`}
+            >
+              <div
+                style={{ fontSize: "2rem", fontWeight: 500, marginBottom: 20 }}
+              >
                 Đánh giá sản phẩm
               </div>
               <div className="grid">
@@ -380,11 +422,12 @@ const Detail = () => {
                     <i className="bi bi-star-fill" />
                   </div>
                   <p className="review-text">
-                    Thật sự đây là một lựa chọn không lãng phí thời giờ của mọi người
-                    một chút nào đâu. Mình thật sự không nghĩ mình sẽ thích nó đến thế,
-                    cứ đêm ngày say sưa với từng dòng chữ trong sách, đắm chìm vào trong
-                    những bức tranh minh họa đầy tài tình, có lúc còn hòa mình vào những
-                    hành động và cử chỉ siêu đáng yêu của cô bé Latina...
+                    Thật sự đây là một lựa chọn không lãng phí thời giờ của mọi
+                    người một chút nào đâu. Mình thật sự không nghĩ mình sẽ
+                    thích nó đến thế, cứ đêm ngày say sưa với từng dòng chữ
+                    trong sách, đắm chìm vào trong những bức tranh minh họa đầy
+                    tài tình, có lúc còn hòa mình vào những hành động và cử chỉ
+                    siêu đáng yêu của cô bé Latina...
                   </p>
                   <span className="review-more">Xem thêm</span>
                   <div className="review-footer d-flex align-items-center gap-4">
@@ -633,11 +676,8 @@ const Detail = () => {
           </div>
         </div>
       </main>
-
-
     </>
-
-  )
+  );
 };
 
 export default Detail;

@@ -3,26 +3,25 @@ import '../asset/css/header.css';
 import '../asset/css/sanpham.css';
 
 import React, { useState, useEffect } from 'react';
-import { getImages, getAllProduct, getProductHot, getProductByCate } from '../api/server';
+import { getImages, getAllProduct, getProductHot, getProductByCate, getAuthor } from '../api/server';
 import { Link, useNavigate } from 'react-router-dom';
-import Logout from './logout';
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [productHot, setProductHot] = useState([]);
   const [mangas, setManga] = useState([]);
   const [fantasys, setFantasy] = useState([]);
   const [images, setImages] = useState([]);
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
   const navigate = useNavigate();
-
+  const [authorName, setAuthorName] = useState('');
 
 
   useEffect(() => {
-    const userData = sessionStorage.getItem('user');
+    // const userData = sessionStorage.getItem('user');
 
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
+    // if (userData) {
+    //   setUser(JSON.parse(userData));
+    // }
 
     const fetchProducts = async () => {
       try {
@@ -74,9 +73,17 @@ const Home = () => {
         console.error('Có lỗi xảy ra khi lấy hình ảnh:', error);
       }
     };
-
-
     fetchImages();
+
+    const fecthAuthor = async () => {
+      try {
+        const authorData = await getAuthor();
+        setAuthorName(authorData);
+      } catch (error) {
+        console.error('Có lỗi xảy ra khi lấy hình ảnh:', error);
+      }
+    };
+    fecthAuthor();
 
     const wrapper = document.querySelector('.products-wrapper');
     const wrapper2 = document.querySelector('.products-wrapper2');
@@ -124,14 +131,14 @@ const Home = () => {
     });
   }, []);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('user');
-    navigate('/login');
-  };
-  console.log(mangas);
+  // const handleLogout = () => {
+  //   sessionStorage.removeItem('user');
+  //   navigate('/login');
+  // };
+  // console.log(mangas);
   // console.log(products);
   // console.log(images);
-  const formattedPrice = products.price ? products.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) : 'N/A';
+
   return (
     <>
 
@@ -210,53 +217,53 @@ const Home = () => {
         >
           <div className="sptt">Sản phẩm mới</div>
         </div>
-
-        {/* product start */}
-        <div className="mt-2 d-flex align-items-center justify-content-center gap-3 overflow-hidden container-card2">
+        <div className='NewProducts'>
           {/* product start */}
-          <div className="list-product">
+          <div className="mt-2 d-flex align-items-center justify-content-center gap-3 overflow-hidden container-card2">
+            {/* product start */}
+            <div className="list-product">
 
-            {/* Repeat the above structure for each product, removing unique classes */}
-            {products && products.length > 0 && images && images.length > 0 ? (
-              products.slice(0, 12).map(product => {
-                const productImage = images.find(image => image.productId === product._id);
-                return (
+              {/* Repeat the above structure for each product, removing unique classes */}
+              {products && products.length > 0 && images && images.length > 0 ? (
+                products.slice(0, 10).map(product => {
+                  const productImage = images.find(image => image.productId === product._id);
+                  return (
 
-                  <div className="mobile-product" key={product._id}>
-                    <div className="product-image">
-                      <img src={productImage ? productImage.url : ''} alt={product.name} />
-                    </div>
-                    <div className="product-details">
-                      <Link className="product-name" to={`/product/${product._id}`}>{product.name}</Link>
-                      <div className="price-container">
-                        <div className="product-price">
-                          {Number(product.price).toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND"
-                          })}
+                    <div className="mobile-product" key={product._id}>
+                      <div className="product-image">
+                        <img src={productImage ? productImage.url : ''} alt={product.name} />
+                      </div>
+                      <div className="product-details">
+                        <Link className="product-name" to={`/product/${product._id}`}>{product.name}</Link>
+                        <div className="price-container">
+                          <div className="product-price">
+                            {Number(product.price).toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND"
+                            })}
+                          </div>
+                          <div className="sale-badge">-50%</div>
                         </div>
-                        <div className="sale-badge">-50%</div>
-                      </div>
-                      <div className="price-sold-container">
-                        <div className="product-old-price">100,000đ</div>
-                        <div className="product-sold">Đã bán {product.sale_count}</div>
+                        <div className="price-sold-container">
+                          <div className="product-old-price">100,000đ</div>
+                          <div className="product-sold">Đã bán {product.sale_count}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
 
-                );
-              })
-            ) : (
-              <p>Đang tải sản phẩm...</p>
-            )}
-            {/* Repeat the above structure for each product, removing unique classes */}
+                  );
+                })
+              ) : (
+                <p>Đang tải sản phẩm...</p>
+              )}
+              {/* Repeat the above structure for each product, removing unique classes */}
+            </div>
+
+
+            {/* product end */}
           </div>
-
-
-          {/* product end */}
         </div>
-
 
         {/* Product End */}
         <div className="mt-2 d-flex align-items-center justify-content-center gap-3 overflow-hidden container-card3"></div>
@@ -284,12 +291,15 @@ const Home = () => {
         <div className="san-pham">
           <div className="products-wrapper2">
 
-            {mangas && mangas.length > 0 && images && images.length > 0 ? (
+            {mangas && mangas.length > 0 && images && images.length > 0 && authorName && authorName.length > 0 ? (
               mangas.map(product => {
                 const productImage = images.find(image => image.productId === product._id);
+                const productAuthor = authorName.find(
+                  (author) => author._id === product.author
+                );
                 return (
 
-                  <div className="san-pham-item" key={product._id}>
+                  <Link to={`/product/${product._id}`} className="san-pham-item" key={product._id}>
                     <img
                       src={productImage.url}
                       alt={product.name}
@@ -305,10 +315,10 @@ const Home = () => {
                     </div>
                     <div className="shop-name-price-old">
                       <div className="price-old">98.000 đ</div>
-                      <div className="shop-name">{product.publisher}</div>
+                      <div className="shop-name">{productAuthor ? productAuthor.name : ''}</div>
                     </div>
                     <div className="add-to-cart">THÊM VÀO GIỎ</div>
-                  </div>
+                  </Link>
 
                 );
               })
@@ -339,12 +349,15 @@ const Home = () => {
         <div className="san-pham">
           <div className="products-wrapper3">
 
-            {fantasys && fantasys.length > 0 && images && images.length > 0 ? (
+            {fantasys && fantasys.length > 0 && images && images.length > 0 && authorName && authorName.length > 0 ? (
               fantasys.map(product => {
                 const productImage = images.find(image => image.productId === product._id);
+                const productAuthor = authorName.find(
+                  (author) => author._id === product.author
+                );
                 return (
 
-                  <div className="san-pham-item" key={product._id}>
+                  <Link to={`/product/${product._id}`} className="san-pham-item" key={product._id}>
                     <img
                       src={productImage.url}
                       alt={product.name}
@@ -360,10 +373,10 @@ const Home = () => {
                     </div>
                     <div className="shop-name-price-old">
                       <div className="price-old">98.000 đ</div>
-                      <div className="shop-name">{product.publisher}</div>
+                      <div className="shop-name">{productAuthor ? productAuthor.name : ''}</div>
                     </div>
                     <div className="add-to-cart">THÊM VÀO GIỎ</div>
-                  </div>
+                  </Link>
 
                 );
               })

@@ -2,6 +2,49 @@
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:3000'; 
+//hàm lấy banner
+export const getBanners = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/banner`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting banners:", error);
+    throw error;
+  }
+};
+
+// Tạo Banner mới
+export const createBanner = async (bannerData) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/banner`, bannerData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating banner:", error);
+    throw error;
+  }
+};
+
+// Cập nhật Banner
+export const updateBanner = async (id, bannerData) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/banner/${id}`, bannerData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating banner:", error);
+    throw error;
+  }
+};
+
+// Xóa Banner
+export const deleteBanner = async (id) => {
+  try {
+    const response = await axios.delete(`${BASE_URL}/banner/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting banner:", error);
+    throw error;
+  }
+};
 //hàm sát thực otp
 export const verifyOTP = async (data) => {
   // data gồm { userId, otp }
