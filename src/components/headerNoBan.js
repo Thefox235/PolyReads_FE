@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
 import '../asset/css/header.css';
 import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link, useLocation } from 'react-router-dom';
 import { useCart } from "./context/cartContext";
 const HeaderNoBan = ({ user, handleLogout }) => {
   const { cart } = useCart();
@@ -93,7 +93,7 @@ const HeaderNoBan = ({ user, handleLogout }) => {
                                     />
                                 </li>
                                 <li>
-                                    <div type="button" className="position-relative bg-transparent">
+                                    <Link to={'/cart'} type="button" className="position-relative bg-transparent">
                                         <img
                                             src="https://s3-alpha-sig.figma.com/img/86b4/b45c/31ba89cf4af5edcd2445279bbde80ed8?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=euFCrS6DWh4fOLrJW8OBkE4YHMFNCEinv9CiN63vvKx-KLMwK7dHrgomI~udpbmbej6OkhO2psbtfCmhQ0pk-DPErEsx3sQg5~W~KQUTFM1Q75Utd~6m3g-51p342r-QuNaD4WHUQtezbMnRqSBwkXRayybhx7Ri7a8vyUK7c~~IyHX7o7PslEIRDU-6GOg~iu0ZB-OcDSOk3yF6nX3WNfkaU-TAPRgGA9ETzXBWnuHL4EJ~1r6UJm0AsgsS9PqHU87IBj2ModiScFcPiAlbC2V0Ya1bSgyPsFyo01DT5qk9getmONyf2~JMpR061RN5yOUrax83g8ovwmkcRpPW-A__"
                                             className="cart"
@@ -103,9 +103,9 @@ const HeaderNoBan = ({ user, handleLogout }) => {
                                             className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
                                             style={{ backgroundColor: "#917FB3", color: "#fff" }}
                                         >
-                                            0 <span className="visually-hidden">unread messages</span>
+                                            {numbercart} <span className="visually-hidden">unread messages</span>
                                         </span>
-                                    </div>
+                                    </Link>
                                 </li>
                             </nav>
                         </div>
@@ -120,7 +120,7 @@ const HeaderNoBan = ({ user, handleLogout }) => {
                                     alt=""
                                 />
                             </div>
-                            <div>
+                            <Link to={'/cart'}>
                                 <button type="button" className="position-relative bg-transparent">
                                     <img
                                         src="https://s3-alpha-sig.figma.com/img/86b4/b45c/31ba89cf4af5edcd2445279bbde80ed8?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=euFCrS6DWh4fOLrJW8OBkE4YHMFNCEinv9CiN63vvKx-KLMwK7dHrgomI~udpbmbej6OkhO2psbtfCmhQ0pk-DPErEsx3sQg5~W~KQUTFM1Q75Utd~6m3g-51p342r-QuNaD4WHUQtezbMnRqSBwkXRayybhx7Ri7a8vyUK7c~~IyHX7o7PslEIRDU-6GOg~iu0ZB-OcDSOk3yF6nX3WNfkaU-TAPRgGA9ETzXBWnuHL4EJ~1r6UJm0AsgsS9PqHU87IBj2ModiScFcPiAlbC2V0Ya1bSgyPsFyo01DT5qk9getmONyf2~JMpR061RN5yOUrax83g8ovwmkcRpPW-A__"
@@ -132,10 +132,10 @@ const HeaderNoBan = ({ user, handleLogout }) => {
                                         className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
                                         style={{ backgroundColor: "#917FB3", color: "#fff" }}
                                     >
-                                        0 <span className="visually-hidden">unread messages</span>
+                                        {numbercart} <span className="visually-hidden">unread messages</span>
                                     </span>
                                 </button>
-                            </div>
+                            </Link>
                         </div>
                         <div className="nav-moblie ">
                             <img

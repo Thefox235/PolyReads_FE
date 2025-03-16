@@ -12,14 +12,30 @@ import { useCart } from "./context/cartContext";
 const changeQuantity = (delta) => {
   console.log("Change quantity by", delta);
 };
+// localStorage.clear();
 const Cart = () => {
-  const { cart, increaseQuantity, decreaseQuantity, clearCart,removeFromCart } = useCart();
+
+  const {
+    cart,
+    increaseQuantity,
+    decreaseQuantity,
+    clearCart,
+    removeFromCart,
+  } = useCart();
   const [product, setProduct] = useState();
   useEffect(() => {
-    const item = cart.map((item) => item.product);
-    setProduct(item);
+    const items = cart.length ? cart.map((item) => item.product || {}) : [];
+    setProduct(items);
   }, [cart]);
-  console.log(product);
+
+  const numbercart = cart.reduce((total, item) => total + item.cartQuantity, 0);
+  const total = cart.reduce(
+    (total, item) => total + item.cartQuantity * item.product.price,
+    0
+  );
+  const cartItem = localStorage.getItem("cart");
+  console.log(cartItem);
+
   return (
     <>
       <section className="banner">
@@ -31,14 +47,16 @@ const Cart = () => {
         </div>
       </section>
       <div className="container mt-5 mb-5 cart-container">
-        <h4 className="heading-cart">GIỎ HÀNG (3 SẢN PHẨM)</h4>
+        <h4 className="heading-cart">GIỎ HÀNG ({numbercart} SẢN PHẨM)</h4>
         <div className="row">
           <div className="col-lg-8">
             <div className="cart-row">
               <div className="cart-header mb-2">
                 <div className="cart-header-item">
                   <input type="checkbox" />{" "}
-                  <span className="ms-2">Chọn tất cả (3 sản phẩm)</span>
+                  <span className="ms-2">
+                    Chọn tất cả ({numbercart} sản phẩm)
+                  </span>
                 </div>
                 <div className="cart-header-item">Số lượng</div>
                 <div className="cart-header-item">Thành tiền</div>
@@ -46,7 +64,7 @@ const Cart = () => {
               {/* Cart item */}
               {product &&
                 product.map((item, index) => (
-                  <div className={`cart-item`} key={item._id}>
+                  <div className="cart-item" key={item._id || `cart-item-${index}`}>
                     <input type="checkbox" className="checkbox" />
                     <img
                       src={cart[index]?.img}
@@ -80,7 +98,10 @@ const Cart = () => {
                         { style: "currency", currency: "VND" }
                       )}
                     </span>
-                    <button className="delete-btn" onClick={()=>removeFromCart(item._id)}>
+                    <button
+                      className="delete-btn"
+                      onClick={() => removeFromCart(item._id)}
+                    >
                       <FontAwesomeIcon icon={faTrashCan} />
                     </button>
                   </div>
@@ -137,14 +158,24 @@ const Cart = () => {
             <div className="total-section mt-2">
               <div className="d-flex justify-content-between align-items-center ">
                 <p>Thành tiền</p>
-                <span>145,000₫</span>
+                <span>
+                  {total.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </span>
               </div>
               <div className="line-total" />
               <div className="d-flex justify-content-between align-items-center total-footer">
                 <p>
                   <strong>Tổng Số Tiền (gồm VAT)</strong>
                 </p>
-                <span>145,000₫</span>
+                <span>
+                  {total.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </span>
               </div>
               <div>
                 <button className="btn btn-danger w-100 mt-3">
