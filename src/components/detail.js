@@ -7,6 +7,8 @@ import {
   getCategory,
   getProductById,
   getAuthor,
+  getDiscounts,
+  getDiscountById
 } from "../api/server";
 import { Link } from "react-router-dom";
 import { useCart } from "./context/cartContext";
@@ -22,10 +24,21 @@ const Detail = () => {
   const [categoryName, setCategoryName] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [number, setNumber] = useState(1);
+  const [discountValue, setDiscounts] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const fetchDiscounts = async () => {
+          try {
+            const discountData = await getDiscounts();
+            setDiscounts(discountData);
+          } catch (error) {
+            console.error('Có lỗi xảy ra khi lấy mã giảm giá:', error);
+          }
+        };
+        fetchDiscounts();
+
         const productData = await getProductById(id);
         // console.log('Fetched product:', productData);
         setProduct(productData);
@@ -55,6 +68,7 @@ const Detail = () => {
 
   const idCate = product.category ? product.category : "N/A";
   const idAuthor = product.ahutor ? product.author : "N/A";
+  const idDiscount = product.discount ? product.discount : "N/A";
   useEffect(() => {
     const fetchProductCate = async () => {
       try {
@@ -76,8 +90,10 @@ const Detail = () => {
       try {
         const data = await getCategory(idCate); // Hàm getCategory() của bạn, trả về đối tượng danh mục
         const dataAuthor = await getAuthor(idAuthor);
+        const dataDiscount = await getDiscountById(idDiscount);
         setCategoryName(data[0].name);
         setAuthorName(dataAuthor[0].name);
+        setDiscounts(dataDiscount.value);
         // console.log(data[0].name);
       } catch (error) {
         console.error("Có lỗi khi lấy danh mục:", error);
@@ -90,15 +106,20 @@ const Detail = () => {
     }
   }, [product]);
 
-  const fetchProductByCate = async () => {
-    try {
-      const mangadata = await getProductByCate(idCate);
-      setProductByCate(mangadata);
-    } catch (error) {
-      console.error('Có lỗi xảy ra khi lấy sản phẩm hot:', error);
+  useEffect(() => {
+    if (idCate !== "N/A") {
+      const fetchProductByCate = async () => {
+        try {
+          const mangadata = await getProductByCate(idCate);
+          setProductByCate(mangadata);
+        } catch (error) {
+          console.error('Có lỗi xảy ra khi lấy sản phẩm hot:', error);
+        }
+      };
+      fetchProductByCate();
     }
-  };
-  fetchProductByCate();
+  }, [idCate]);
+  
   //chuyển tab
   const [activeTab, setActiveTab] = useState("motasp");
 
@@ -141,15 +162,16 @@ const Detail = () => {
     addToCart(data);
   };
 
-  const formattedPrice = product.price
-    ? product.price
-        .toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-          currencyDisplay: "code",
-        })
-        .replace("VND", "VNĐ")
+  const formattedPrice = ((product.price)*(100-discountValue)/100)
+    ? ((product.price)*(100-discountValue)/100)
+      .toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+        currencyDisplay: "code",
+      })
+      .replace("VND", "VNĐ")
     : "N/A";
+    // console.log(discountValue);
   return (
     <>
       <main>
@@ -476,8 +498,8 @@ const Detail = () => {
               style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
             >
               <div className="title_top_menu tab_link_module">
-              <h3><a href="new-arrivals" title="Sản phẩm tương tự">Sản phẩm tương tự</a></h3>
-                </div>
+                <h3><a href="new-arrivals" title="Sản phẩm tương tự">Sản phẩm tương tự</a></h3>
+              </div>
               <div className="d-flex align-items-center gap-3">
                 <div
                   style={{ color: "#917fb3", fontSize: 25, cursor: "pointer" }}

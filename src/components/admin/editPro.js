@@ -5,6 +5,7 @@ import {
   getImagesByProductId,
   updateProduct,
   getPublishers,
+  getDiscounts,
   uploadImageToCloudinary
 } from '../../api/server';
 import CustomSelect from './customSelect';
@@ -25,15 +26,18 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
     published_date: '',
     publisher: '',
     category: '',
-    author: ''
+    author: '',
+    discount: ''
   });
   const [categories, setCategories] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [publishers, setPublishers] = useState([]);
+  const [discounts, setDiscounts] = useState([]);
+
   const [error, setError] = useState('');
   // State cho danh sách hình ảnh
   const [images, setImages] = useState([]);
-  
+
   // Khi mở EditPro, prefill thông tin từ initialData
   useEffect(() => {
     if (initialData) {
@@ -51,7 +55,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
         published_date: initialData.published_date || '',
         publisher: initialData.publisher || '',
         category: initialData.category || '',
-        author: initialData.author || ''
+        author: initialData.author || '',
+        discount: initialData.discount || ''
+
       });
       // Nếu sản phẩm đã có hình ảnh, load chúng
       if (initialData.images) {
@@ -59,7 +65,7 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
       }
     }
   }, [initialData]);
-  
+
   // Fetch danh mục, tác giả, NXB và ảnh từ API
   useEffect(() => {
     const fetchData = async () => {
@@ -70,6 +76,8 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
         setAuthors(authData);
         const nxbData = await getPublishers();
         setPublishers(nxbData);
+        const disData = await getDiscounts();
+        setDiscounts(disData);
         // Nếu API có trả về hình ảnh dựa trên product id
         if (initialData && initialData._id) {
           const imagesData = await getImagesByProductId(initialData._id);
@@ -82,16 +90,16 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
         setError('Có lỗi xảy ra khi lấy danh mục hoặc tác giả');
       }
     };
-    
+
     fetchData();
   }, [initialData]);
-  
+
   // Handler cho các input văn bản
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
-  
+
   // Handler upload file ảnh (cho phép nhiều file)
   const handleFileChange = async (e) => {
     const files = e.target.files;
@@ -114,12 +122,12 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
       alert('Có lỗi khi upload ảnh');
     }
   };
-  
+
   // Handler xoá ảnh khỏi state
   const handleDeleteImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
-  
+
   // Submit form cập nhật sản phẩm
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -137,7 +145,7 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
       alert('Có lỗi xảy ra khi cập nhật sản phẩm');
     }
   };
-  
+
 
   return (
     <div className="editPro-container">
@@ -322,48 +330,68 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
 
 
         {/* Row 9: Hình ảnh sản phẩm (full-width) */}
-        <div className="form-group full-width">
-        <label htmlFor="imageFile">Chọn ảnh mới (có thể chọn nhiều):</label>
-          <input
-            type="file"
-            id="imageFile"
-            name="imageFile"
-            multiple
-            onChange={handleFileChange}
-            className="form-control"
-          />
-          {images.length > 0 && (
-            <div className="images-preview" style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-              {images.map((img, index) => (
-                <div key={index} className="image-preview-item" style={{ position: 'relative' }}>
-                  <img
-                    src={img.url}
-                    alt={`Preview ${index + 1}`}
-                    style={{ width: '100px', height: '150px', objectFit: 'cover' }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteImage(index)}
-                    style={{
-                      position: 'absolute',
-                      top: '-5px',
-                      right: '-5px',
-                      backgroundColor: 'red',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '20px',
-                      height: '20px',
-                      cursor: 'pointer'
-                    }}
-                    title="Xóa hình ảnh"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
+        <div className="form-row full-width">
+          <div className='form-group'>
+            <label htmlFor="imageFile">Chọn ảnh mới (có thể chọn nhiều):</label>
+            <input
+              type="file"
+              id="imageFile"
+              name="imageFile"
+              multiple
+              onChange={handleFileChange}
+              className="form-control"
+            />
+            {images.length > 0 && (
+              <div className="images-preview" style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                {images.map((img, index) => (
+                  <div key={index} className="image-preview-item" style={{ position: 'relative' }}>
+                    <img
+                      src={img.url}
+                      alt={`Preview ${index + 1}`}
+                      style={{ width: '100px', height: '150px', objectFit: 'cover' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteImage(index)}
+                      style={{
+                        position: 'absolute',
+                        top: '-5px',
+                        right: '-5px',
+                        backgroundColor: 'red',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '20px',
+                        height: '20px',
+                        cursor: 'pointer'
+                      }}
+                      title="Xóa hình ảnh"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className='form-group'>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+              <CustomSelect
+                label="Giảm giá"
+                options={discounts.map(dis => ({
+                  value: dis._id,
+                  label: `${dis.code} - ${dis.value}%`
+                }))}
+
+                value={form.discount}
+                onChange={(selectedValue) =>
+                  setForm(prev => ({ ...prev, discount: selectedValue }))
+                }
+                placeholder="Chọn khuyến mãi"
+              />
             </div>
-          )}
+          </div>
         </div>
 
         {/* Nút Submit */}

@@ -2,6 +2,20 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000'; 
 
+//lấy discount theo id 
+export const getDiscountById = async (id) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/discount/${id}`);
+    // console.log(response.data.discounts);
+    // Giả sử API trả về: { discounts: [...] }
+    return response.data.discount;
+
+  } catch (error) {
+    console.error('Lỗi khi lấy discount:', error);
+    throw error;
+  }
+};
+
 // Lấy danh sách discount
 export const getDiscounts = async () => {
   try {
