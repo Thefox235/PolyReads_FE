@@ -479,6 +479,14 @@
   position: absolute;
   width: 232px;
   height: 51px;
-  top: 525px;
+  top: 523px;
+  left: 25px;
+}
+
+.dashboard .div-10 {
+  position: absolute;
+  width: 232px;
+  height: 51px;
+  top: 574px;
   left: 25px;
 }

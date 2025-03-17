@@ -24,17 +24,18 @@ const Cart = () => {
   } = useCart();
   const [product, setProduct] = useState();
   useEffect(() => {
-    const items = cart.length ? cart.map((item) => item.product || {}) : [];
-    setProduct(items);
+    const item = cart.map((item) => item.product);
+    setProduct(item);
   }, [cart]);
 
   const numbercart = cart.reduce((total, item) => total + item.cartQuantity, 0);
+
   const total = cart.reduce(
     (total, item) => total + item.cartQuantity * item.product.price,
     0
   );
-  const cartItem = localStorage.getItem("cart");
-  console.log(cartItem);
+  // const cartItem = localStorage.getItem("cart");
+  // console.log(cartItem);
 
   return (
     <>
@@ -64,7 +65,7 @@ const Cart = () => {
               {/* Cart item */}
               {product &&
                 product.map((item, index) => (
-                  <div className="cart-item" key={item._id || `cart-item-${index}`}>
+                  <div className={`cart-item`} key={item._id}>
                     <input type="checkbox" className="checkbox" />
                     <img
                       src={cart[index]?.img}

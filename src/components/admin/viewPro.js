@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllProduct, deleteProduct, getImages, getCategory, getAuthor, getPublishers } from '../../api/server';
+import { getAllProduct, deleteProduct, getImages, getCategory, getAuthor, getPublishers, getDiscounts } from '../../api/server';
 import '../../asset/css/adminPro.css';
 // Giả sử CreatePro đã được dùng cho modal thêm sản phẩm
 import CreatePro from './createPro';
@@ -32,6 +32,7 @@ const ViewPro = () => {
   const [categoryName, setCategoryName] = useState([]);
   const [authorName, setAuthorName] = useState([]);
   const [publisherName, setPublisherName] = useState([]);
+  const [discountValue, setDiscountValue] = useState([]);
 
 
   useEffect(() => {
@@ -87,33 +88,47 @@ const ViewPro = () => {
     };
     fetchPublisher();
 
+    const fetchDiscount = async () => {
+      try {
+        const discountData = await getDiscounts();
+        setDiscountValue(discountData);
+      } catch (error) {
+        console.error('Có lỗi xảy ra khi lấy discount:', error);
+      }
+    };
+    fetchDiscount();
+
   }, []);
 
   const handleCreateSuccess = async (newProduct) => {
     // Thêm sản phẩm mới vào state tạm thời, nếu cần hiển thị ngay
     setProducts(prev => [...prev, newProduct]);
-    
+
     // Re-fetch lại các dữ liệu để đảm bảo toàn bộ thông tin, kể cả danh mục, tác giả và NXB
     const freshProducts = await getAllProduct();
     setProducts(freshProducts);
-  
+
     const freshImages = await getImages();
     setImages(freshImages);
-  
+
     // Re-fetch lại danh mục, vì có thể danh mục mới đã được tạo hoặc đã được add trước đó
     const freshCategories = await getCategory();
     setCategoryName(freshCategories);
-  
+
     // Re-fetch lại tác giả
     const freshAuthors = await getAuthor();
     setAuthorName(freshAuthors);
-  
+
     // Re-fetch lại nhà xuất bản (NXB)
     const freshPublishers = await getPublishers();
     setPublisherName(freshPublishers);
+
+    // Re-fetch lại discount
+    const freshDiscount = await getDiscounts();
+    setDiscountValue(freshDiscount);
   };
-  
-  
+
+
   // Khi sửa sản phẩm thành công
   const handleEditSuccess = (updatedProduct) => {
     setProducts(prev =>

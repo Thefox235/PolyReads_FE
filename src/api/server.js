@@ -6,8 +6,10 @@ const BASE_URL = 'http://localhost:3000';
 export const getDiscounts = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/discount/`);
+    // console.log(response.data.discounts);
     // Giả sử API trả về: { discounts: [...] }
     return response.data.discounts;
+
   } catch (error) {
     console.error('Lỗi khi lấy danh sách discount:', error);
     throw error;
@@ -17,7 +19,7 @@ export const getDiscounts = async () => {
 // Tạo mới discount
 export const createDiscount = async (discountData) => {
   try {
-    const response = await axios.post(BASE_URL, discountData, {
+    const response = await axios.post(`${BASE_URL}/discount`, discountData, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -33,7 +35,7 @@ export const createDiscount = async (discountData) => {
 // Cập nhật discount
 export const updateDiscount = async (id, discountData) => {
   try {
-    const response = await axios.put(`${BASE_URL}/${id}`, discountData, {
+    const response = await axios.put(`${BASE_URL}/discount/${id}`, discountData, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -49,7 +51,7 @@ export const updateDiscount = async (id, discountData) => {
 // Xóa discount
 export const deleteDiscount = async (id) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/${id}`);
+    const response = await axios.delete(`${BASE_URL}/discount/${id}`);
     // API có thể trả về thông báo thành công
     return response.data;
   } catch (error) {

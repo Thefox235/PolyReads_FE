@@ -101,6 +101,12 @@ const SideBar = () => {
                             </div>
                             <img className="img-3" src="https://media-hosting.imagekit.io//234d454134ff4465/publishing.png?Expires=1836360148&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=DhNFOSs6vsEYxtlfEuxrEbx4vPimzYINWJ-AetBG0FezX-7u-UDGmR94n5cPV8f79nhAtdKrE0yLCd8uYRuWvvuuWWiYUCY10cdZq3iIh1FUNjvGYAKrea55l~MQ2ODWplxlI4~r~T1NBE23DrSZXsFEELjwMSVjpKFdd1ZZQP1~jf1OzrSgmLpQKRTrs36kd8GfCHEmYaTfe0-mxYdKjN38eDGeiqYASpqtxKmQiwzYz7I-1YxhYzzqMSegAUWG7JSMYaHTW~ca0jZ1gci0o4O6uWwu2oVT7jvkxzaIGTgd2WzU74Hb8OInrMcHnWp17IWkIVxHgW4XMomA68xt7g__" />
                         </Link>
+                        <Link to={'/viewDiscount'} className="div-10">
+                            <div className="text-wrapper-70">
+                                <a style={{ color: "white" }} href="" /> Mã giảm giá
+                            </div>
+                            <img className="img-3" src="https://media-hosting.imagekit.io//5ef2f6dab1c747f0/voucher.png?Expires=1836820324&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=L3QiT-riV242VZWFOKROGMBo~xKMgTc1IF6hU9nhMDlkNz9EJdFJjG9kpIZztoauP-GR6ycAydySP4T~DPGWdAa1xpQ0rUd0zT3clyWPt8ugBawyQGb2Ut38eof5z1stWGhwzySYp1fdnAmilmBbwIcHv5Yw-7ziDnBgNWHpOz92zXDSdLuIGq9O-wm-y7jy4c~zCK7E210XyUYdi4n~0exav2b-33dwIBeM3wWE4x8MRhu98I30iGWH6-i~z0RJzsuwr6G0rQ~~K2K2~kPriVNuhtd7RUJXAJZn9KAGIXzG5OrWQ~T3z0l6419sNG57ymROS5tFfZdZkszZDVm4QQ__" />
+                        </Link>
                     </div>
                 </div>
             </div>

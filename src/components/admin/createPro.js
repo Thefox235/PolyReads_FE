@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { createProduct, getCategories, getAuthors, getPublishers, uploadImageToCloudinary } from '../../api/server';
+import { createProduct, getCategories, getAuthors, getPublishers, uploadImageToCloudinary, getDiscounts } from '../../api/server';
 import CustomSelect from './customSelect';
 import Modal from '../model';
 import CreatePublisher from './createPublisher';   // Nếu cần tạo NXB inline
 import CreateCate from './createCate';   // Nếu cần tạo danh mục inline
 import CreateAuthor from './createAuthor';     // Nếu cần tạo tác giả inline
+import CreateDiscount from './createDiscount';     // Nếu cần tạo tác giả inline
 
 const CreatePro = ({ onClose, onCreateSuccess }) => {
   const [form, setForm] = useState({
@@ -21,11 +22,13 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
     published_date: '',
     publisher: '',
     category: '',
-    author: ''
+    author: '',
+    discount: ''
   });
   const [categories, setCategories] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [publishers, setPublishers] = useState([]);
+  const [discounts, setDiscounts] = useState([]);
   const [error, setError] = useState('');
 
   // State dùng xử lý hình ảnh
@@ -58,6 +61,7 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
   const [showCreateCateModal, setShowCreateCateModal] = useState(false);
   const [showCreateAuthorModal, setShowCreateAuthorModal] = useState(false);
   const [showCreatePublisherModal, setShowCreatePublisherModal] = useState(false);
+  const [showCreateDiscountModal, setShowCreateDiscountModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,6 +72,8 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
         setAuthors(authorsData);
         const pubData = await getPublishers();
         setPublishers(pubData);
+        const disData = await getDiscounts();
+        setDiscounts(disData);
       } catch (err) {
         setError('Có lỗi xảy ra khi lấy danh sách');
       }
@@ -104,7 +110,8 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
         published_date: '',
         publisher: '',
         category: '',
-        author: ''
+        author: '',
+        discount: ''
       });
       setImages([]);
       if (onCreateSuccess) onCreateSuccess(completeProduct);
@@ -113,11 +120,11 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
       alert('Có lỗi xảy ra khi thêm sản phẩm');
     }
   };
-  
+
   const handleDeleteImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
-  
+  console.log('discount: ', discounts);
   return (
     <div className="addPro-container">
       <h1>Thêm sản phẩm:</h1>
@@ -289,6 +296,7 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
 
         {/* Row 8: Danh mục và Tác giả */}
         <div className="form-row">
+
           <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
             <CustomSelect
               label="Danh mục"
@@ -330,55 +338,83 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
         </div>
 
         {/* Phần chọn hình ảnh */}
-        <div className="form-group">
-          <label htmlFor="imageFile">Chọn ảnh sản phẩm:</label>
-          <input
-            type="file"
-            id="imageFile"
-            name="imageFile"
-            multiple
-            onChange={handleFileChange}
-            className="form-control"
-          />
-          {images.length > 0 && (
-            <div
-              className="images-preview"
-              style={{ display: 'flex', gap: '10px', marginTop: '10px' }}
-            >
-              {images.map((img, index) => (
-                <div
-                  key={index}
-                  className="image-preview-item"
-                  style={{ position: 'relative' }}
-                >
-                  <img
-                    src={img.url}
-                    alt={`Preview ${index + 1}`}
-                    style={{ width: '100px', height: '150px', objectFit: 'cover' }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteImage(index)}
-                    style={{
-                      position: 'absolute',
-                      top: '-5px',
-                      right: '-5px',
-                      backgroundColor: 'red',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '20px',
-                      height: '20px',
-                      cursor: 'pointer'
-                    }}
-                    title="Xóa hình ảnh"
+        <div className="form-row">
+          <div className='form-group'>
+            <label htmlFor="imageFile">Chọn ảnh sản phẩm:</label>
+            <input
+              type="file"
+              id="imageFile"
+              name="imageFile"
+              multiple
+              onChange={handleFileChange}
+              className="form-control"
+            />
+            {images.length > 0 && (
+              <div
+                className="images-preview"
+                style={{ display: 'flex', gap: '10px', marginTop: '10px' }}
+              >
+                {images.map((img, index) => (
+                  <div
+                    key={index}
+                    className="image-preview-item"
+                    style={{ position: 'relative' }}
                   >
-                    ×
-                  </button>
-                </div>
-              ))}
+                    <img
+                      src={img.url}
+                      alt={`Preview ${index + 1}`}
+                      style={{ width: '100px', height: '150px', objectFit: 'cover' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteImage(index)}
+                      style={{
+                        position: 'absolute',
+                        top: '-5px',
+                        right: '-5px',
+                        backgroundColor: 'red',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '20px',
+                        height: '20px',
+                        cursor: 'pointer'
+                      }}
+                      title="Xóa hình ảnh"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+          </div>
+          <div className='form-group'>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+              <CustomSelect
+                label="Giảm giá"
+                options={discounts.map(dis => ({
+                  value: dis._id,
+                  label: `${dis.code} - ${dis.value}%`
+                }))}
+                
+                value={form.discount}
+                onChange={(selectedValue) =>
+                  setForm(prev => ({ ...prev, discount: selectedValue }))
+                }
+                placeholder="Chọn khuyến mãi"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCreateDiscountModal(true)}
+                className="btn btn-secondary"
+                style={{ marginLeft: '10px' }}
+              >
+                Tạo mới
+              </button>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Nút Submit */}
@@ -421,6 +457,18 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
             onCreateSuccess={(newPublisher) => {
               setPublishers(prev => [...prev, newPublisher]);
               setForm(prev => ({ ...prev, publisher: newPublisher._id }));
+            }}
+          />
+        </Modal>
+      )}
+
+      {showCreateDiscountModal && (
+        <Modal onClose={() => setShowCreateDiscountModal(false)}>
+          <CreateDiscount
+            onClose={() => setShowCreateDiscountModal(false)}
+            onCreateSuccess={(newDiscount) => {
+              setDiscounts(prev => [...prev, newDiscount]);
+              setForm(prev => ({ ...prev, discount: newDiscount._id }));
             }}
           />
         </Modal>
