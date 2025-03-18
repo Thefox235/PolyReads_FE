@@ -1,7 +1,41 @@
 // api.js
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000'; 
+// tạo order
+export const createOrder = async (orderData) => {
+  const response = await axios.post(`${BASE_URL}/order`, orderData);
+  return response.data;
+};
+// Export a constant function called getAllOrder which is an asynchronous function
+export const getAllOrder = async () => {
+  // Use axios to make a GET request to the BASE_URL/order endpoint
+  const response = await axios.get(`${BASE_URL}/order`);
+  // Return the data from the response
+  return response.data;
+};
 
+// Export a function called deleteOrder that takes in an id as a parameter
+export const deleteOrder = async (id) => {
+  // Make a delete request to the API using the id parameter
+  const response = await axios.delete(`${BASE_URL}/order/${id}`);
+  // Return the data from the response
+  return response.data;
+};
+//gửi otp quên mk
+export const sendForgotPasswordOTP = async (email) => {
+  const response = await axios.post(`${BASE_URL}/users/forgotPass/send-otp`, { email });
+  return response.data;
+};
+//sát thực otp quên mk
+export const verifyForgotPasswordOTP = async (email, otp) => {
+  const response = await axios.post(`${BASE_URL}/users/forgotPass/verify-otp`, { email, otp });
+  return response.data;
+};
+//reset mk
+export const resetForgotPassword = async (email, newPassword) => {
+  const response = await axios.post(`${BASE_URL}/users/forgotPass/reset`, { email, newPassword });
+  return response.data;
+};
 //lấy discount theo id 
 export const getDiscountById = async (id) => {
   try {
@@ -217,6 +251,14 @@ export const deleteBanner = async (id) => {
     throw error;
   }
 };
+//hàm gửi lại otp
+// api/server.js
+export const resendOTP = async (data) => {
+  const response = await axios.post(`${BASE_URL}/users/resend-otp`, data);
+  console.log(data);
+  return response.data;
+};
+
 //hàm sát thực otp
 export const verifyOTP = async (data) => {
   // data gồm { userId, otp }
@@ -454,15 +496,24 @@ export const Login = async (userData) => {
 //hàm đăng ký
 export const Register = async (userData) => {
   try {
-    console.log('Sending user data:', userData); // Log dữ liệu gửi đi để kiểm tra
-    const response = await axios.post(`${BASE_URL}/users/register`, userData);
-    console.log('Response data:', response.data); // Log dữ liệu nhận được từ API
+    // Lọc bỏ các trường undefined
+    const payload = Object.keys(userData).reduce((acc, key) => {
+      if (userData[key] !== undefined) {
+        acc[key] = userData[key];
+      }
+      return acc;
+    }, {});
+    
+    console.log('Sending user data:', payload);
+    const response = await axios.post(`${BASE_URL}/users/register`, payload);
+    console.log('Response data:', response.data);
     return response.data;
   } catch (error) {
     console.error('Có lỗi xảy ra khi đăng ký:', error);
     throw error;
   }
 };
+
 //hàm lấy sản phẩm
 export const getProducts = async () => {
   try {
