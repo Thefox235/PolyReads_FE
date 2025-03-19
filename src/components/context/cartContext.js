@@ -137,9 +137,7 @@ export const CartProvider = ({ children }) => {
       await createOrderDetail(orderDetailPayload);
 
       clearCart();
-      alert("Đơn hàng được tạo thành công với Order ID: " + orderId);
-      // Dùng useNavigate để chuyển hướng
-      Navigate(`/order/${orderId}`);
+      return orderId;
     } catch (error) {
       console.error("Lỗi tạo đơn hàng:", error);
       alert("Có lỗi xảy ra khi tạo đơn hàng, hãy kiểm tra console để biết thêm chi tiết");

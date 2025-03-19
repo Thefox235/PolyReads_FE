@@ -2,7 +2,16 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000'; 
 const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
-
+//lấy chi tiết order
+export const getOrderDetail = async (orderId) => {
+  const response = await axios.get(`${BASE_URL}/order/${orderId}`);
+  return response.data; // Ví dụ: { order: { ... } }
+}
+//sửa oreder
+export const updateOrder = async (orderId, updateData) => {
+  const response = await axios.put(`${BASE_URL}/order/${orderId}`, updateData);
+  return response.data; // Ví dụ: { order: { ... } }
+};
 //api lấy địa chỉ
 export const getProvinces = async () => {
   const response = await axios.get(ADDR_URL);
@@ -32,7 +41,11 @@ export const updateAddress = async (id, addressData) => {
   const response = await axios.put(`${BASE_URL}/address/${id}`, addressData);
   return response.data;
 };
-
+// hàm lấy tất cả order
+export const getAllOrder = async () => {
+  const response = await axios.get(`${BASE_URL}/order`);
+  return response.data.orders;
+}
 // Hàm lấy tất cả các địa chỉ (có thể áp dụng bộ lọc theo userId nếu cần)
 export const getAllAddresses = async () => {
   const response = await axios.get(`${BASE_URL}/address`);

@@ -13,12 +13,14 @@ import {
   getDiscounts
 } from '../api/server';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from "./context/cartContext";
 const Home = () => {
   //banner
   const [activeBanners, setActiveBanners] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   //product
+  const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [discounts, setDiscounts] = useState([]);
   const [productHot, setProductHot] = useState([]);

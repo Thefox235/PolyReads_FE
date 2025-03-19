@@ -1,46 +1,51 @@
 import React, { useState, useEffect } from "react";
 import "../asset/css/cart.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronRight,
-  faTrashCan,
-  faRectangleList,
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronRight, faTrashCan, faRectangleList } from "@fortawesome/free-solid-svg-icons";
 import { useCart } from "./context/cartContext";
-import { createOrder, getDiscounts, createOrderDetail, getAllAddresses } from "../api/server"; // API cho Order và Discount
+import { getDiscounts, getAllAddresses, createOrder, createOrderDetail } from "../api/server"; // API từ server
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
+  // Lấy thông tin user từ sessionStorage
   const [user, setUser] = useState(() => {
     const stored = sessionStorage.getItem("user");
     return stored ? JSON.parse(stored) : {};
   });
 
+  // Lấy giỏ hàng và hàm xử lý từ context
   const {
     cart,
     increaseQuantity,
     decreaseQuantity,
     clearCart,
     removeFromCart,
-    checkout
+    checkout, // hàm checkout từ CartContext đã được cập nhật để nhận (userId, addressId)
   } = useCart();
 
-  const [discount, setDiscount] = useState([]);
   const navigate = useNavigate();
 
-  // Đối với checkbox chọn sản phẩm, lưu trạng thái tick cho từng sản phẩm
+  // State cho discount
+  const [discount, setDiscount] = useState([]);
+  // State cho danh sách địa chỉ
+  const [addresses, setAddresses] = useState([]);
+  // State để lưu ID của địa chỉ được chọn
+  const [selectedAddressId, setSelectedAddressId] = useState("");
+  // State cho trạng thái tick sản phẩm
   const [selectedItems, setSelectedItems] = useState({});
 
+  // Khi cart thay đổi, khởi tạo selectedItems với tất cả false
   useEffect(() => {
-    // Khi cart thay đổi, khởi tạo selectedItems với tất cả false
     const selections = {};
     cart.forEach((item) => {
-      // Giả sử product có trường _id
+      // Giả sử mỗi item có thuộc tính product._id
       selections[item.product._id] = false;
     });
     setSelectedItems(selections);
+  }, [cart]);
 
-    // Lấy mã giảm giá từ API
+  // Lấy discount từ API
+  useEffect(() => {
     const fetchDiscounts = async () => {
       try {
         const discountData = await getDiscounts();
@@ -52,17 +57,47 @@ const Cart = () => {
     fetchDiscounts();
   }, [cart]);
 
+  // Lấy danh sách địa chỉ từ API
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const response = await getAllAddresses();
+        // Nếu API trả về { addresses: [...] } hoặc mảng trực tiếp
+        setAddresses(response.addresses || response);
+      } catch (error) {
+        console.error("Error fetching addresses:", error);
+      }
+    };
+    fetchAddresses();
+  }, []);
+
+  // Khi danh sách địa chỉ hoặc user cập nhật, tự động chọn địa chỉ của user (địa chỉ mặc định nếu có)
+  useEffect(() => {
+    if (addresses.length > 0 && user._id) {
+      const userAddresses = addresses.filter(
+        (addr) => String(addr.userId) === String(user._id)
+      );
+      if (userAddresses.length > 0) {
+        const defaultAddress = userAddresses.find((addr) => addr.default === true);
+        if (defaultAddress) {
+          setSelectedAddressId(defaultAddress._id);
+        } else {
+          setSelectedAddressId(userAddresses[0]._id);
+        }
+      }
+    }
+  }, [addresses, user._id]);
+
   // Tính tổng số sản phẩm trong giỏ (không liên quan đến tick)
   const numbercart = cart.reduce(
     (total, item) => total + item.cartQuantity,
     0
   );
 
-  // Tính tổng tiền cho các sản phẩm được tick, sử dụng giá sau giảm (nếu có discount)
+  // Tính tổng tiền cho các sản phẩm được tick, sử dụng giá sau giảm nếu có discount
   const selectedTotal = cart.reduce((acc, item) => {
     if (selectedItems[item.product._id]) {
       const prod = item.product;
-      // Tìm discount nếu có (so sánh ID discount của sản phẩm với discount từ API)
       const productDiscount = discount.find(
         (dis) => dis && dis._id === prod.discount
       );
@@ -75,15 +110,13 @@ const Cart = () => {
 
   // Tính số lượng sản phẩm được tick
   const selectedCount = cart.reduce(
-    (acc, item) =>
-      selectedItems[item.product._id] ? acc + item.cartQuantity : acc,
+    (acc, item) => (selectedItems[item.product._id] ? acc + item.cartQuantity : acc),
     0
   );
 
-  // Kiểm tra xem tất cả các sản phẩm đã được chọn hay chưa
+  // Kiểm tra xem tất cả sản phẩm có được tick hay không
   const allSelected =
-    cart.length > 0 &&
-    cart.every((item) => selectedItems[item.product._id]);
+    cart.length > 0 && cart.every((item) => selectedItems[item.product._id]);
 
   // Hàm xử lý tick cho từng sản phẩm
   const handleSelectItem = (productId) => {
@@ -93,17 +126,15 @@ const Cart = () => {
     }));
   };
 
-  // Hàm chọn tất cả / bỏ chọn tất cả
+  // Hàm chọn tất cả/bỏ chọn tất cả
   const handleSelectAll = () => {
     if (allSelected) {
-      // Bỏ chọn tất cả
       const newSelections = {};
       cart.forEach((item) => {
         newSelections[item.product._id] = false;
       });
       setSelectedItems(newSelections);
     } else {
-      // Chọn hết
       const newSelections = {};
       cart.forEach((item) => {
         newSelections[item.product._id] = true;
@@ -112,32 +143,10 @@ const Cart = () => {
     }
   };
 
-  // console.log("Cart items:", cart);
-  const [selectedAddressId, setSelectedAddressId] = useState("");
-  const addresses = getAllAddresses();
-  useEffect(() => {
-    if (addresses.length > 0 && user._id) {
-      // Lọc ra tất cả các địa chỉ của user
-      const userAddresses = addresses.filter(
-        (addr) => String(addr.userId) === String(user._id)
-      );
-      if (userAddresses.length > 0) {
-        // Nếu có địa chỉ mặc định, lấy địa chỉ mặc định
-        const defaultAddress = userAddresses.find((addr) => addr.default);
-        if (defaultAddress) {
-          setSelectedAddressId(defaultAddress._id);
-        } else {
-          // Nếu không có default, chọn địa chỉ đầu tiên
-          setSelectedAddressId(userAddresses[0]._id);
-        }
-      }
-    }
-  }, [addresses, user._id]);
-  
-  // Hàm thanh toán: tạo đơn hàng (order) dựa trên các sản phẩm được tick
+  // Hàm xử lý thanh toán
   const handleCheckout = async () => {
     if (selectedCount === 0) {
-      alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
+      alert("Vui lòng tick chọn sản phẩm bạn muốn mua!");
       return;
     }
     if (!selectedAddressId || selectedAddressId.trim() === "") {
@@ -145,13 +154,63 @@ const Cart = () => {
       return;
     }
     try {
-      await checkout(user._id, selectedAddressId);
-      // navigate hoặc hiển thị thông báo sau khi thành công sẽ được thực hiện trong hàm checkout
+      // Lấy các sản phẩm được tick chọn từ cart
+      const checkedItems = cart.filter((item) => selectedItems[item.product._id]);
+  
+      // Xây dựng danh sách order items dựa trên dữ liệu từ giỏ hàng
+      const orderItems = checkedItems.map((item) => {
+        const prod = item.product;
+        const productDiscount = discount.find((dis) => dis && dis._id === prod.discount);
+        const discountPercent = productDiscount ? Number(productDiscount.value) : 0;
+        // Tính giá sau discount; đảm bảo rằng prod.price có giá trị hợp lệ
+        const currentPrice = Number(prod.price) * ((100 - discountPercent) / 100);
+        return {
+          productId: prod._id,
+          quantily: item.cartQuantity || 1, // Sử dụng "quantily" theo schema order_detail
+          price: currentPrice,
+          total: currentPrice * (item.cartQuantity || 1),
+        };
+      });
+      
+      // Tính tổng số lượng và tổng tiền từ danh sách orderItems
+      const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantily, 0);
+      const totalPrice = orderItems.reduce((sum, item) => sum + item.total, 0);
+  
+      // Payload cho Order gồm địa chỉ giao hàng và thông tin khác
+      const orderPayload = {
+        userId: user._id,
+        addressId: selectedAddressId,
+        name: "Đơn hàng của khách hàng",
+        quantity: totalQuantity,
+        img: checkedItems[0]?.img || "",
+        price: totalPrice, // Giá đơn hàng tính từ orderItems
+        total: totalPrice,
+        status: 0,
+        payment_status: 0,
+      };
+  
+      // Tạo Order và lấy Order ID
+      const orderRes = await createOrder(orderPayload);
+      const orderId = orderRes.order._id;
+      
+      // Thêm orderId vào từng order item để tạo Order Detail payload
+      const orderDetailPayload = {
+        orderId,
+        items: orderItems.map((item) => ({ ...item, orderId })),
+      };
+  
+      await createOrderDetail(orderDetailPayload);
+  
+      clearCart();
+      alert("Đơn hàng được tạo thành công với Order ID: " + orderId);
+      navigate(`/order/${orderId}`);
     } catch (error) {
       console.error("Lỗi tạo đơn hàng:", error);
       alert("Có lỗi xảy ra khi tạo đơn hàng");
     }
   };
+  
+  
 
 
   return (
@@ -173,6 +232,7 @@ const Cart = () => {
           <div className="col-lg-8">
             <div className="cart-row">
               <div className="cart-header mb-2">
+
                 <div className="cart-header-item">
                   <input
                     type="checkbox"
@@ -183,9 +243,11 @@ const Cart = () => {
                     Chọn tất cả ({cart.length} sản phẩm)
                   </span>
                 </div>
+
                 <div className="cart-header-item">Số lượng</div>
                 <div className="cart-header-item">Thành tiền</div>
               </div>
+              
               {/* Hiển thị các sản phẩm trong giỏ hàng */}
               {cart && cart.length > 0 ? (
                 cart.map((item) => {
