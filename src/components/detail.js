@@ -159,7 +159,9 @@ const Detail = () => {
       img: productImages[0].url,
       quantity: number,
     };
+    console.log(data);
     addToCart(data);
+
   };
 
   const formattedPrice = ((product.price)*(100-discountValue)/100)
@@ -172,6 +174,7 @@ const Detail = () => {
       .replace("VND", "VNĐ")
     : "N/A";
     // console.log(discountValue);
+    console.log(number);
   return (
     <>
       <main>

@@ -4,6 +4,14 @@
     box-sizing: border-box;
 }
 /* Container cho dropdown */
+.login-user-name {
+    max-width: 140px;       /* Điều chỉnh chiều rộng tối đa theo nhu cầu */
+    white-space: nowrap;    /* Không cho phép tên xuống dòng */
+    overflow: hidden;       /* Ẩn phần vượt quá chiều rộng */
+    text-overflow: ellipsis;/* Hiển thị dấu ba chấm "..." ở cuối khi tên dài */
+    display: inline-block;  /* Đảm bảo hoạt động với text-overflow */
+  }
+  
 /* Container của dropdown */
 .user-dropdown-menu {
     background: none;

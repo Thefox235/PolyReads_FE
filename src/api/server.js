@@ -1,18 +1,73 @@
 // api.js
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000'; 
+const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+
+//api lấy địa chỉ
+export const getProvinces = async () => {
+  const response = await axios.get(ADDR_URL);
+  return response.data.results; // Trả về danh sách tỉnh/thành phố
+};
+
+// Lấy danh sách quận/huyện theo province_code
+export const getDistrictsByProvince = async (provinceCode) => {
+  const response = await axios.get(`${ADDR_URL}/district/${provinceCode}`);
+  return response.data.results; // Trả về danh sách quận/huyện
+};
+
+// Lấy danh sách xã/phường theo district_code
+export const getWardsByDistrict = async (districtCode) => {
+  const response = await axios.get(`${ADDR_URL}/ward/${districtCode}`);
+  return response.data.results; // Trả về danh sách xã/phường
+};
+// Hàm tạo địa chỉ mới
+export const createAddress = async (addressData) => {
+  const response = await axios.post(`${BASE_URL}/address`, addressData);
+  console.log(addressData);
+  return response.data;
+};
+
+// Hàm cập nhật địa chỉ theo ID (nếu cần)
+export const updateAddress = async (id, addressData) => {
+  const response = await axios.put(`${BASE_URL}/address/${id}`, addressData);
+  return response.data;
+};
+
+// Hàm lấy tất cả các địa chỉ (có thể áp dụng bộ lọc theo userId nếu cần)
+export const getAllAddresses = async () => {
+  const response = await axios.get(`${BASE_URL}/address`);
+  return response.data.addresses;
+};
+
+// Hàm lấy địa chỉ theo ID
+export const getAddressById = async (id) => {
+  const response = await axios.get(`${BASE_URL}/address/${id}`);
+  return response.data;
+};
+// update user
+export const updateUser = async (id, data) => {
+  const response = await axios.put(`${BASE_URL}/users/${id}`, data);
+  console.log(response.data);
+  return response.data.user;
+};
 // tạo order
 export const createOrder = async (orderData) => {
   const response = await axios.post(`${BASE_URL}/order`, orderData);
+  return response.data; // ví dụ: { order: { _id: '...', ... } }
+};
+
+export const createOrderDetail = async (orderDetailData) => {
+  const response = await axios.post(`${BASE_URL}/order-detail`, orderDetailData);
+
+  return response.data; // ví dụ: { orderDetail: { ... } }
+};
+// Export a constant function called getUserOrder which is an asynchronous function
+export const getUserOrder = async (userId) => {
+  const response = await axios.get(`${BASE_URL}/order/user/${userId}`);
+  console.log(response.data.orders);
   return response.data;
 };
-// Export a constant function called getAllOrder which is an asynchronous function
-export const getAllOrder = async () => {
-  // Use axios to make a GET request to the BASE_URL/order endpoint
-  const response = await axios.get(`${BASE_URL}/order`);
-  // Return the data from the response
-  return response.data;
-};
+
 
 // Export a function called deleteOrder that takes in an id as a parameter
 export const deleteOrder = async (id) => {

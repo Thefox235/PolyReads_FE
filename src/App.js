@@ -29,6 +29,7 @@ import Blog from './components/blog';
 import ViewDiscount from './components/admin/viewDiscount';
 import EditDiscount from './components/admin/editDiscount';
 import ForgotPassword from './components/ForgotPassword';
+import Account from './components/account';
 // import ViewOrder from './components/admin/viewOrder';
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
 
           {/* Các route không cần header (hoặc có layout khác) */}
           <Route element={<MainLayout />}>
+            <Route path="/account" element={<Account />} />
             <Route path="/forgotPassword" element={<ForgotPassword />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/contact" element={<Contact />} />
@@ -62,7 +64,7 @@ function App() {
 
           {/* Các route admin có thể đặt ở đây nếu muốn dùng chung layout */}
           <Route element={<AdminLayout />}>
-          {/* <Route path="/viewOrder" element={<PrivateRoute element={ViewOrder} roles={['1']} />} /> */}
+            {/* <Route path="/viewOrder" element={<PrivateRoute element={ViewOrder} roles={['1']} />} /> */}
             <Route path="/viewPro" element={<PrivateRoute element={ViewPro} roles={['1']} />} />
             <Route path="/viewCate" element={<PrivateRoute element={ViewCate} roles={['1']} />} />
             <Route path="/viewAuthor" element={<PrivateRoute element={ViewAuthor} roles={['1']} />} />

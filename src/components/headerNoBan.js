@@ -48,7 +48,7 @@ const HeaderNoBan = ({ user, handleLogout }) => {
                                     {user ? (
                                         <li className="user-dropdown-menu">
                                             <button className="user-dropdown-btn">
-                                                {user.name}
+                                                <p className='login-user-name'>{user.name}</p>
                                             </button>
                                             <div className="user-dropdown-content">
                                                 {user.role === "1" && (

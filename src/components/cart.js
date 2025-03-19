@@ -7,33 +7,40 @@ import {
   faRectangleList,
 } from "@fortawesome/free-solid-svg-icons";
 import { useCart } from "./context/cartContext";
-import { createOrder, getDiscounts } from "../api/server"; // Các API của bạn
+import { createOrder, getDiscounts, createOrderDetail, getAllAddresses } from "../api/server"; // API cho Order và Discount
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
+  const [user, setUser] = useState(() => {
+    const stored = sessionStorage.getItem("user");
+    return stored ? JSON.parse(stored) : {};
+  });
+
   const {
     cart,
     increaseQuantity,
     decreaseQuantity,
     clearCart,
     removeFromCart,
+    checkout
   } = useCart();
-  
-  // discount được lấy từ API discounts
+
   const [discount, setDiscount] = useState([]);
   const navigate = useNavigate();
 
-  // selectedItems: lưu trạng thái tick của từng sản phẩm với key là product._id và value là true/false.
+  // Đối với checkbox chọn sản phẩm, lưu trạng thái tick cho từng sản phẩm
   const [selectedItems, setSelectedItems] = useState({});
 
   useEffect(() => {
     // Khi cart thay đổi, khởi tạo selectedItems với tất cả false
     const selections = {};
     cart.forEach((item) => {
+      // Giả sử product có trường _id
       selections[item.product._id] = false;
     });
     setSelectedItems(selections);
-    
+
+    // Lấy mã giảm giá từ API
     const fetchDiscounts = async () => {
       try {
         const discountData = await getDiscounts();
@@ -51,11 +58,11 @@ const Cart = () => {
     0
   );
 
-  // Tính tổng tiền của các sản phẩm được tick (sử dụng giá sau discount)
+  // Tính tổng tiền cho các sản phẩm được tick, sử dụng giá sau giảm (nếu có discount)
   const selectedTotal = cart.reduce((acc, item) => {
     if (selectedItems[item.product._id]) {
       const prod = item.product;
-      // Tìm discount nếu có (so sánh ID discount của sản phẩm với các discount từ API)
+      // Tìm discount nếu có (so sánh ID discount của sản phẩm với discount từ API)
       const productDiscount = discount.find(
         (dis) => dis && dis._id === prod.discount
       );
@@ -67,16 +74,18 @@ const Cart = () => {
   }, 0);
 
   // Tính số lượng sản phẩm được tick
-  const selectedCount = cart.reduce((acc, item) => {
-    return selectedItems[item.product._id] ? acc + item.cartQuantity : acc;
-  }, 0);
+  const selectedCount = cart.reduce(
+    (acc, item) =>
+      selectedItems[item.product._id] ? acc + item.cartQuantity : acc,
+    0
+  );
 
-  // Kiểm tra nếu tất cả sản phẩm đều được tick
+  // Kiểm tra xem tất cả các sản phẩm đã được chọn hay chưa
   const allSelected =
     cart.length > 0 &&
     cart.every((item) => selectedItems[item.product._id]);
 
-  // Hàm xử lý tick từng sản phẩm
+  // Hàm xử lý tick cho từng sản phẩm
   const handleSelectItem = (productId) => {
     setSelectedItems((prev) => ({
       ...prev,
@@ -103,35 +112,47 @@ const Cart = () => {
     }
   };
 
-  // Hàm thanh toán, tạo order từ các sản phẩm được tick
+  // console.log("Cart items:", cart);
+  const [selectedAddressId, setSelectedAddressId] = useState("");
+  const addresses = getAllAddresses();
+  useEffect(() => {
+    if (addresses.length > 0 && user._id) {
+      // Lọc ra tất cả các địa chỉ của user
+      const userAddresses = addresses.filter(
+        (addr) => String(addr.userId) === String(user._id)
+      );
+      if (userAddresses.length > 0) {
+        // Nếu có địa chỉ mặc định, lấy địa chỉ mặc định
+        const defaultAddress = userAddresses.find((addr) => addr.default);
+        if (defaultAddress) {
+          setSelectedAddressId(defaultAddress._id);
+        } else {
+          // Nếu không có default, chọn địa chỉ đầu tiên
+          setSelectedAddressId(userAddresses[0]._id);
+        }
+      }
+    }
+  }, [addresses, user._id]);
+  
+  // Hàm thanh toán: tạo đơn hàng (order) dựa trên các sản phẩm được tick
   const handleCheckout = async () => {
-    // Kiểm tra xem có sản phẩm nào được tick không
     if (selectedCount === 0) {
       alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
       return;
     }
+    if (!selectedAddressId || selectedAddressId.trim() === "") {
+      alert("Vui lòng chọn địa chỉ giao hàng!");
+      return;
+    }
     try {
-      const orderData = {
-        name: "Đơn hàng của khách hàng",
-        quantity: selectedCount,
-        // Dùng ảnh của sản phẩm đầu tiên được tick làm đại diện, nếu có
-        img: cart.find((item) => selectedItems[item.product._id])?.img || "",
-        price: selectedTotal,
-        status: 0,
-        payment_status: 0,
-        total: selectedTotal,
-      };
-
-      // Gọi API tạo order
-      const result = await createOrder(orderData);
-      alert("Đơn hàng được tạo thành công!");
-      clearCart();
-      navigate(`/order/${result.order._id}`);
+      await checkout(user._id, selectedAddressId);
+      // navigate hoặc hiển thị thông báo sau khi thành công sẽ được thực hiện trong hàm checkout
     } catch (error) {
       console.error("Lỗi tạo đơn hàng:", error);
       alert("Có lỗi xảy ra khi tạo đơn hàng");
     }
   };
+
 
   return (
     <>
@@ -143,6 +164,7 @@ const Cart = () => {
           </p>
         </div>
       </section>
+
       <div className="container mt-5 mb-5 cart-container">
         <h4 className="heading-cart">
           GIỎ HÀNG ({numbercart} sản phẩm) - Đã chọn {selectedCount} sản phẩm
@@ -166,7 +188,7 @@ const Cart = () => {
               </div>
               {/* Hiển thị các sản phẩm trong giỏ hàng */}
               {cart && cart.length > 0 ? (
-                cart.map((item, index) => {
+                cart.map((item) => {
                   const prod = item.product;
                   const productDiscount = discount.find(
                     (dis) => dis && dis._id === prod.discount
@@ -262,7 +284,9 @@ const Cart = () => {
                     </div>
                   </div>
                   <div className="col-3 text-end">
-                    <button className="btn btn-primary btn-sm w-100">Mua Thêm</button>
+                    <button className="btn btn-primary btn-sm w-100">
+                      Mua Thêm
+                    </button>
                   </div>
                 </div>
               </div>
@@ -296,10 +320,7 @@ const Cart = () => {
                 </span>
               </div>
               <div>
-                <button
-                  className="btn btn-danger w-100 mt-3"
-                  onClick={handleCheckout}
-                >
+                <button className="btn btn-danger w-100 mt-3" onClick={handleCheckout}>
                   <span className="fw-bold text-uppercase">Thanh Toán</span>
                 </button>
               </div>
