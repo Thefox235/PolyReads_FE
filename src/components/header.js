@@ -64,7 +64,7 @@ const Header = ({ user, handleLogout }) => {
                             <div className="logo-sreach">
                                 <Link to={'/home'} className="logo-img">
                                     <img
-                                        src="https://s3-alpha-sig.figma.com/img/b0af/45d1/c03498be8824b354d70f86daf9efda3b?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=JrcB2oVrKpzIjqbEdZ3mDFItqIY6WTbXqMSD3MNT05y1P9AgZn13ZnMaSXCZBarIj1GS7ZQ~E-uM3-HsJUMSpG6PRPhvqUiDHcwGYaszSk6F86gkpq8G9o7j67yHHoNEi9143lgkzoLCOEfzjScNwhbYrNX3WXuq~sbtdriEHyRrDU6Ki~WqHVQzM7w1Vz0MWzwOvVZlBkD2e-zvGywWd6Ps4h21Jm5hEwH62m~tIaHTglUIPv5CWSgWQCkEGLsUF3r0UfmH6IxmTgpI5RqczdeA42J4yrPsT2pv0rOP~gBo7gnVc5244CaoGmfDHAjd2kIMdmuT7I33ypcjCJluEg__"
+                                        src="https://media-hosting.imagekit.io//29d6e5ff805d4235/download-10.png?Expires=1837170924&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Vf-I1tp1iEMiPxgzy8ulSny9ROJx5xHvoW9YjGN9AEqDkCbNEzgirf0u7U1j3IK11dYRvkmKwhYU6eQ5r66RUpwd3nyEV8DHEvaSGTMB~IiOSr3Vo-nnl3bAfd9Al8MtnKoMYcYWkLcNXUQqBGmf2rQIkrf6K1jVSaxRxPQz-Gelim0evIIgiEHMSL3-UCksUvxQpO1Zmmv1LUuhTsp8tYlwj9aUuDeF25NGhso7aV2Y8H5H~zM0j0F9H8wN-b95oZobTbSh8JZkiKZm6Zo5o-DxfaDUpizEAffML-A8uqAECU879OOlppSI-cyngwuuqaja7CT9D7DEWDmzHgknZA__"
                                         alt=""
                                     />
                                 </Link>
@@ -132,7 +132,7 @@ const Header = ({ user, handleLogout }) => {
                                 <li>
                                     <Link to={'/cart'} type="button" className="position-relative bg-transparent">
                                         <img
-                                            src="https://s3-alpha-sig.figma.com/img/86b4/b45c/31ba89cf4af5edcd2445279bbde80ed8?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=euFCrS6DWh4fOLrJW8OBkE4YHMFNCEinv9CiN63vvKx-KLMwK7dHrgomI~udpbmbej6OkhO2psbtfCmhQ0pk-DPErEsx3sQg5~W~KQUTFM1Q75Utd~6m3g-51p342r-QuNaD4WHUQtezbMnRqSBwkXRayybhx7Ri7a8vyUK7c~~IyHX7o7PslEIRDU-6GOg~iu0ZB-OcDSOk3yF6nX3WNfkaU-TAPRgGA9ETzXBWnuHL4EJ~1r6UJm0AsgsS9PqHU87IBj2ModiScFcPiAlbC2V0Ya1bSgyPsFyo01DT5qk9getmONyf2~JMpR061RN5yOUrax83g8ovwmkcRpPW-A__"
+                                            src="https://media-hosting.imagekit.io//ca0ca63ea9194c3a/fast-cart0.png?Expires=1837170915&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=z1rdhaP6OLMIsgulbU0xrCoUyARXEXolE2F-~bVCU75EEp4X9Up6fu9nB3mB0zCl1W7Qcf-B0S98rG0DdBO~Rv5yvAtvs5hbEf5oetLsV4j2PDf34W4~v9d8bfEUMBK4conlEVK-ucmWb3GSSBpn0VmueCjQJPcePtvcKQ0YwFeZQrMsaQ~eeECw3EVtRWt~VY8qOXo0FnMQIDX8dv1ygkb-bCoVyHjEGPJWwKglVOAnVvnupYjcG~NOiCXo2YfTy~bj0TJcdg1fHqdbECSWYDGsR-wKqyh8hixZ-7MLCz2GSdqkAbUPAQ8AuaCEUz2jyzxlZ17OeML1~2X97Q6rXg__"
                                             className="cart"
                                             alt=""
                                         />
@@ -162,7 +162,7 @@ const Header = ({ user, handleLogout }) => {
                             <div>
                                 <Link to={'/cart'} type="button" className="position-relative bg-transparent">
                                     <img
-                                        src="https://s3-alpha-sig.figma.com/img/86b4/b45c/31ba89cf4af5edcd2445279bbde80ed8?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=euFCrS6DWh4fOLrJW8OBkE4YHMFNCEinv9CiN63vvKx-KLMwK7dHrgomI~udpbmbej6OkhO2psbtfCmhQ0pk-DPErEsx3sQg5~W~KQUTFM1Q75Utd~6m3g-51p342r-QuNaD4WHUQtezbMnRqSBwkXRayybhx7Ri7a8vyUK7c~~IyHX7o7PslEIRDU-6GOg~iu0ZB-OcDSOk3yF6nX3WNfkaU-TAPRgGA9ETzXBWnuHL4EJ~1r6UJm0AsgsS9PqHU87IBj2ModiScFcPiAlbC2V0Ya1bSgyPsFyo01DT5qk9getmONyf2~JMpR061RN5yOUrax83g8ovwmkcRpPW-A__"
+                                        src="https://media-hosting.imagekit.io//ca0ca63ea9194c3a/fast-cart0.png?Expires=1837170915&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=z1rdhaP6OLMIsgulbU0xrCoUyARXEXolE2F-~bVCU75EEp4X9Up6fu9nB3mB0zCl1W7Qcf-B0S98rG0DdBO~Rv5yvAtvs5hbEf5oetLsV4j2PDf34W4~v9d8bfEUMBK4conlEVK-ucmWb3GSSBpn0VmueCjQJPcePtvcKQ0YwFeZQrMsaQ~eeECw3EVtRWt~VY8qOXo0FnMQIDX8dv1ygkb-bCoVyHjEGPJWwKglVOAnVvnupYjcG~NOiCXo2YfTy~bj0TJcdg1fHqdbECSWYDGsR-wKqyh8hixZ-7MLCz2GSdqkAbUPAQ8AuaCEUz2jyzxlZ17OeML1~2X97Q6rXg__"
                                         width={20}
                                         className="cart"
                                         alt=""
