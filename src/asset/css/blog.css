@@ -176,7 +176,6 @@
     white-space: normal;
     margin-left: 30px;
     width: 908px;
-    border: 1px solid black;
     scroll-behavior: smooth;
     /* Cuộn mượt mà */
 
@@ -394,6 +393,13 @@
     height: 100px;
     border-radius: 5px;
 }
+.card_right_1 img
+{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
 
 .card_right_2 {
     margin-left: 15px;
@@ -535,11 +541,18 @@
 
 .article_5_left_img {
     display: flex;
-    background-image: url(https://media-hosting.imagekit.io//cfc8587206294ba4/blog_context_14.png?Expires=1836490569&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=dsmqQ5ECmVx9mc5svZhZ3EzLTdwNp~CEbai10pd2yNdkiqIWOnk6Hr-U0Z5hhnERaMHsOBIT9Dde-QwnBoNwMBVwxqCFp34dg~nNy42N0o8skIZKCAPjPMU9wMsWjp9q52-VKTZ2Jz0PyTJ5e-C6dkRDTGgkEgTDiOWf8YrP~~j6Ia8H3vmP6vzrLw7HIJJNFZ0-nDpgoqOWna3U9LQDO0eYmx5CkbKwwFy0S6xE~YFoN4OBkgqbzEaMUzQeYtFh3IhleywZA3jxrhvpnxgbEOl~5Bv7lQ093-h1FdfYTcSm4y4JeUOZtebzWVhMxqxYg1TLPqq~qGJJIbyPuh2WXw__);
     width: 370px;
     height: 370px;
     border-radius: 5px;
 }
+.article_5_left_img img
+{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
 
 .title_background {
     margin-top: 335px;
@@ -558,6 +571,7 @@
     font-size: 14px;
     line-height: 17px;
     color: #FFFFFF;
+
 }
 
 .article_5_left_text_1 {
@@ -615,6 +629,19 @@
 .article_5_right_img {
     width: 203.32px;
     height: 203.32px;
+}
+.article_5_right_img_img
+{
+    width: 204px;
+    height: 204px;
+    border-radius: 5px;
+}
+
+.article_5_right_img img
+{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .article_5_right_text_1 {

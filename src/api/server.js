@@ -2,6 +2,103 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000'; 
 const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+// Hàm xóa bài viết theo ID
+export const deletePost = async (postId) => {
+  try {
+    const response = await fetch(`/api/posts/${postId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // Kiểm tra nếu response không ok, throw lỗi với thông báo từ server
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Lỗi khi xóa bài viết');
+    }
+
+    // Parse dữ liệu JSON trả về từ server (ví dụ có thể là { message: '...' })
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Lỗi trong deletePost:', error);
+    throw error;
+  }
+};
+// Hàm lấy danh sách bài viết
+export const getPosts = async () => {
+  try {
+    const response = await fetch('/api/posts', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    // Kiểm tra nếu response không ok thì throw lỗi
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Lỗi khi lấy danh sách bài viết');
+    }
+
+    // Parse dữ liệu JSON từ response
+    const data = await response.json();
+    // Giả sử dữ liệu trả về dạng { posts: [...] }
+    return data.posts;
+  } catch (error) {
+    console.error('Lỗi trong getPosts:', error);
+    throw error;
+  }
+};
+// Hàm cập nhật bài viết
+export const updatePost = async (postId, postData) => {
+  try {
+    const response = await fetch(`/BASE_URL/posts/${postId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(postData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Lỗi khi cập nhật bài viết');
+    }
+
+    const data = await response.json();
+    return data.post; // Trả về bài viết đã được cập nhật
+  } catch (error) {
+    console.error('Lỗi trong updatePost:', error);
+    throw error;
+  }
+};
+
+// Các hàm khác, như getPosts, createPost, deletePost, updateCategory,... có thể được định nghĩa tương tự
+// Hàm tạo mới bài viết
+export const createPost = async (postData) => {
+  try {
+    const response = await fetch('/BASE_URL/posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(postData)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Lỗi khi tạo bài viết');
+    }
+
+    const data = await response.json();
+    return data.post; // trả về bài viết được tạo thành công
+  } catch (error) {
+    console.error('Error in createPost:', error);
+    throw error;
+  }
+};
 //lấy chi tiết order
 export const getOrderDetail = async (orderId) => {
   const response = await axios.get(`${BASE_URL}/order/${orderId}`);

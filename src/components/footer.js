@@ -31,7 +31,7 @@ const Footer = () => {
                         <i className="bi bi-twitter" />
                         <i className="bi bi-tiktok" />
                         <img
-                            src="https://s3-alpha-sig.figma.com/img/be21/49be/c88622e49b6235579f1f13b3c20aeab4?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=k69IQF1sNV8by8sIDhmo4FzNigvSHPQZN9MN5Esv0ldQN5fVPXhaUMSXid1t03fQr~8Aizk1W3JXKHYXWzNQv3o0MbzqkfZaeIHZjNQkSZtUoyV63~tf-pF4g8LHT-cAchmyZbLmTAD0CVRXpllvRc7qoZMJW3FT6azdk5GkHGSs0hTQxWyPaXBTpyWcc6AUu-4tZZcDA0jgkbpxVx1FNsqe5u1jlsHUNGFyjU-H0trVNDVsCj3fcOQqx4SfrXs39O~QwzKMRYjRynHDg8cB6D5rchq4r2MDXm~txmt1i-NLKTgmGJjoLpXB~GklHPMfFMWFsJWt9t3SsSjEqOa--g__"
+                            src="https://media-hosting.imagekit.io//9410bee802df4779/link0.png?Expires=1837259374&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=KQnh-pmWXgQVZR6zYWwNu7SYSbhBnRNP29P7mnGQDbQ6tJlErnEjpfzpBksKFPex2MCFI3oFRHksaryfPZ3tx9L6tvJMIDD-cK4oytD54DgN~ISJqseouk9NMY3TbhWsvOflv94OoWQwARwq3mjMSov3Q6~Iz7He~YAzJQpvnCBPH4l0hBsquKpX0N3uS6sY2cn45FIDee1Ez~TKpNNokTyMRW105BAh~kIk7J2QOXe4v7IzzgyV8qU2N5EDD~9wdn6Bgn1F~g7ffJgLdzh7utg5~XkxAhjRSnwUgXzMVb2p8cTJ3JYvWkgjNJ3w9owJi8hDn~ERX6ysNSWzN7O-rw__"
                             alt=""
                         />
                     </div>
@@ -44,7 +44,7 @@ const Footer = () => {
                         <div className="image-blog-container">
                             <img
                                 className="blog-tag-img"
-                                src="https://s3-alpha-sig.figma.com/img/d942/d8d1/3018c14d28aa7db45b5f389e57caa819?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=p6JoK3sw~OBC8zijkYzWS1iXDZBJ1c2-6tHfl0kE8yPGWRndPHKppzeyEZU2ZwUHCpwzWVvyEjroY1c3Lb-eN8SoWIxxUEqxNg~Uv-LKq63lj~Nfqm-V0PKIXhfOlZ4JolVj2KioBWkCZ5XbPA8Y14q6gR57lPzs8O1u-Ij5pIQr2sC2y33Q-iZsg25wjAZVd5bEm1oJBRoDfwOZDwUb5A1dVpTvZjIMf94QUn16HPDekkm84MmBq9BQIRV3fJvogdYVL4CdRdfmdlEr8xGs2Ee7QEuDFQWxaF9gJfWmlm0Z5gp3A3nqszM2IWZtZboppR5-osizlvnq5O5SVeVGgA__"
+                                src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__"
                                 width={113}
                                 alt=""
                             />
@@ -80,7 +80,7 @@ const Footer = () => {
                         <div className="image-blog-container">
                             <img
                                 className="blog-tag-img"
-                                src="https://s3-alpha-sig.figma.com/img/d942/d8d1/3018c14d28aa7db45b5f389e57caa819?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=p6JoK3sw~OBC8zijkYzWS1iXDZBJ1c2-6tHfl0kE8yPGWRndPHKppzeyEZU2ZwUHCpwzWVvyEjroY1c3Lb-eN8SoWIxxUEqxNg~Uv-LKq63lj~Nfqm-V0PKIXhfOlZ4JolVj2KioBWkCZ5XbPA8Y14q6gR57lPzs8O1u-Ij5pIQr2sC2y33Q-iZsg25wjAZVd5bEm1oJBRoDfwOZDwUb5A1dVpTvZjIMf94QUn16HPDekkm84MmBq9BQIRV3fJvogdYVL4CdRdfmdlEr8xGs2Ee7QEuDFQWxaF9gJfWmlm0Z5gp3A3nqszM2IWZtZboppR5-osizlvnq5O5SVeVGgA__"
+                                src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__"
                                 width={113}
                                 alt=""
                             />

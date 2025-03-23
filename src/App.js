@@ -22,7 +22,7 @@ import PrivateRoute from './components/PrivateRoute';
 import Register from './components/register';
 import Cart from './components/cart';
 import ViewBanner from './components/admin/viewBanner';
-import { createBanner, createDiscount } from './api/server';
+import { createBanner, createDiscount, createPost } from './api/server';
 import EditBanner from './components/admin/editBanner';
 import ViewPublisher from './components/admin/viewPublisher';
 import Blog from './components/blog';
@@ -32,6 +32,7 @@ import ForgotPassword from './components/ForgotPassword';
 import Account from './components/account';
 import Checkout from './components/checkout';
 import ViewOrder from './components/admin/viewOrder';
+import ViewPost from './components/admin/viewPost';
 // import ViewOrder from './components/admin/viewOrder';
 
 function App() {
@@ -75,6 +76,7 @@ function App() {
             <Route path="/viewPublisher" element={<PrivateRoute element={ViewPublisher} roles={['1']} />} />
             <Route path="/viewDiscount" element={<PrivateRoute element={ViewDiscount} roles={['1']} />} />
             <Route path="/viewOrder" element={<PrivateRoute element={ViewOrder} roles={['1']} />} />
+            <Route path="/viewPost" element={<PrivateRoute element={ViewPost} roles={['1']} />} />
 
 
 
@@ -83,6 +85,7 @@ function App() {
             <Route path="/createAuthor" element={<PrivateRoute element={CreateAuthor} roles={['1']} />} />
             <Route path="/createBanner" element={<PrivateRoute element={createBanner} roles={['1']} />} />
             <Route path="/createDiscount" element={<PrivateRoute element={createDiscount} roles={['1']} />} />
+
 
 
             <Route path="/editSp/:id" element={<PrivateRoute element={EditPro} roles={['1']} />} />

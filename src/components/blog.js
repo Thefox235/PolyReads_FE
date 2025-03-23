@@ -69,33 +69,24 @@ const Blog = () => {
         <>
             <section className="banner">
                 <div className="banner-overlay">
-                    <h1>Contact</h1>
+                    <h1>Blog</h1>
                     <p style={{ fontSize: 20, fontWeight: 400 }}>
-                        <a href="/">Trang chủ</a> &gt; Contact
+                        <a href="/">Trang chủ</a> &gt; Blog
                     </p>
                 </div>
             </section>
             <div className='blog-container'>
-                <main style={{paddingTop: "30px"}}>
+                <main style={{ paddingTop: "30px" }}>
                     <article>
                         <div
                             className="d-flex justify-content-between align-items-center"
                             style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
                         >
-                            <div className="sptt">Sản phẩm hot</div>
+                            <div className="title_top_menu tab_link_module">
+                                <h3><a href="new-arrivals" title="Sản phẩm hot">Tất cả bài viết</a></h3>
+                            </div>
                             <div className="d-flex align-items-center gap-3">
-                                <div
-                                    style={{ color: "#917fb3", fontSize: 25, cursor: "pointer" }}
-                                    id="prev"
-                                >
-                                    &lt;
-                                </div>
-                                <div
-                                    style={{ color: "#917fb3", fontSize: 25, cursor: "pointer" }}
-                                    id="next"
-                                >
-                                    &gt;
-                                </div>
+                               
                             </div>
                         </div>
                         <div className="article_2">
@@ -293,7 +284,7 @@ const Blog = () => {
                                             </span>
                                         </div>
                                         <div className="article_3_right_img">
-                                            <img src="https://media-hosting.imagekit.io//1fbfed4a94444e88/blog_context.jpg?Expires=1836491026&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=JK34G8afaIc1A1FNkJWHZwca4yUA2~I4YW-HIJTCLeO4uByQmFFC6P5ZhMfRC3NdGaW2sUzVevCLr0ijwhwTBgvwi6N-uRWK1FCPeRebb2cnxBtn3LyrKY1AeK1rj265xzacLWZpImC9u8iAQanfBUhOc0lGY-mpYhMv0~aTCIbDnusxZO0MS-MMBmIEPtR3oBTf7XFx9PgprIFQPTHnlhFTxMCHfVShwOEhxOUFs-d9hhsVbN4kccENvOui6gOOih0fDf6qMK9Ln0RxTpLHwBMJqOET0nBzdkmNyih2P5jyADtXm7xUkZ4L7qFKhSyIcdtjPkJ~zilpuWZFoECuaQ__" alt="" />
+                                            <img style={{ width: "197px", height: "197px" }} src="https://media-hosting.imagekit.io//1fbfed4a94444e88/blog_context.jpg?Expires=1836491026&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=JK34G8afaIc1A1FNkJWHZwca4yUA2~I4YW-HIJTCLeO4uByQmFFC6P5ZhMfRC3NdGaW2sUzVevCLr0ijwhwTBgvwi6N-uRWK1FCPeRebb2cnxBtn3LyrKY1AeK1rj265xzacLWZpImC9u8iAQanfBUhOc0lGY-mpYhMv0~aTCIbDnusxZO0MS-MMBmIEPtR3oBTf7XFx9PgprIFQPTHnlhFTxMCHfVShwOEhxOUFs-d9hhsVbN4kccENvOui6gOOih0fDf6qMK9Ln0RxTpLHwBMJqOET0nBzdkmNyih2P5jyADtXm7xUkZ4L7qFKhSyIcdtjPkJ~zilpuWZFoECuaQ__" alt="" />
                                         </div>
                                         <div className="article_3_right_text_2">
                                             <span className="article_3_right_text_2a">14 Oct, 2024</span>
@@ -313,6 +304,7 @@ const Blog = () => {
                                 <img
                                     src="https://media-hosting.imagekit.io//ad79d5602821404d/blog_img.png?Expires=1836489263&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=phLdBI46zuhJxYKy9FRnMjS-E9zVNAQwcFGtFhvkwIkOkt3RG4HCOue7JaKEhG4IeBX7rzk6toh~0MbAOomB2Bu9Vrc4BWlaVpcXcDT6Uej81wj8beU2V5J0DBf9Z4uRG10bEcKrl4NTUznrg1b5uwoPVc3MZ5-ewKoKkBVyQ3CqaSESZwo2r5UEzTv3Z52j7zbOJ5QIrZoBRrrCoJPAa3xSZd-p8KG~UUJ4isr3Zmeeou3jPiaGFGOmDkEKUXmfcI-zDXC1wSAQTyqzmDPdyKrtsumiH78siGtnLLwEwfvB4M4pBnLKemFDpb9DGJynh8wVsSwG00bNrkhZ4usUfA__"
                                     alt=""
+                                    style={{ width: 350, height: 280 }}
                                 />
                             </div>
                             <div className="card_left_2">
@@ -369,6 +361,7 @@ const Blog = () => {
                                 <img
                                     src="https://media-hosting.imagekit.io//ad79d5602821404d/blog_img.png?Expires=1836489263&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=phLdBI46zuhJxYKy9FRnMjS-E9zVNAQwcFGtFhvkwIkOkt3RG4HCOue7JaKEhG4IeBX7rzk6toh~0MbAOomB2Bu9Vrc4BWlaVpcXcDT6Uej81wj8beU2V5J0DBf9Z4uRG10bEcKrl4NTUznrg1b5uwoPVc3MZ5-ewKoKkBVyQ3CqaSESZwo2r5UEzTv3Z52j7zbOJ5QIrZoBRrrCoJPAa3xSZd-p8KG~UUJ4isr3Zmeeou3jPiaGFGOmDkEKUXmfcI-zDXC1wSAQTyqzmDPdyKrtsumiH78siGtnLLwEwfvB4M4pBnLKemFDpb9DGJynh8wVsSwG00bNrkhZ4usUfA__"
                                     alt=""
+                                    style={{ width: 350, height: 280 }}
                                 />
                             </div>
                             <div className="card_left_2">
@@ -425,6 +418,7 @@ const Blog = () => {
                                 <img
                                     src="https://media-hosting.imagekit.io//ad79d5602821404d/blog_img.png?Expires=1836489263&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=phLdBI46zuhJxYKy9FRnMjS-E9zVNAQwcFGtFhvkwIkOkt3RG4HCOue7JaKEhG4IeBX7rzk6toh~0MbAOomB2Bu9Vrc4BWlaVpcXcDT6Uej81wj8beU2V5J0DBf9Z4uRG10bEcKrl4NTUznrg1b5uwoPVc3MZ5-ewKoKkBVyQ3CqaSESZwo2r5UEzTv3Z52j7zbOJ5QIrZoBRrrCoJPAa3xSZd-p8KG~UUJ4isr3Zmeeou3jPiaGFGOmDkEKUXmfcI-zDXC1wSAQTyqzmDPdyKrtsumiH78siGtnLLwEwfvB4M4pBnLKemFDpb9DGJynh8wVsSwG00bNrkhZ4usUfA__"
                                     alt=""
+                                    style={{ width: 350, height: 280 }}
                                 />
                             </div>
                             <div className="card_left_2">
@@ -481,6 +475,7 @@ const Blog = () => {
                                 <img
                                     src="https://media-hosting.imagekit.io//ad79d5602821404d/blog_img.png?Expires=1836489263&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=phLdBI46zuhJxYKy9FRnMjS-E9zVNAQwcFGtFhvkwIkOkt3RG4HCOue7JaKEhG4IeBX7rzk6toh~0MbAOomB2Bu9Vrc4BWlaVpcXcDT6Uej81wj8beU2V5J0DBf9Z4uRG10bEcKrl4NTUznrg1b5uwoPVc3MZ5-ewKoKkBVyQ3CqaSESZwo2r5UEzTv3Z52j7zbOJ5QIrZoBRrrCoJPAa3xSZd-p8KG~UUJ4isr3Zmeeou3jPiaGFGOmDkEKUXmfcI-zDXC1wSAQTyqzmDPdyKrtsumiH78siGtnLLwEwfvB4M4pBnLKemFDpb9DGJynh8wVsSwG00bNrkhZ4usUfA__"
                                     alt=""
+                                    style={{ width: 350, height: 280 }}
                                 />
                             </div>
                             <div className="card_left_2">
@@ -547,7 +542,9 @@ const Blog = () => {
                             <span className="title_trend">PHỔ BIẾN TRENDING</span>
                             <div className="card_right_0">
                                 <div className="card_right_1">
-                                    <img src="img/blog_context_10.png" alt="" />
+                                    <img
+                                        style={{ width: 113, height: 100 }}
+                                        src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__" alt="" />
                                 </div>
                                 <div className="card_right_2">
                                     <div className="card_right_2_title_background">
@@ -581,7 +578,10 @@ const Blog = () => {
                             </div>
                             <div className="card_right_0">
                                 <div className="card_right_1">
-                                    <img src="img/blog_context_10.png" alt="" />
+                                    <img
+                                        style={{ width: 113, height: 100 }}
+                                        src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__" alt="" />
+
                                 </div>
                                 <div className="card_right_2">
                                     <div className="card_right_2_title_background">
@@ -615,7 +615,10 @@ const Blog = () => {
                             </div>
                             <div className="card_right_0">
                                 <div className="card_right_1">
-                                    <img src="img/blog_context_10.png" alt="" />
+                                    <img
+                                        style={{ width: 113, height: 100 }}
+                                        src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__" alt="" />
+
                                 </div>
                                 <div className="card_right_2">
                                     <div className="card_right_2_title_background">
@@ -649,7 +652,10 @@ const Blog = () => {
                             </div>
                             <div className="card_right_0">
                                 <div className="card_right_1">
-                                    <img src="img/blog_context_10.png" alt="" />
+                                    <img
+                                        style={{ width: 113, height: 100 }}
+                                        src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__" alt="" />
+
                                 </div>
                                 <div className="card_right_2">
                                     <div className="card_right_2_title_background">
@@ -683,7 +689,10 @@ const Blog = () => {
                             </div>
                             <div className="card_right_0">
                                 <div className="card_right_1">
-                                    <img src="img/blog_context_10.png" alt="" />
+                                    <img
+                                        style={{ width: 113, height: 100 }}
+                                        src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__" alt="" />
+
                                 </div>
                                 <div className="card_right_2">
                                     <div className="card_right_2_title_background">
@@ -762,24 +771,11 @@ const Blog = () => {
                 <div className="article_blog">
                     <div className="article_5_left">
                         <div className="article_5_left_img">
-                            <div className="title_background">
-                                <span className="title_manga">
-                                    <svg
-                                        width={17}
-                                        height={17}
-                                        viewBox="0 0 15 17"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
-                                            fill="white"
-                                        />
-                                        <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
-                                    </svg>
-                                    MANGA
-                                </span>
-                            </div>
+                            <img
+                                style={{ width: '370', height: '370' }}
+                                src='https://media-hosting.imagekit.io//bc7c7f487c474e47/blog_context_14.jpg?Expires=1837259782&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=fJBsoPBvGjlCMFpJt9U1WBDgnqsUXB2nIY-aqfWSHxYnDuWqrXFggWqIJWqQIcwoi4nAkhDhwOWge~F9xGNlDRGnXd1UanTVTsaAHXiZn1q4qtjibqxf3uf5LZK6dGa-8C1v1F2dr7bQUJL1ckAwnMz945r4sle-2q2rC36bW9hlogzMocr126t~i3y~QoJX9gmcEwkKDf7cCrZDK0QLsSRN4jCPGzH2WoQ9fRVY8y5uPDFy~ic9bPMtwRUV9u5WVTLiQUrGQXbtP-v8GyRhHR2QCc99B6qKACJ7onOrA5AHFYsW53qFF10bOxWZKk9t4VWG~2ENfBnxrNYRYvTk8w__' />
+
+
                         </div>
                         <div className="article_5_left_text">
                             <div className="article_5_left_text_1">
@@ -802,7 +798,10 @@ const Blog = () => {
                     <div className="article_5_right">
                         <div className="article_5_right_top">
                             <div className="article_5_right_img">
-                                <img src="img/kagurabachi-chapter-61-600x421a.png" alt="" />
+                                <div className='article_5_right_img_img'>
+                                    <img
+                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
+                                </div>
                                 <div className="article_5_right_text">
                                     <div className="article_5_right_text_1">
                                         <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
@@ -814,7 +813,10 @@ const Blog = () => {
                                 </div>
                             </div>
                             <div className="article_5_right_img">
-                                <img src="img/kagurabachi-chapter-61-600x421a.png" alt="" />
+                                <div className='article_5_right_img_img'>
+                                    <img
+                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
+                                </div>
                                 <div className="article_5_right_text">
                                     <div className="article_5_right_text_1">
                                         <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
@@ -826,7 +828,10 @@ const Blog = () => {
                                 </div>
                             </div>
                             <div className="article_5_right_img">
-                                <img src="img/kagurabachi-chapter-61-600x421a.png" alt="" />
+                                <div className='article_5_right_img_img'>
+                                    <img
+                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
+                                </div>
                                 <div className="article_5_right_text">
                                     <div className="article_5_right_text_1">
                                         <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
@@ -840,7 +845,10 @@ const Blog = () => {
                         </div>
                         <div className="article_5_right_bot">
                             <div className="article_5_right_img">
-                                <img src="img/kagurabachi-chapter-61-600x421a.png" alt="" />
+                                <div className='article_5_right_img_img'>
+                                    <img
+                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
+                                </div>
                                 <div className="article_5_right_text">
                                     <div className="article_5_right_text_1">
                                         <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
@@ -852,7 +860,10 @@ const Blog = () => {
                                 </div>
                             </div>
                             <div className="article_5_right_img">
-                                <img src="img/kagurabachi-chapter-61-600x421a.png" alt="" />
+                                <div className='article_5_right_img_img'>
+                                    <img
+                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
+                                </div>
                                 <div className="article_5_right_text">
                                     <div className="article_5_right_text_1">
                                         <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
@@ -864,7 +875,10 @@ const Blog = () => {
                                 </div>
                             </div>
                             <div className="article_5_right_img">
-                                <img src="img/kagurabachi-chapter-61-600x421a.png" alt="" />
+                                <div className='article_5_right_img_img'>
+                                    <img
+                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
+                                </div>
                                 <div className="article_5_right_text">
                                     <div className="article_5_right_text_1">
                                         <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
@@ -885,7 +899,9 @@ const Blog = () => {
                         className="d-flex justify-content-between align-items-center"
                         style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
                     >
-                        <div className="sptt">Sản phẩm hot</div>
+                        <div className="title_top_menu tab_link_module">
+                            <h3><a href="new-arrivals" title="Sản phẩm hot">Sản phẩm hot</a></h3>
+                        </div>
                         <div className="d-flex align-items-center gap-3">
                             <div
                                 style={{ color: "#917fb3", fontSize: 25, cursor: "pointer" }}
