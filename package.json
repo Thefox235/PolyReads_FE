@@ -9,6 +9,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@toast-ui/editor": "^3.2.2",
     "@toast-ui/react-editor": "^3.2.3",
     "@vitejs/plugin-react": "^4.3.4",
     "axios": "^1.7.2",
@@ -22,6 +23,7 @@
     "react-router-dom": "^6.25.1",
     "react-scripts": "5.0.1",
     "react-select": "^5.10.1",
+    "tui-editor": "^1.4.10",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

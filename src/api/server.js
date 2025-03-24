@@ -2,101 +2,71 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000'; 
 const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+
 // Hàm xóa bài viết theo ID
 export const deletePost = async (postId) => {
   try {
-    const response = await fetch(`/api/posts/${postId}`, {
-      method: 'DELETE',
+    const response = await axios.delete(`${BASE_URL}/post/${postId}`, {
       headers: {
         'Content-Type': 'application/json'
       }
     });
-
-    // Kiểm tra nếu response không ok, throw lỗi với thông báo từ server
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Lỗi khi xóa bài viết');
-    }
-
-    // Parse dữ liệu JSON trả về từ server (ví dụ có thể là { message: '...' })
-    const data = await response.json();
-    return data;
+    return response.data; // Ví dụ: { message: '...' }
   } catch (error) {
-    console.error('Lỗi trong deletePost:', error);
-    throw error;
+    const errMessage = error.response?.data?.message || 'Lỗi khi xóa bài viết';
+    console.error('Lỗi trong deletePost:', errMessage);
+    throw new Error(errMessage);
   }
 };
+
 // Hàm lấy danh sách bài viết
 export const getPosts = async () => {
   try {
-    const response = await fetch('/api/posts', {
-      method: 'GET',
+    const response = await axios.get(`${BASE_URL}/post`, {
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
-
-    // Kiểm tra nếu response không ok thì throw lỗi
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Lỗi khi lấy danh sách bài viết');
-    }
-
-    // Parse dữ liệu JSON từ response
-    const data = await response.json();
     // Giả sử dữ liệu trả về dạng { posts: [...] }
-    return data.posts;
+    return response.data.posts;
   } catch (error) {
-    console.error('Lỗi trong getPosts:', error);
-    throw error;
+    const errMessage = error.response?.data?.message || 'Lỗi khi lấy danh sách bài viết';
+    console.error('Lỗi trong getPosts:', errMessage);
+    throw new Error(errMessage);
   }
 };
+
 // Hàm cập nhật bài viết
 export const updatePost = async (postId, postData) => {
   try {
-    const response = await fetch(`/BASE_URL/posts/${postId}`, {
-      method: 'PUT',
+    const response = await axios.put(`${BASE_URL}/post/${postId}`, postData, {
       headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(postData),
+        'Content-Type': 'application/json'
+      }
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Lỗi khi cập nhật bài viết');
-    }
-
-    const data = await response.json();
-    return data.post; // Trả về bài viết đã được cập nhật
+    // Trả về bài viết đã được cập nhật
+    return response.data.post;
   } catch (error) {
-    console.error('Lỗi trong updatePost:', error);
-    throw error;
+    const errMessage = error.response?.data?.message || 'Lỗi khi cập nhật bài viết';
+    console.error('Lỗi trong updatePost:', errMessage);
+    throw new Error(errMessage);
   }
 };
 
-// Các hàm khác, như getPosts, createPost, deletePost, updateCategory,... có thể được định nghĩa tương tự
 // Hàm tạo mới bài viết
 export const createPost = async (postData) => {
   try {
-    const response = await fetch('/BASE_URL/posts', {
-      method: 'POST',
+    const response = await axios.post(`${BASE_URL}/post`, postData, {
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(postData)
+      }
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Lỗi khi tạo bài viết');
-    }
-
-    const data = await response.json();
-    return data.post; // trả về bài viết được tạo thành công
+    // Trả về bài viết được tạo thành công
+    return response.data.post;
   } catch (error) {
-    console.error('Error in createPost:', error);
-    throw error;
+    const errMessage = error.response?.data?.message || 'Lỗi khi tạo bài viết';
+    console.error('Error in createPost:', errMessage);
+    throw new Error(errMessage);
   }
 };
 //lấy chi tiết order
