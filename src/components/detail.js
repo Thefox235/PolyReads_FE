@@ -8,11 +8,21 @@ import {
   getProductById,
   getAuthor,
   getDiscounts,
-  getDiscountById
+  getDiscountById,
+  getComment,
+  createComment,
+  deleteComment,
+  updateComment,
+  toggleLikeComment,
 } from "../api/server";
 import { Link } from "react-router-dom";
 import { useCart } from "./context/cartContext";
 import { getImages } from "../api/server";
+import Modal from "./model";
+import { useForm } from "react-hook-form";
+import { convertTime } from "../utils/Converter";
+import StarRating from "../utils/StarRating";
+
 const Detail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState({});
@@ -25,7 +35,48 @@ const Detail = () => {
   const [authorName, setAuthorName] = useState("");
   const [number, setNumber] = useState(1);
   const [discountValue, setDiscounts] = useState([]);
+  const [comments, setComments] = useState([]);
+  const checkuser = JSON.parse(sessionStorage.getItem("user")) || null;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showUpdateModal, setshowUpdateModal] = useState(false);
+  const [commentId, setCommentId] = useState();
+  const [commentUpdateCurent, setCommentUpdateCurrent] = useState("");
+  const [commentUpdateStar, setCommentUpdateStar] = useState("");
+  const [selectedStar, setSelectedStar] = useState();
+  const filtersao = comments.filter((item) => item?.productId?._id === id);
+  const totalRating =
+    filtersao.length > 0
+      ? filtersao.map((item) => item.rating).reduce((acc, cur) => acc + cur, 0)
+      : 0;
+  const result = (
+    totalRating / comments.filter((item) => item?.productId?._id === id).length
+  ).toFixed(1);
+  const handleStarChange = (value) => {
+    setSelectedStar(value);
+    setCommentUpdateStar(value);
+  };
 
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({});
+  const closeCreateModal = () => {
+    setCommentId("");
+    setCommentUpdateCurrent("");
+    reset();
+    setShowCreateModal(false);
+  };
+  const openCreateModal = () => setShowCreateModal(true);
+  const closeUpdateCreateModal = () => {
+    setshowUpdateModal(false);
+    setCommentId("");
+    reset();
+    setCommentUpdateCurrent("");
+  };
+  const openUpdateCreateModal = () => setshowUpdateModal(true);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,7 +85,7 @@ const Detail = () => {
             const discountData = await getDiscounts();
             setDiscounts(discountData);
           } catch (error) {
-            console.error('Có lỗi xảy ra khi lấy mã giảm giá:', error);
+            console.error("Có lỗi xảy ra khi lấy mã giảm giá:", error);
           }
         };
         fetchDiscounts();
@@ -53,6 +104,19 @@ const Detail = () => {
 
     fetchData();
   }, [id]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getComment();
+        setComments(data.comments);
+        console.log("Dữ liệu nhận được:", data);
+      } catch (error) {
+        console.error("Có lỗi xảy ra khi lấy bình luận:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   // Lọc ra các hình ảnh phù hợp với sản phẩm hiện tại dựa trên product._id
   useEffect(() => {
     const filteredImages = images.filter(
@@ -84,6 +148,55 @@ const Detail = () => {
     }
   }, [idCate]);
 
+  const removeComment = async (id) => {
+    if (!id) {
+      console.warn("ID không hợp lệ!");
+      return;
+    }
+
+    try {
+      const result = await deleteComment(id);
+      if (result) {
+        console.log(`Xóa comment ${id} thành công!`);
+        setComments(comments.filter((item) => item._id !== id));
+        // Cập nhật danh sách comments nếu cần
+      } else {
+        console.error(`Xóa comment ${id} thất bại!`);
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa comment:", error);
+    }
+  };
+  const updateComments = async (value) => {
+    try {
+      const data = {
+        userId: checkuser._id,
+        productId: id,
+        content: value.content,
+        rating: Number(selectedStar),
+      };
+
+      const result = await updateComment(commentId, data);
+      console.log(selectedStar);
+      alert("Thành công");
+    } catch (error) {
+      console.error("Lỗi khi cập nhật comment:", error);
+    } finally {
+      closeUpdateCreateModal();
+    }
+    console.log(value);
+  };
+  const togglelike = async (id) => {
+    try {
+      const data = {
+        userId: checkuser._id,
+      };
+      const res = await toggleLikeComment(id, data);
+      alert("Yêu thích thành công");
+    } catch (error) {
+      console.log("Lỗi", error);
+    }
+  };
   //fetch category
   useEffect(() => {
     const fetchCategory = async (idCate) => {
@@ -113,13 +226,13 @@ const Detail = () => {
           const mangadata = await getProductByCate(idCate);
           setProductByCate(mangadata);
         } catch (error) {
-          console.error('Có lỗi xảy ra khi lấy sản phẩm hot:', error);
+          console.error("Có lỗi xảy ra khi lấy sản phẩm hot:", error);
         }
       };
       fetchProductByCate();
     }
   }, [idCate]);
-  
+
   //chuyển tab
   const [activeTab, setActiveTab] = useState("motasp");
 
@@ -133,10 +246,42 @@ const Detail = () => {
       setNumber(1);
     }
   };
+  const open = (id) => {
+    openUpdateCreateModal();
+    setCommentId(id);
+  };
+  const comment = () => {
+    if (checkuser === null) {
+      alert("Vui lòng đánh giá để bình luận");
+    } else {
+      openCreateModal();
+    }
+  };
+  const onSubmitComent = async (value) => {
+    const data = {
+      userId: checkuser._id,
+      productId: id,
+      content: value.content,
+      rating: value.rating,
+    };
+    try {
+      const res = await createComment(data);
+      alert("Tạo comment thành công!");
+      reset();
+    } catch (err) {
+      console.error(err);
+      // setError("Có lỗi xảy ra khi tạo comment.");
+    } finally {
+      closeCreateModal();
+    }
+    // console.log(value);
+  };
+
   // Kiểm tra nếu product là một object rỗng
-  if (!product) {
+  if (!product || !comments) {
     return <p>Loading...</p>;
   }
+
   const wrapper = document.querySelector(".products-wrapper");
   const prevBtn = document.getElementById("prev");
   const nextBtn = document.getElementById("next");
@@ -404,8 +549,8 @@ const Detail = () => {
                 <div className="rating-summary align-items-center gap-3">
                   <div className="rating-details d-flex flex-column justify-content-center align-items-center">
                     <div>
-                      <span className="rating-score fs-1">5</span>/
-                      <span className="total-score fs-3">5</span>
+                      {/* <span className="rating-score fs-1">{comments.reduce((item)=>)}</span>/ */}
+                      <span className="total-score fs-3">{result}</span>
                     </div>
                     <div className="star-rating">
                       <i className="bi bi-star-fill" />
@@ -418,7 +563,12 @@ const Detail = () => {
                       className="rating-count"
                       style={{ color: "#00000099", fontSize: 14 }}
                     >
-                      (4 đánh giá)
+                      (
+                      {
+                        comments.filter((item) => item?.productId?._id === id)
+                          .length
+                      }{" "}
+                      đánh giá)
                     </span>
                   </div>
                   <div className="rating-filters dg">
@@ -430,7 +580,7 @@ const Detail = () => {
                     <button>1 Sao</button>
                   </div>
                 </div>
-                <button className="btn-dg">
+                <button className="btn-dg" onClick={() => comment()}>
                   <img
                     src="https://media-hosting.imagekit.io//e53ddc3e6be34a6a/Hand%20With%20Pen.png?Expires=1835791964&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=PJC2u5WFpYM5ORSBexftdgeTtsCwdBwfnJwvlVOwvE-4MY8f8XIJUGcFa7Eyf8DD0HNW72RTGUponK7XVxUy5kZORgWfUssFzodQEXds0XcWBgozC1e9zfZ-GpzUbiZSjvRtqKni2Id6xz1YSQHeqbAKNm-aQnvuiEl0alOJEcoktpR2XUjh~cWF5cPQmBxAt7YoUT8hv5T0fOpLJ2LQsmp75-mS32ePvV0kvheoXxMrxNMD3ql-KS9xvwVd~ATa2WUcYxWKwYO1T0a9jwmXef~5bX3~L3lsUjn~A3NjSV2td7N0YK7RECrqIQ6-WEAq8CkEwRfoRoWJHTJuKIsfwQ__"
                     alt="Viết đánh giá"
@@ -443,41 +593,90 @@ const Detail = () => {
                 <div className="text-danger">Mới nhất</div>
                 <div>Bình luận hữu ích nhất</div>
               </div>
-              <div className="review">
-                <div className="review-header">
-                  <p className="review-author">Thượng</p>
-                  <p className="review-date">13/08/2022</p>
-                </div>
-                <div className="review-body">
-                  <div className="review-stars">
-                    <i className="bi bi-star-fill" />
-                    <i className="bi bi-star-fill" />
-                    <i className="bi bi-star-fill" />
-                    <i className="bi bi-star-fill" />
-                    <i className="bi bi-star-fill" />
-                  </div>
-                  <p className="review-text">
-                    Thật sự đây là một lựa chọn không lãng phí thời giờ của mọi
-                    người một chút nào đâu. Mình thật sự không nghĩ mình sẽ
-                    thích nó đến thế, cứ đêm ngày say sưa với từng dòng chữ
-                    trong sách, đắm chìm vào trong những bức tranh minh họa đầy
-                    tài tình, có lúc còn hòa mình vào những hành động và cử chỉ
-                    siêu đáng yêu của cô bé Latina...
-                  </p>
-                  <span className="review-more">Xem thêm</span>
-                  <div className="review-footer d-flex align-items-center gap-4">
-                    <div className="review-helpful d-flex align-items-center gap-2">
-                      <img
-                        src="https://media-hosting.imagekit.io//da4de5807dfd47de/Facebook%20Like.png?Expires=1835791963&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=t7-46AdUsTOXIE0Cg7IiRQoWmEZY-~zS4UTkftE6X49wXu5dnBuHE4bBLHAJ7QneCpXBoznqrUvYVxXRNpUMOkF9McmwRXL3WzFqJgSdZ9uMlC2rlQMLqcSQNtE3c9gp49w8SFi1On4Or6ogcl4Ez52NblC-ZOnprHCIH3JudlH3WxmEFichJcfvH4WbzJRDQr6vl4ExjRYzGPtE1q8nt8coo8VDgcC4Tb0eXvhhJUJAwnH2Wdv074SyIJlVUKVdj1PeltUgclKm6cpKzvgnI5Lu~lw4LrNpqHcUjeqS5pPADVAjQ39AZCNwU4MiGuVitbVd8RNWVDeECLTA2UAeMg__"
-                        width={18}
-                        alt="Hữu ích"
-                      />
-                      <div className="review-helpful-text">Hữu ích (0)</div>
+              {comments.map((item) => {
+                if (item.productId._id === id) {
+                  return (
+                    <div className="review" key={item._id}>
+                      <div className="review-header">
+                        <p className="review-author">{item.userId.name}</p>
+                        <p className="review-date">{convertTime(item.date)}</p>
+                      </div>
+                      <div className="review-body">
+                        <div className="review-stars">
+                          <StarRating rating={item.rating} />
+                        </div>
+                        <p className="review-text">{item.content}</p>
+                        <span className="review-more">Xem thêm</span>
+                        <div className="review-footer d-flex align-items-center gap-4">
+                          <div
+                            className="review-helpful d-flex align-items-center gap-2 "
+                            style={{ cursor: "pointer" }}
+                            onClick={() => togglelike(item._id)}
+                          >
+                            <img
+                              src="https://media-hosting.imagekit.io//da4de5807dfd47de/Facebook%20Like.png?Expires=1835791963&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=t7-46AdUsTOXIE0Cg7IiRQoWmEZY-~zS4UTkftE6X49wXu5dnBuHE4bBLHAJ7QneCpXBoznqrUvYVxXRNpUMOkF9McmwRXL3WzFqJgSdZ9uMlC2rlQMLqcSQNtE3c9gp49w8SFi1On4Or6ogcl4Ez52NblC-ZOnprHCIH3JudlH3WxmEFichJcfvH4WbzJRDQr6vl4ExjRYzGPtE1q8nt8coo8VDgcC4Tb0eXvhhJUJAwnH2Wdv074SyIJlVUKVdj1PeltUgclKm6cpKzvgnI5Lu~lw4LrNpqHcUjeqS5pPADVAjQ39AZCNwU4MiGuVitbVd8RNWVDeECLTA2UAeMg__"
+                              width={18}
+                              alt="Hữu ích"
+                            />
+                            <div className="review-helpful-text">
+                              Hữu ích ({item.likes})
+                            </div>
+                          </div>
+                          <div className="review-report">(!) Báo cáo</div>
+                          <div className="d-flex align-items-center gap-1">
+                            {item?.userId?._id === checkuser?._id ? (
+                              <div className="d-flex align-items-center gap-1">
+                                <div
+                                  className="d-flex align-items-center gap-1"
+                                  onClick={() => removeComment(item._id)}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    fill="currentColor"
+                                    class="bi bi-x-lg"
+                                    viewBox="0 0 16 16"
+                                  >
+                                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+                                  </svg>
+                                  <button
+                                    style={{
+                                      border: "0",
+                                      color: "red",
+                                      background: "white",
+                                    }}
+                                  >
+                                    Xóa
+                                  </button>
+                                </div>
+                                <button
+                                  style={{
+                                    border: "0",
+
+                                    background: "white",
+                                  }}
+                                  onClick={() => {
+                                    open(item._id);
+                                    setCommentUpdateCurrent(item.content);
+                                    setCommentId(item._id);
+                                    setSelectedStar(item.rating);
+                                  }}
+                                >
+                                  Cập nhật
+                                </button>
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="review-report">(!) Báo cáo</div>
-                  </div>
-                </div>
-              </div>
+                  );
+                } else {
+                  return null;
+                }
+              })}
+
               <div className="m-auto w-100">
                 <div className="paginations">
                   <a href="#">&lt;</a>
@@ -501,7 +700,11 @@ const Detail = () => {
               style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
             >
               <div className="title_top_menu tab_link_module">
-                <h3><a href="new-arrivals" title="Sản phẩm tương tự">Sản phẩm tương tự</a></h3>
+                <h3>
+                  <a href="new-arrivals" title="Sản phẩm tương tự">
+                    Sản phẩm tương tự
+                  </a>
+                </h3>
               </div>
               <div className="d-flex align-items-center gap-3">
                 <div
@@ -521,29 +724,43 @@ const Detail = () => {
             {/* product start */}
             <div className="list-product">
               <div className="products-wrapper">
-
-                {productByCate && productByCate.length > 0 && images && images.length > 0 ? (
-                  productByCate.map(product => {
-                    const productImage = images.find(image => image.productId === product._id);
+                {productByCate &&
+                productByCate.length > 0 &&
+                images &&
+                images.length > 0 ? (
+                  productByCate.map((product) => {
+                    const productImage = images.find(
+                      (image) => image.productId === product._id
+                    );
                     return (
                       <div className="mobile-product" key={product._id}>
                         <div className="product-image">
-                          <img src={productImage ? productImage.url : ''} alt={product.name} />
+                          <img
+                            src={productImage ? productImage.url : ""}
+                            alt={product.name}
+                          />
                         </div>
                         <div className="product-details">
-                          <Link className="product-name" to={`/product/${product._id}`}>{product.name}</Link>
+                          <Link
+                            className="product-name"
+                            to={`/product/${product._id}`}
+                          >
+                            {product.name}
+                          </Link>
                           <div className="price-container">
                             <div className="product-price">
                               {Number(product.price).toLocaleString("vi-VN", {
                                 style: "currency",
-                                currency: "VND"
+                                currency: "VND",
                               })}
                             </div>
                             <div className="sale-badge">-50%</div>
                           </div>
                           <div className="price-sold-container">
                             <div className="product-old-price">100,000đ</div>
-                            <div className="product-sold">Đã bán {product.sale_count}</div>
+                            <div className="product-sold">
+                              Đã bán {product.sale_count}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -552,13 +769,188 @@ const Detail = () => {
                 ) : (
                   <p>Đang tải sản phẩm...</p>
                 )}
-
               </div>
               {/* Repeat the above structure for each product, removing unique classes */}
             </div>
             {/* product end */}
           </div>
         </div>
+        {showCreateModal && (
+          <Modal onClose={closeCreateModal}>
+            <h2>Viết bình luận</h2>
+            <form
+              action=""
+              className="center"
+              onSubmit={handleSubmit(onSubmitComent)}
+            >
+              <input
+                type="text"
+                placeholder="Nhập bình luận"
+                className="w-100 mt-3 p-2"
+                {...register("content", {
+                  required: "Vui lòng nhập bình luận",
+                  minLength: {
+                    value: 5,
+                    message: "Bình luận phải có ít nhất 5 ký tự",
+                  },
+                  maxLength: {
+                    value: 500,
+                    message: "Bình luận không được vượt quá 500 ký tự",
+                  },
+                })}
+              />
+              {errors.content && (
+                <p className="text-red-500">{errors.content.message}</p>
+              )}
+
+              <div className="rating">
+                <input
+                  {...register("rating")}
+                  value="5"
+                  id="star5"
+                  type="radio"
+                />
+                <label htmlFor="star5"></label>
+                <input
+                  {...register("rating")}
+                  value="4"
+                  id="star4"
+                  type="radio"
+                />
+                <label htmlFor="star4"></label>
+                <input
+                  {...register("rating")}
+                  value="3"
+                  id="star3"
+                  type="radio"
+                />
+                <label htmlFor="star3"></label>
+                <input
+                  {...register("rating")}
+                  value="2"
+                  id="star2"
+                  type="radio"
+                />
+                <label htmlFor="star2"></label>
+                <input
+                  {...register("rating")}
+                  value="1"
+                  id="star1"
+                  type="radio"
+                />
+                <label htmlFor="star1"></label>
+              </div>
+
+              <button
+                type="submit"
+                className="mt-3 "
+                style={{
+                  background: "#9b89c5",
+                  color: "white",
+                  border: "0",
+                  borderRadius: "5px",
+                  padding: "10px",
+                }}
+                // onClick={() => onsubmit()}
+              >
+                Gửi bình luận
+              </button>
+            </form>
+          </Modal>
+        )}
+        {showUpdateModal && (
+          <Modal onClose={closeUpdateCreateModal}>
+            <h2>Viết bình luận</h2>
+            <form
+              action=""
+              className="center"
+              onSubmit={handleSubmit(updateComments)}
+            >
+              <input
+                type="text"
+                placeholder="Nhập bình luận"
+                className="w-100 mt-3 p-2"
+                defaultValue={commentUpdateCurent}
+                {...register("content", {
+                  required: "Vui lòng nhập bình luận",
+                  minLength: {
+                    value: 5,
+                    message: "Bình luận phải có ít nhất 5 ký tự",
+                  },
+                  maxLength: {
+                    value: 500,
+                    message: "Bình luận không được vượt quá 500 ký tự",
+                  },
+                })}
+              />
+              {errors.content && (
+                <p className="text-red-500">{errors.content.message}</p>
+              )}
+              <div className="rating">
+                <input
+                  {...register("rating")}
+                  value="5"
+                  id="star5"
+                  type="radio"
+                  checked={selectedStar === 5}
+                  onChange={() => handleStarChange(5)}
+                />
+                <label htmlFor="star5"></label>
+                <input
+                  {...register("rating")}
+                  value="4"
+                  id="star4"
+                  type="radio"
+                  checked={selectedStar === 4}
+                  onChange={() => handleStarChange(4)}
+                />
+                <label htmlFor="star4"></label>
+                <input
+                  {...register("rating")}
+                  value="3"
+                  id="star3"
+                  type="radio"
+                  checked={selectedStar === 3}
+                  onChange={() => handleStarChange(3)}
+                />
+                <label htmlFor="star3"></label>
+                <input
+                  {...register("rating")}
+                  value="2"
+                  id="star2"
+                  type="radio"
+                  checked={selectedStar === 2}
+                  onChange={() => handleStarChange(2)}
+                />
+                <label htmlFor="star2"></label>
+                <input
+                  {...register("rating")}
+                  value="1"
+                  id="star1"
+                  type="radio"
+                  checked={selectedStar === 1}
+                  onChange={() => handleStarChange(1)}
+                />
+                <label htmlFor="star1"></label>
+              </div>
+              <br />
+              <button
+                type="submit"
+                className="mt-3 "
+                style={{
+                  background: "#9b89c5",
+                  color: "white",
+                  border: "0",
+                  borderRadius: "5px",
+                  padding: "10px",
+                }}
+                // onClick={() => onsubmit()}
+              >
+                Gửi bình luận
+              </button>
+            </form>
+          </Modal>
+        )}
       </main>
     </>
   );

@@ -2,7 +2,29 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000'; 
 const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+//comment
+export const getComment = async () => {
+  const response = await axios.get(`${BASE_URL}/comment`);
+  return response.data;
+};
+export const toggleLikeComment = async(id,data)=>{
+  const response = await axios.put(`${BASE_URL}/comment/${id}/toggle-like`,data);
+  return response.data;
+}
+export const createComment = async (comment) => {
+  const response = await axios.post(`${BASE_URL}/comment`, comment);
+  return response.data;
+};
+export const deleteComment = async (id) => {
+  const response = await axios.delete(`${BASE_URL}/comment/${id}`);
+  console.log(response);
+  return response.data;
+};
+export const updateComment = async (id, body) => {
+  const response = await axios.put(`${BASE_URL}/comment/${id}`, body);
 
+  return response.data;
+};
 // Hàm xóa bài viết theo ID
 export const deletePost = async (postId) => {
   try {
