@@ -5,6 +5,15 @@
   justify-content: space-between;
   width: 100%;
 }
+.blog-cover-image 
+{
+  width: 200px;
+}
+.blog-cover-image img
+{
+  width: 100%;
+}
+
 .btn-primary
 {
   background-color: #917fb3;

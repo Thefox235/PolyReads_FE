@@ -33,6 +33,7 @@ import Account from './components/account';
 import Checkout from './components/checkout';
 import ViewOrder from './components/admin/viewOrder';
 import ViewPost from './components/admin/viewPost';
+import BlogDetail from './components/blog_detail';
 // import ViewOrder from './components/admin/viewOrder';
 
 function App() {
@@ -64,6 +65,7 @@ function App() {
             <Route path="/login" element={<AuthForm />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/product/:id" element={<Detail />} />
+            <Route path="/blog/:id" element={<BlogDetail />} />
           </Route>
 
           {/* Các route admin có thể đặt ở đây nếu muốn dùng chung layout */}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getPosts, deletePost } from '../../api/server';
+import { getPosts, deletePost, getCategory } from '../../api/server';
 
 import CreatePost from './createPost'; // Component tạo bài viết dưới dạng popup
 import EditPost from './editPost';     // Component sửa bài viết dưới dạng popup
@@ -12,6 +12,7 @@ const ViewPost = () => {
   // State cho modal sửa bài viết
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [categoryName, setCategoryName] = useState([]);
 
   // Fetch danh sách bài viết khi component mount
   useEffect(() => {
@@ -24,6 +25,17 @@ const ViewPost = () => {
       }
     };
     fetchPosts();
+
+    const fetchCategory = async () => {
+      try {
+        const categoryData = await getCategory();
+        setCategoryName(categoryData);
+      } catch (error) {
+        console.error('Có lỗi xảy ra khi lấy danh mục:', error);
+      }
+    };
+    fetchCategory();
+
   }, []);
 
   // Hàm xóa bài viết
@@ -85,7 +97,7 @@ const ViewPost = () => {
           <tr>
             <th>STT</th>
             <th>Tiêu đề</th>
-            <th>Slug</th>
+            <th>Ảnh minh họa</th>
             <th>Danh mục</th>
             <th>Ngày tạo</th>
             <th>Thao tác</th>
@@ -93,42 +105,41 @@ const ViewPost = () => {
         </thead>
         <tbody>
           {posts && posts.length > 0 ? (
-            posts.map((post, index) => (
-              <tr key={post._id || index}>
-                <td>{index + 1}</td>
-                <td>{post.title}</td>
-                <td>{post.slug}</td>
-                <td>
-                  {post.tag && post.tag.name
-                    ? post.tag.name
-                    : post.tag || 'N/A'}
-                </td>
-                <td>{new Date(post.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <button
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          'Bạn có chắc chắn muốn xóa bài viết này không?'
-                        )
-                      ) {
-                        handleDelete(post._id);
-                      }
-                    }}
-                    className="trash"
-                  >
-                    <i className="bi bi-trash"></i>
-                  </button>
-                  <button
-                    onClick={() => openEditModal(post)}
-                    className="fix"
-                    style={{ marginLeft: '5px' }}
-                  >
-                    <i className="bi bi-pen"></i>
-                  </button>
-                </td>
-              </tr>
-            ))
+            posts.map((post, index) => {
+              const postCate = categoryName.filter(cate => cate).find(cate => cate._id === post.tag);
+              return (
+                <tr key={post._id || index}>
+                  <td>{index + 1}</td>
+                  <td className='book-name'>{post.title}</td>
+                  <td className="blog-cover-image">
+                    <img src={post.coverImage} alt={post.title} />
+                  </td>
+                  <td>
+                    {postCate ? postCate.name : 'Không có danh mục'}
+                  </td>
+                  <td>{new Date(post.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
+                          handleDelete(post._id);
+                        }
+                      }}
+                      className="trash"
+                    >
+                      <i className="bi bi-trash"></i>
+                    </button>
+                    <button
+                      onClick={() => openEditModal(post)}
+                      className="fix"
+                      style={{ marginLeft: "5px" }}
+                    >
+                      <i className="bi bi-pen"></i>
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
               <td colSpan="6">Đang tải bài viết...</td>

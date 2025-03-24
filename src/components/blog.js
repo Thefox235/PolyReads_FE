@@ -3,18 +3,44 @@ import '../asset/css/blog.css'
 import {
     getImages,
     getProductHot,
-    getDiscounts
+    getDiscounts,
+    getPosts,
+    getCategory
 } from '../api/server';
-import { height } from '@fortawesome/free-solid-svg-icons/fa0';
 import { Link } from 'react-router-dom';
+import ArticleSlider from './ArticleSlider';
+import ArticleCard from './ArticleCardSlider';
 const Blog = () => {
     //product
     const [discounts, setDiscounts] = useState([]);
     const [productHot, setProductHot] = useState([]);
     const [images, setImages] = useState([]);
+    const [posts, setPosts] = useState([]);       // Danh sách bài post
+    const [categoryName, setCategoryName] = useState([]);
 
     useEffect(() => {
+        //cate
+        const fetchCategory = async () => {
+            try {
+                const categoryData = await getCategory();
+                setCategoryName(categoryData);
+            } catch (error) {
+                console.error('Có lỗi xảy ra khi lấy danh mục:', error);
+            }
+        };
+        fetchCategory();
+        //post
+        const fetchPosts = async () => {
+            try {
+                const data = await getPosts();
+                // Lấy 10 bài post đầu tiên
+                setPosts(data);
+            } catch (err) {
+                console.error("Lỗi khi lấy bài viết:", err);
+            }
+        };
 
+        fetchPosts();
         //discount
         const fetchDiscounts = async () => {
             try {
@@ -75,6 +101,7 @@ const Blog = () => {
                     </p>
                 </div>
             </section>
+
             <div className='blog-container'>
                 <main style={{ paddingTop: "30px" }}>
                     <article>
@@ -86,110 +113,12 @@ const Blog = () => {
                                 <h3><a href="new-arrivals" title="Sản phẩm hot">Tất cả bài viết</a></h3>
                             </div>
                             <div className="d-flex align-items-center gap-3">
-                               
-                            </div>
-                        </div>
-                        <div className="article_2">
-                            <div className="article_2_left">
-                                <div className="article_2_title">
-                                    <div className="article_2_title_background">
-                                        <span className="title_manga">
-                                            <svg
-                                                width={17}
-                                                height={17}
-                                                viewBox="0 0 15 17"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
-                                                    fill="white"
-                                                />
-                                                <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
-                                            </svg>
-                                            MANGA
-                                        </span>
-                                    </div>
-                                    <div className="title_manga_1">
-                                        <span className="title_manga_1a">
-                                            Kagurabachi Chapter 61: Liên minh của Chihiro với Makizumi
-                                        </span>
-                                    </div>
-                                    <div className="title_manga_2">
-                                        <span className="title_manga_2a">
-                                            <svg
-                                                width={15}
-                                                height={15}
-                                                viewBox="0 0 13 13"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                xmlnsXlink="http://www.w3.org/1999/xlink"
-                                            >
-                                                <rect
-                                                    width={13}
-                                                    height={13}
-                                                    fill="url(#pattern0_517_12933)"
-                                                />
-                                                <defs>
-                                                    <pattern
-                                                        id="pattern0_517_12933"
-                                                        patternContentUnits="objectBoundingBox"
-                                                        width={1}
-                                                        height={1}
-                                                    >
-                                                        <use
-                                                            xlinkHref="#image0_517_12933"
-                                                            transform="scale(0.01)"
-                                                        />
-                                                    </pattern>
-                                                    <image
-                                                        id="image0_517_12933"
-                                                        width={100}
-                                                        height={100}
-                                                        preserveAspectRatio="none"
-                                                        xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAC20lEQVR4nO2dzYrUQBSFy9GNos/g/zvIKI7vMGTXbtK5p+jeNcj0MiouBHHtC8wLyDyB+AOKy1mKoO0TuHci1ZNBHNqkR+jUSeV8cJeBe++XSioQ6jonhBBCkAPgkpntmdkbM/toZq8mk8kNR8Z4PL4VcqtzDLk+ms1mF11K5Hl+BcBnANWp+Glm244E7/3dkNOKPD9Np9PLLhXM7OWKIk/iS5Zl52PnWJblBQBfG/J84VLBzH40FFoVRXGHIMftphzN7LtLBQBHLcXuxs7RzHZbcvzlUqGp0DoyghyztjxdKkgIGRISgaIorpvZw7BvBzA/FW2PrP0V18w7jv018vzrmrrWkff+mmPBe/8AwPs1ikk6zOydme3EdHEOwLO2HdTA4gjA09Cbzm3UMmI3oCKNJzEeU1oZaFwp9zsTYmYfCO7Civ2d0omMsKOIXSx6EmHnuXEhYWsbu1D0J0YbF7Lmd4UCyx7MNy7EzB6r4Vjrhgu9khDwrE4JQXwJEoL4jZcQxG+2hCB+gyUE8ZsqIYjfSAkhaB4kJH7DICHxmwQJid8YDFlI+MOv/scp+bDjWrmFADh0AwHAoYQQISFkSAgZEkKGhJAhIWRICBkSQoaEkCEhZEgIGRJChoSQISFkSAgZEkKGhJAhIWRICBkSQoaEkCEhZEgIGRJChoSQISFkSAgZEkKGhJAhIWRICBkSQoaEkCEhZEgIGRJChoSQISFkSAgZEkJGX4R8cwMBwKIPQkLcdInjvb/di7NO6nhdluWWS5SyLLcAHPRJyFJKmJrp0lwZBzSnAf3HUeOLespnCrE44/FMexsXosP4wXUYf57nVzXMBTzjKgJhWMkZH1tDjLedyKiF7GiVoG3k0T3XJWEaGcFdWDFGJ7urf4zNC1I0HAx/VkYto/uxeSeEaWR6p2D5zuj8MbXGsLBRPZL0+RACx99ko7DzjN1/IYQQQgghhBBCCCFcx/wGTFfoYNipPBIAAAAASUVORK5CYII="
-                                                    />
-                                                </defs>
-                                            </svg>
-                                            2/3/2025
-                                        </span>
-                                        <span className="title_manga_2a">
-                                            <img
-                                                width={14}
-                                                height={14}
-                                                preserveaspectratio="none"
-                                                src="https://media-hosting.imagekit.io//1383d94ae8c748c0/download.png?Expires=1836489064&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Xc6YKJDxSQJwwUIYDxlrtiYwsmYk8C~xITF1W7OE4sQ1yJpBKpgVRR-XDd2JON5G17xr73OcL3fwvAvbraxs0GVTRad7tbJW9KWTxRecDCiM3XXSlJxf4pgnYHpJAZA8acpp6byJyZqIVVf4pAsJt9U51ORZcmFWhue62eKEW-zg5Vr1AfZs9kYEBcaC9EBnfOpA1SQburE2qMPphyj26Op4uzKLBfl05XjuQK9aM-93E-~OuCuLFTWHMlRiZ9MHGefFyF2QuwS7USc6s5Xn19i4R8aE6tifFOgfo6KlOpJVGPzhQmPoz7WLNcYgo2jjTQ9QQ5Gr7MKyUxy0rk~TVA__"
-                                            />
-                                            2/3/2025
-                                        </span>
-                                    </div>
-                                    <div className="title_manga_3">
-                                        <span className="title_manga_3a">
-                                            Những fan muốn biết thêm về mối quan hệ của Dae Ho với nhân vật
-                                            nữ chính có lẽ sẽ có được nhiều thông tin chuyên sâu hơn trong
-                                            Secret Class Chapter 245.
-                                        </span>
-                                    </div>
-                                    <div className="title_manga_4">
-                                        <span className="title_manga_4a">
-                                            <img
-                                                src="https://media-hosting.imagekit.io//55d60f98dbfb4747/avt1.png?Expires=1835257364&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=BGXDi67WtbrUu6MMFpHtgEuuUlB2TUqDdN6ThcWyCgUV-4sH6LgyuD2EZaBuz3nCDzHNSmfHkWwVCDPXI0f~-gLtFRvzq3V9U~iRcYMZV4YSe-yIM-fyTdUwvFkdlYpK2AlFVsMi-mcmTXQI3itXLpic6jw8rwaKWW4KnvScQxq6d9PS1pUWWrgM9FfRlQUXUdaJ~Lnz7oaP7izU6gttdM9tPnzKbY0UfPFy4UB-3I~0uLC9KPlGzqBLzFkwSl0TfZGlxVJWZf8rswqM3mbaeCI0THv8ANBXfdW~WtU69ppXsR3JPebaLJbIxMv0tCzgrnvJAkrfleDkjwK-RvxHvQ__"
-                                                id="image0_517_12945"
-                                                width="40px"
-                                                height="40px"
 
-                                                preserveaspectratio="none"
-                                                style={{ marginRight: "15px" }}
-                                            />
-                                            KURAI TENSHI
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="article_2_right">
-                                <img src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
                             </div>
                         </div>
+
+                        <ArticleSlider />
+
                         <div className="article_3">
                             <div className="article_3_left">
                                 <div className="article_3_left_1">
@@ -205,8 +134,10 @@ const Blog = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="article_3_rigth">
+
+                            {/* <div className="article_3_rigth">
                                 <div className="article_3_card">
+
                                     <div className="article_3_card_silde">
                                         <div className="article_3_right_text_1">
                                             <span className="article_3_right_text_1a">
@@ -221,6 +152,8 @@ const Blog = () => {
                                             <span className="article_3_right_text_2a">927 lượt xem</span>
                                         </div>
                                     </div>
+
+                                    
                                     <div className="article_3_card_silde">
                                         <div className="article_3_right_text_1">
                                             <span className="article_3_right_text_1a">
@@ -235,495 +168,168 @@ const Blog = () => {
                                             <span className="article_3_right_text_2a">927 lượt xem</span>
                                         </div>
                                     </div>
-                                    <div className="article_3_card_silde">
-                                        <div className="article_3_right_text_1">
-                                            <span className="article_3_right_text_1a">
-                                                Hunter x Hunter chap 403: kế hoạch ám sát thất bại c...
-                                            </span>
-                                        </div>
-                                        <div className="article_3_right_img">
-                                            <img style={{ width: "197px", height: "197px" }} src="https://media-hosting.imagekit.io//1fbfed4a94444e88/blog_context.jpg?Expires=1836491026&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=JK34G8afaIc1A1FNkJWHZwca4yUA2~I4YW-HIJTCLeO4uByQmFFC6P5ZhMfRC3NdGaW2sUzVevCLr0ijwhwTBgvwi6N-uRWK1FCPeRebb2cnxBtn3LyrKY1AeK1rj265xzacLWZpImC9u8iAQanfBUhOc0lGY-mpYhMv0~aTCIbDnusxZO0MS-MMBmIEPtR3oBTf7XFx9PgprIFQPTHnlhFTxMCHfVShwOEhxOUFs-d9hhsVbN4kccENvOui6gOOih0fDf6qMK9Ln0RxTpLHwBMJqOET0nBzdkmNyih2P5jyADtXm7xUkZ4L7qFKhSyIcdtjPkJ~zilpuWZFoECuaQ__" alt="" />
-                                        </div>
-                                        <div className="article_3_right_text_2">
-                                            <span className="article_3_right_text_2a">14 Oct, 2024</span>
-                                            <span className="article_3_right_text_2a">927 lượt xem</span>
-                                        </div>
-                                    </div>
-                                    <div className="article_3_card_silde">
-                                        <div className="article_3_right_text_1">
-                                            <span className="article_3_right_text_1a">
-                                                Hunter x Hunter chap 403: kế hoạch ám sát thất bại c...
-                                            </span>
-                                        </div>
-                                        <div className="article_3_right_img">
-                                            <img style={{ width: "197px", height: "197px" }} src="https://media-hosting.imagekit.io//1fbfed4a94444e88/blog_context.jpg?Expires=1836491026&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=JK34G8afaIc1A1FNkJWHZwca4yUA2~I4YW-HIJTCLeO4uByQmFFC6P5ZhMfRC3NdGaW2sUzVevCLr0ijwhwTBgvwi6N-uRWK1FCPeRebb2cnxBtn3LyrKY1AeK1rj265xzacLWZpImC9u8iAQanfBUhOc0lGY-mpYhMv0~aTCIbDnusxZO0MS-MMBmIEPtR3oBTf7XFx9PgprIFQPTHnlhFTxMCHfVShwOEhxOUFs-d9hhsVbN4kccENvOui6gOOih0fDf6qMK9Ln0RxTpLHwBMJqOET0nBzdkmNyih2P5jyADtXm7xUkZ4L7qFKhSyIcdtjPkJ~zilpuWZFoECuaQ__" alt="" />
-                                        </div>
-                                        <div className="article_3_right_text_2">
-                                            <span className="article_3_right_text_2a">14 Oct, 2024</span>
-                                            <span className="article_3_right_text_2a">927 lượt xem</span>
-                                        </div>
-                                    </div>
-                                    <div className="article_3_card_silde">
-                                        <div className="article_3_right_text_1">
-                                            <span className="article_3_right_text_1a">
-                                                Hunter x Hunter chap 403: kế hoạch ám sát thất bại c...
-                                            </span>
-                                        </div>
-                                        <div className="article_3_right_img">
-                                            <img style={{ width: "197px", height: "197px" }} src="https://media-hosting.imagekit.io//1fbfed4a94444e88/blog_context.jpg?Expires=1836491026&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=JK34G8afaIc1A1FNkJWHZwca4yUA2~I4YW-HIJTCLeO4uByQmFFC6P5ZhMfRC3NdGaW2sUzVevCLr0ijwhwTBgvwi6N-uRWK1FCPeRebb2cnxBtn3LyrKY1AeK1rj265xzacLWZpImC9u8iAQanfBUhOc0lGY-mpYhMv0~aTCIbDnusxZO0MS-MMBmIEPtR3oBTf7XFx9PgprIFQPTHnlhFTxMCHfVShwOEhxOUFs-d9hhsVbN4kccENvOui6gOOih0fDf6qMK9Ln0RxTpLHwBMJqOET0nBzdkmNyih2P5jyADtXm7xUkZ4L7qFKhSyIcdtjPkJ~zilpuWZFoECuaQ__" alt="" />
-                                        </div>
-                                        <div className="article_3_right_text_2">
-                                            <span className="article_3_right_text_2a">14 Oct, 2024</span>
-                                            <span className="article_3_right_text_2a">927 lượt xem</span>
-                                        </div>
-                                    </div>
-                                    <div className="article_3_card_silde">
-                                        <div className="article_3_right_text_1">
-                                            <span className="article_3_right_text_1a">
-                                                Hunter x Hunter chap 403: kế hoạch ám sát thất bại c...
-                                            </span>
-                                        </div>
-                                        <div className="article_3_right_img">
-                                            <img style={{ width: "197px", height: "197px" }} src="https://media-hosting.imagekit.io//1fbfed4a94444e88/blog_context.jpg?Expires=1836491026&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=JK34G8afaIc1A1FNkJWHZwca4yUA2~I4YW-HIJTCLeO4uByQmFFC6P5ZhMfRC3NdGaW2sUzVevCLr0ijwhwTBgvwi6N-uRWK1FCPeRebb2cnxBtn3LyrKY1AeK1rj265xzacLWZpImC9u8iAQanfBUhOc0lGY-mpYhMv0~aTCIbDnusxZO0MS-MMBmIEPtR3oBTf7XFx9PgprIFQPTHnlhFTxMCHfVShwOEhxOUFs-d9hhsVbN4kccENvOui6gOOih0fDf6qMK9Ln0RxTpLHwBMJqOET0nBzdkmNyih2P5jyADtXm7xUkZ4L7qFKhSyIcdtjPkJ~zilpuWZFoECuaQ__" alt="" />
-                                        </div>
-                                        <div className="article_3_right_text_2">
-                                            <span className="article_3_right_text_2a">14 Oct, 2024</span>
-                                            <span className="article_3_right_text_2a">927 lượt xem</span>
-                                        </div>
-                                    </div>
+
                                 </div>
-                            </div>
+                            </div> */}
+                            <ArticleCard />
+
                         </div>
+
                     </article>
                 </main>
+
                 <div className="article_4">
                     <div className="article_4_left">
                         <span className="title_new_left">BÀI VIẾT MỚI</span>
-                        <div className="card_left">
-                            <div className="card_left_1">
-                                <img
-                                    src="https://media-hosting.imagekit.io//ad79d5602821404d/blog_img.png?Expires=1836489263&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=phLdBI46zuhJxYKy9FRnMjS-E9zVNAQwcFGtFhvkwIkOkt3RG4HCOue7JaKEhG4IeBX7rzk6toh~0MbAOomB2Bu9Vrc4BWlaVpcXcDT6Uej81wj8beU2V5J0DBf9Z4uRG10bEcKrl4NTUznrg1b5uwoPVc3MZ5-ewKoKkBVyQ3CqaSESZwo2r5UEzTv3Z52j7zbOJ5QIrZoBRrrCoJPAa3xSZd-p8KG~UUJ4isr3Zmeeou3jPiaGFGOmDkEKUXmfcI-zDXC1wSAQTyqzmDPdyKrtsumiH78siGtnLLwEwfvB4M4pBnLKemFDpb9DGJynh8wVsSwG00bNrkhZ4usUfA__"
-                                    alt=""
-                                    style={{ width: 350, height: 280 }}
-                                />
-                            </div>
-                            <div className="card_left_2">
-                                <div className="card_left_2_title_background">
-                                    <span className="title_manga">
-                                        <svg
-                                            width={17}
-                                            height={17}
-                                            viewBox="0 0 15 17"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
-                                                fill="white"
+
+                        {posts && posts.length > 0 ? (
+                            (posts.slice(0, 4)).map((post, index) => {
+                                const postCate = categoryName.filter(cate => cate).find(cate => cate._id === post.tag);
+                                return (
+
+                                    <div className="card_left" key={post._id || index}>
+                                        <div className="card_left_1">
+                                            <img
+                                                src={post.coverImage}
+                                                alt=""
+
                                             />
-                                            <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
-                                        </svg>
-                                        MANGA
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_1">
-                                    <span className="card_left_2_text_1">
-                                        RuriDragon Chapter 26: Dạng giới hạn
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_2">
-                                    <span className="card_left_2_text_2">13 Dec, 2024</span>
-                                    <span className="card_left_2_text_2">
-                                        <img
-                                            id=""
-                                            width={13}
-                                            height={13}
-                                            preserveaspectratio="none"
-                                            src="https://media-hosting.imagekit.io//1383d94ae8c748c0/download.png?Expires=1836489064&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Xc6YKJDxSQJwwUIYDxlrtiYwsmYk8C~xITF1W7OE4sQ1yJpBKpgVRR-XDd2JON5G17xr73OcL3fwvAvbraxs0GVTRad7tbJW9KWTxRecDCiM3XXSlJxf4pgnYHpJAZA8acpp6byJyZqIVVf4pAsJt9U51ORZcmFWhue62eKEW-zg5Vr1AfZs9kYEBcaC9EBnfOpA1SQburE2qMPphyj26Op4uzKLBfl05XjuQK9aM-93E-~OuCuLFTWHMlRiZ9MHGefFyF2QuwS7USc6s5Xn19i4R8aE6tifFOgfo6KlOpJVGPzhQmPoz7WLNcYgo2jjTQ9QQ5Gr7MKyUxy0rk~TVA__"
-                                        />
-                                        123 lượt xem
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_3">
-                                    <span className="card_left_2_text_3">
-                                        RuriDragon Chapter 26 có thể khám phá xung đột giữa Yoshioka và
-                                        học sinh đã thách đấu anh ta. Chi tiết về lịch sử của họ hoặc lý
-                                        do cho mối hận thù có thể sẽ được tiết lộ.
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_4">
-                                    <span className="card_left_2_text_4">XEM THÊM-&gt;</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="card_left">
-                            <div className="card_left_1">
-                                <img
-                                    src="https://media-hosting.imagekit.io//ad79d5602821404d/blog_img.png?Expires=1836489263&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=phLdBI46zuhJxYKy9FRnMjS-E9zVNAQwcFGtFhvkwIkOkt3RG4HCOue7JaKEhG4IeBX7rzk6toh~0MbAOomB2Bu9Vrc4BWlaVpcXcDT6Uej81wj8beU2V5J0DBf9Z4uRG10bEcKrl4NTUznrg1b5uwoPVc3MZ5-ewKoKkBVyQ3CqaSESZwo2r5UEzTv3Z52j7zbOJ5QIrZoBRrrCoJPAa3xSZd-p8KG~UUJ4isr3Zmeeou3jPiaGFGOmDkEKUXmfcI-zDXC1wSAQTyqzmDPdyKrtsumiH78siGtnLLwEwfvB4M4pBnLKemFDpb9DGJynh8wVsSwG00bNrkhZ4usUfA__"
-                                    alt=""
-                                    style={{ width: 350, height: 280 }}
-                                />
-                            </div>
-                            <div className="card_left_2">
-                                <div className="card_left_2_title_background">
-                                    <span className="title_manga">
-                                        <svg
-                                            width={17}
-                                            height={17}
-                                            viewBox="0 0 15 17"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
-                                                fill="white"
-                                            />
-                                            <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
-                                        </svg>
-                                        MANGA
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_1">
-                                    <span className="card_left_2_text_1">
-                                        RuriDragon Chapter 26: Dạng giới hạn
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_2">
-                                    <span className="card_left_2_text_2">13 Dec, 2024</span>
-                                    <span className="card_left_2_text_2">
-                                        <img
-                                            id=""
-                                            width={13}
-                                            height={13}
-                                            preserveaspectratio="none"
-                                            src="https://media-hosting.imagekit.io//1383d94ae8c748c0/download.png?Expires=1836489064&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Xc6YKJDxSQJwwUIYDxlrtiYwsmYk8C~xITF1W7OE4sQ1yJpBKpgVRR-XDd2JON5G17xr73OcL3fwvAvbraxs0GVTRad7tbJW9KWTxRecDCiM3XXSlJxf4pgnYHpJAZA8acpp6byJyZqIVVf4pAsJt9U51ORZcmFWhue62eKEW-zg5Vr1AfZs9kYEBcaC9EBnfOpA1SQburE2qMPphyj26Op4uzKLBfl05XjuQK9aM-93E-~OuCuLFTWHMlRiZ9MHGefFyF2QuwS7USc6s5Xn19i4R8aE6tifFOgfo6KlOpJVGPzhQmPoz7WLNcYgo2jjTQ9QQ5Gr7MKyUxy0rk~TVA__"
-                                        />
-                                        123 lượt xem
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_3">
-                                    <span className="card_left_2_text_3">
-                                        RuriDragon Chapter 26 có thể khám phá xung đột giữa Yoshioka và
-                                        học sinh đã thách đấu anh ta. Chi tiết về lịch sử của họ hoặc lý
-                                        do cho mối hận thù có thể sẽ được tiết lộ.
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_4">
-                                    <span className="card_left_2_text_4">XEM THÊM-&gt;</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="card_left">
-                            <div className="card_left_1">
-                                <img
-                                    src="https://media-hosting.imagekit.io//ad79d5602821404d/blog_img.png?Expires=1836489263&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=phLdBI46zuhJxYKy9FRnMjS-E9zVNAQwcFGtFhvkwIkOkt3RG4HCOue7JaKEhG4IeBX7rzk6toh~0MbAOomB2Bu9Vrc4BWlaVpcXcDT6Uej81wj8beU2V5J0DBf9Z4uRG10bEcKrl4NTUznrg1b5uwoPVc3MZ5-ewKoKkBVyQ3CqaSESZwo2r5UEzTv3Z52j7zbOJ5QIrZoBRrrCoJPAa3xSZd-p8KG~UUJ4isr3Zmeeou3jPiaGFGOmDkEKUXmfcI-zDXC1wSAQTyqzmDPdyKrtsumiH78siGtnLLwEwfvB4M4pBnLKemFDpb9DGJynh8wVsSwG00bNrkhZ4usUfA__"
-                                    alt=""
-                                    style={{ width: 350, height: 280 }}
-                                />
-                            </div>
-                            <div className="card_left_2">
-                                <div className="card_left_2_title_background">
-                                    <span className="title_manga">
-                                        <svg
-                                            width={17}
-                                            height={17}
-                                            viewBox="0 0 15 17"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
-                                                fill="white"
-                                            />
-                                            <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
-                                        </svg>
-                                        MANGA
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_1">
-                                    <span className="card_left_2_text_1">
-                                        RuriDragon Chapter 26: Dạng giới hạn
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_2">
-                                    <span className="card_left_2_text_2">13 Dec, 2024</span>
-                                    <span className="card_left_2_text_2">
-                                        <img
-                                            id=""
-                                            width={13}
-                                            height={13}
-                                            preserveaspectratio="none"
-                                            src="https://media-hosting.imagekit.io//1383d94ae8c748c0/download.png?Expires=1836489064&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Xc6YKJDxSQJwwUIYDxlrtiYwsmYk8C~xITF1W7OE4sQ1yJpBKpgVRR-XDd2JON5G17xr73OcL3fwvAvbraxs0GVTRad7tbJW9KWTxRecDCiM3XXSlJxf4pgnYHpJAZA8acpp6byJyZqIVVf4pAsJt9U51ORZcmFWhue62eKEW-zg5Vr1AfZs9kYEBcaC9EBnfOpA1SQburE2qMPphyj26Op4uzKLBfl05XjuQK9aM-93E-~OuCuLFTWHMlRiZ9MHGefFyF2QuwS7USc6s5Xn19i4R8aE6tifFOgfo6KlOpJVGPzhQmPoz7WLNcYgo2jjTQ9QQ5Gr7MKyUxy0rk~TVA__"
-                                        />
-                                        123 lượt xem
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_3">
-                                    <span className="card_left_2_text_3">
-                                        RuriDragon Chapter 26 có thể khám phá xung đột giữa Yoshioka và
-                                        học sinh đã thách đấu anh ta. Chi tiết về lịch sử của họ hoặc lý
-                                        do cho mối hận thù có thể sẽ được tiết lộ.
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_4">
-                                    <span className="card_left_2_text_4">XEM THÊM-&gt;</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="card_left">
-                            <div className="card_left_1">
-                                <img
-                                    src="https://media-hosting.imagekit.io//ad79d5602821404d/blog_img.png?Expires=1836489263&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=phLdBI46zuhJxYKy9FRnMjS-E9zVNAQwcFGtFhvkwIkOkt3RG4HCOue7JaKEhG4IeBX7rzk6toh~0MbAOomB2Bu9Vrc4BWlaVpcXcDT6Uej81wj8beU2V5J0DBf9Z4uRG10bEcKrl4NTUznrg1b5uwoPVc3MZ5-ewKoKkBVyQ3CqaSESZwo2r5UEzTv3Z52j7zbOJ5QIrZoBRrrCoJPAa3xSZd-p8KG~UUJ4isr3Zmeeou3jPiaGFGOmDkEKUXmfcI-zDXC1wSAQTyqzmDPdyKrtsumiH78siGtnLLwEwfvB4M4pBnLKemFDpb9DGJynh8wVsSwG00bNrkhZ4usUfA__"
-                                    alt=""
-                                    style={{ width: 350, height: 280 }}
-                                />
-                            </div>
-                            <div className="card_left_2">
-                                <div className="card_left_2_title_background">
-                                    <span className="title_manga">
-                                        <svg
-                                            width={17}
-                                            height={17}
-                                            viewBox="0 0 15 17"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
-                                                fill="white"
-                                            />
-                                            <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
-                                        </svg>
-                                        MANGA
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_1">
-                                    <span className="card_left_2_text_1">
-                                        RuriDragon Chapter 26: Dạng giới hạn
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_2">
-                                    <span className="card_left_2_text_2">13 Dec, 2024</span>
-                                    <span className="card_left_2_text_2">
-                                        <img
-                                            id=""
-                                            width={13}
-                                            height={13}
-                                            preserveaspectratio="none"
-                                            src="https://media-hosting.imagekit.io//1383d94ae8c748c0/download.png?Expires=1836489064&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Xc6YKJDxSQJwwUIYDxlrtiYwsmYk8C~xITF1W7OE4sQ1yJpBKpgVRR-XDd2JON5G17xr73OcL3fwvAvbraxs0GVTRad7tbJW9KWTxRecDCiM3XXSlJxf4pgnYHpJAZA8acpp6byJyZqIVVf4pAsJt9U51ORZcmFWhue62eKEW-zg5Vr1AfZs9kYEBcaC9EBnfOpA1SQburE2qMPphyj26Op4uzKLBfl05XjuQK9aM-93E-~OuCuLFTWHMlRiZ9MHGefFyF2QuwS7USc6s5Xn19i4R8aE6tifFOgfo6KlOpJVGPzhQmPoz7WLNcYgo2jjTQ9QQ5Gr7MKyUxy0rk~TVA__"
-                                        />
-                                        123 lượt xem
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_3">
-                                    <span className="card_left_2_text_3">
-                                        RuriDragon Chapter 26 có thể khám phá xung đột giữa Yoshioka và
-                                        học sinh đã thách đấu anh ta. Chi tiết về lịch sử của họ hoặc lý
-                                        do cho mối hận thù có thể sẽ được tiết lộ.
-                                    </span>
-                                </div>
-                                <div className="card_left_2_title_4">
-                                    <span className="card_left_2_text_4">XEM THÊM-&gt;</span>
-                                </div>
-                            </div>
-                        </div>
+                                        </div>
+
+                                        <div className="card_left_2">
+
+                                            <div className="card_left_2_title_background">
+                                                <span className="title_manga">
+
+                                                    <svg
+                                                        width={17}
+                                                        height={17}
+
+                                                        viewBox="0 0 15 17"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
+                                                            fill="white"
+                                                        />
+                                                        <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
+                                                    </svg>
+                                                    <span>{postCate && postCate.name}</span>
+
+                                                </span>
+
+                                            </div>
+
+                                            <div className="card_left_2_title_1">
+                                                <span className="card_left_2_text_1">
+                                                    {post.title}
+                                                </span>
+                                            </div>
+
+                                            <div className="card_left_2_title_2">
+                                                <span className="card_left_2_text_2">{new Date(post.createdAt).toLocaleDateString()}</span>
+                                                <span className="card_left_2_text_2">
+                                                    <img
+                                                        id=""
+                                                        width={13}
+                                                        height={13}
+                                                        preserveaspectratio="none"
+                                                        src="https://media-hosting.imagekit.io//1383d94ae8c748c0/download.png?Expires=1836489064&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Xc6YKJDxSQJwwUIYDxlrtiYwsmYk8C~xITF1W7OE4sQ1yJpBKpgVRR-XDd2JON5G17xr73OcL3fwvAvbraxs0GVTRad7tbJW9KWTxRecDCiM3XXSlJxf4pgnYHpJAZA8acpp6byJyZqIVVf4pAsJt9U51ORZcmFWhue62eKEW-zg5Vr1AfZs9kYEBcaC9EBnfOpA1SQburE2qMPphyj26Op4uzKLBfl05XjuQK9aM-93E-~OuCuLFTWHMlRiZ9MHGefFyF2QuwS7USc6s5Xn19i4R8aE6tifFOgfo6KlOpJVGPzhQmPoz7WLNcYgo2jjTQ9QQ5Gr7MKyUxy0rk~TVA__"
+                                                    />
+                                                    123 lượt xem
+                                                </span>
+                                            </div>
+
+                                            <div className="card_left_2_title_3">
+                                                <span className="card_left_2_text_3">
+                                                    {post.content.length > 200
+                                                        ? post.content.substring(0, 180) + "..."
+                                                        : post.content}
+                                                </span>
+                                            </div>
+
+                                            <div className="card_left_2_title_4">
+                                                <Link to={`/blog/${post._id}`} className="card_left_2_text_4">XEM THÊM-&gt;</Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <tr>
+                                <td colSpan="6">Đang tải bài viết...</td>
+                            </tr>
+                        )}
+
+
                     </div>
                     <div className="article_4_rigth">
                         <span className="title_new_right">Theo dõi chúng tôi</span>
                         <div className="card_icon_left">
-                            <img src="img/facebook.png" alt="" />
-                            <img src="img/facebook.png" alt="" />
+                            <img src="https://media-hosting.imagekit.io//92a62286f2644892/facebook.png?Expires=1837450880&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=mFhrcQJCpLejv7cKUolBFE480sE998usEnszLlGkcJpEd9LXwxszdv1AvH1ppzXDCw0pGPKNvs6bnLn~uj6DlM3Rd75UVBulBmBHqF1w5GFk0gnO7AimXY6KNFY3C~KGSQ4cnv1MPYKdYtBSmIAn1pMo--gd5iUVe6~UH-1mJPXfe9FesUrJN7hMedV7dz67Ce61dS6fvRsyOYqibY4ybM438YVvy~8JVoTQqUZFOl4to4OR-vIHz3WgQEYjPeWbF6OiUwGeKOoHVpW2Sr~eob24skE4LZ-KGegM3MJ7AVtEIE2JRxOt91Czln~Q3kJojToEg9PO-nRPTeA3kNhnOw__" alt="facebook" />
+                            <img src="https://media-hosting.imagekit.io//5d0d66bad9a84455/twitter.png?Expires=1837450880&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=1ExtPjWeVu-XI-m0PEx~KQ7M27NBn9U4baeSU08XrStATBrcncW7yZZyH~MyMfJea4rZ1HlWXR9ickflrc4EZb8eGFlrP0P7oIh6VgkWXV31GS-cYKEaskpdMZA55R~TbCWJcSLUrcO96vRmevh3FZdYtZhl2NISnys9c9Og~g9ClqkuyGoETmslhGekaolvOa7Xl-Ann2-xXt3u1O8-50dgNlqTzROiKzipOESD0R3TC6IVI6aK-gBl10fq9C-k~WgZBrlsIHHD4eMBdKl9zy461p0HXHelaXCVLM1iNFklaCZ4tL~5HU5c6pKlpuskvlDzxz1aK3lHuauABQIb4w__" alt="twitter" />
                         </div>
                         <div className="card_icon_right">
-                            <img src="img/facebook.png" alt="" />
-                            <img src="img/facebook.png" alt="" />
+                            <img src="https://media-hosting.imagekit.io//06dffb0c28374efb/instagram.png?Expires=1837450880&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=JswuGGQSA5Hg~zZ6gthf0DXDS20MadfLSMGlQoNyeg~7GWE8vNNnvPUR0-fLVA23FMRnZ~t3lEqmrHoREMxCIWZUYQmoeKlDiaAN4MFl92EX3GyzvYT6EFXots2sFEuIoMPdgEHFONJeR4lZr3wnvia3~YGX9Ay~IJ~or0jJGUzzHDaBU0hE7Md0aERNu6rxCKbhTY5MH8EoR8JMKUCy~RlQezN7vOQTQyPFREPYVBJ3ROn82ko63BROIvELUUfXKko9X20AP8axdgCH0s26Zw-rmoIi6j2u2M8~7U3bHdPZTn5jdbl2BiLaEkNtetlG6F5on6xixtwsleOg3lVxqA__" alt="insta" />
+                            <img src="https://media-hosting.imagekit.io//0935e16350674e7c/toptop.png?Expires=1837450880&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=uUqa3S5P~ytf77kdXYUXua6tY98H27ENWoGsqWW-qKS-jGYQrHoFV-WiMySh14fS3dEJ2tShMd0fV8t45yhPyU4FVv-wTYLgswNxL3G8D2g~JWMGhHOGnQZ1stBGq~CYaer5YqW5LkblvzErfpBv~g-QeFkY1Cjd-Cx9KbJt6Gk2eI5Jy~JXUhAQWiWw3vXr8SQ~U1PKg9l902rYa6~FGf8OJyJ-OTCjJnFZ4ChYLUJ87ia0Ah2IK8md2nBPxLu3lRQ1Pqtk0VBHDTxZkQ4awIDHPSeh-LMA5leClehtpKZW5sMo3pjq7TIo-hUA62CO9LQUv3AqVjgw828H4782vw__" alt="toptop" />
                         </div>
                         <div className="card_right">
                             <span className="title_trend">PHỔ BIẾN TRENDING</span>
-                            <div className="card_right_0">
-                                <div className="card_right_1">
-                                    <img
-                                        style={{ width: 113, height: 100 }}
-                                        src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__" alt="" />
-                                </div>
-                                <div className="card_right_2">
-                                    <div className="card_right_2_title_background">
-                                        <span className="title_manga">
-                                            <svg
-                                                width={17}
-                                                height={17}
-                                                viewBox="0 0 15 17"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
-                                                    fill="white"
-                                                />
-                                                <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
-                                            </svg>
-                                            TIỂU SỬ
-                                        </span>
-                                    </div>
-                                    <div className="card_right_2_title_1">
-                                        <span className="card_right_2_text_1">
-                                            'Mã nguồn' chuyện đời tỷ phú Bill Ga...
-                                        </span>
-                                    </div>
-                                    <div className="card_right_2_title_2">
-                                        <span className="card_right_2_text_2">05 Dec, 2024</span>
-                                        <span className="card_right_2_text_3">5,579 lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card_right_0">
-                                <div className="card_right_1">
-                                    <img
-                                        style={{ width: 113, height: 100 }}
-                                        src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__" alt="" />
 
-                                </div>
-                                <div className="card_right_2">
-                                    <div className="card_right_2_title_background">
-                                        <span className="title_manga">
-                                            <svg
-                                                width={17}
-                                                height={17}
-                                                viewBox="0 0 15 17"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
-                                                    fill="white"
-                                                />
-                                                <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
-                                            </svg>
-                                            TIỂU SỬ
-                                        </span>
-                                    </div>
-                                    <div className="card_right_2_title_1">
-                                        <span className="card_right_2_text_1">
-                                            'Mã nguồn' chuyện đời tỷ phú Bill Ga...
-                                        </span>
-                                    </div>
-                                    <div className="card_right_2_title_2">
-                                        <span className="card_right_2_text_2">05 Dec, 2024</span>
-                                        <span className="card_right_2_text_3">5,579 lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card_right_0">
-                                <div className="card_right_1">
-                                    <img
-                                        style={{ width: 113, height: 100 }}
-                                        src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__" alt="" />
+                            {posts && posts.length > 0 ? (
+                                (posts.slice(0, 5)).map((post, index) => {
+                                    const postCate = categoryName.filter(cate => cate).find(cate => cate._id === post.tag);
+                                    return (
 
-                                </div>
-                                <div className="card_right_2">
-                                    <div className="card_right_2_title_background">
-                                        <span className="title_manga">
-                                            <svg
-                                                width={17}
-                                                height={17}
-                                                viewBox="0 0 15 17"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
-                                                    fill="white"
-                                                />
-                                                <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
-                                            </svg>
-                                            TIỂU SỬ
-                                        </span>
-                                    </div>
-                                    <div className="card_right_2_title_1">
-                                        <span className="card_right_2_text_1">
-                                            'Mã nguồn' chuyện đời tỷ phú Bill Ga...
-                                        </span>
-                                    </div>
-                                    <div className="card_right_2_title_2">
-                                        <span className="card_right_2_text_2">05 Dec, 2024</span>
-                                        <span className="card_right_2_text_3">5,579 lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card_right_0">
-                                <div className="card_right_1">
-                                    <img
-                                        style={{ width: 113, height: 100 }}
-                                        src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__" alt="" />
+                                        <div className="card_right_0" key={post._id || index}>
+                                            <div className="card_right_1">
+                                                <img
+                                                    style={{ width: 113, height: 100 }}
+                                                    src={post.coverImage} alt={post.title} />
+                                            </div>
 
-                                </div>
-                                <div className="card_right_2">
-                                    <div className="card_right_2_title_background">
-                                        <span className="title_manga">
-                                            <svg
-                                                width={17}
-                                                height={17}
-                                                viewBox="0 0 15 17"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
-                                                    fill="white"
-                                                />
-                                                <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
-                                            </svg>
-                                            TIỂU SỬ
-                                        </span>
-                                    </div>
-                                    <div className="card_right_2_title_1">
-                                        <span className="card_right_2_text_1">
-                                            'Mã nguồn' chuyện đời tỷ phú Bill Ga...
-                                        </span>
-                                    </div>
-                                    <div className="card_right_2_title_2">
-                                        <span className="card_right_2_text_2">05 Dec, 2024</span>
-                                        <span className="card_right_2_text_3">5,579 lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card_right_0">
-                                <div className="card_right_1">
-                                    <img
-                                        style={{ width: 113, height: 100 }}
-                                        src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__" alt="" />
+                                            <div className="card_right_2">
+                                                <div className="card_right_2_title_background">
+                                                    <span className="title_manga">
+                                                        <svg
+                                                            width={17}
+                                                            height={17}
+                                                            viewBox="0 0 15 17"
+                                                            fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                            <path
+                                                                d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
+                                                                fill="white"
+                                                            />
+                                                            <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
+                                                        </svg>
+                                                        <span>{postCate && postCate.name}</span>
+                                                    </span>
+                                                </div>
+                                                <div className="card_right_2_title_1">
+                                                    <span className="card_right_2_text_1">
+                                                    {post.title.length > 35
+                                                        ? post.title.substring(0, 30) + "..."
+                                                        : post.title}
+                                                    </span>
+                                                </div>
+                                                <div className="card_right_2_title_2">
+                                                    <span className="card_right_2_text_2">05 Dec, 2024</span>
+                                                    <span className="card_right_2_text_3">5,579 lượt xem</span>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                </div>
-                                <div className="card_right_2">
-                                    <div className="card_right_2_title_background">
-                                        <span className="title_manga">
-                                            <svg
-                                                width={17}
-                                                height={17}
-                                                viewBox="0 0 15 17"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
-                                                    fill="white"
-                                                />
-                                                <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
-                                            </svg>
-                                            TIỂU SỬ
-                                        </span>
-                                    </div>
-                                    <div className="card_right_2_title_1">
-                                        <span className="card_right_2_text_1">
-                                            'Mã nguồn' chuyện đời tỷ phú Bill Ga...
-                                        </span>
-                                    </div>
-                                    <div className="card_right_2_title_2">
-                                        <span className="card_right_2_text_2">05 Dec, 2024</span>
-                                        <span className="card_right_2_text_3">5,579 lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
+                                    );
+                                })
+                            ) : (
+                                <tr>
+                                    <td colSpan="6">Đang tải bài viết...</td>
+                                </tr>
+                            )}
+
                             <img
                                 className="card_slide"
                                 id="slideshow"

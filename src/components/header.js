@@ -101,6 +101,9 @@ const Header = ({ user, handleLogout }) => {
                                                         <hr className="user-dropdown-divider" />
                                                     </>
                                                 )}
+                                                <a href="/account">
+                                                    <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Trang người dùng
+                                                </a>
                                                 <a href="#" onClick={handleLogout}>
                                                     ĐĂNG XUẤT
                                                 </a>

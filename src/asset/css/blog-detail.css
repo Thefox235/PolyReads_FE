@@ -1,0 +1,35 @@
+.detail_article_3
+{
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    margin-top: 40px;
+
+}
+
+.detail_article_3_left {
+
+    width: 770px;
+}
+.detail_article_3_left_4 {
+    margin-top: 80px;
+    margin-left: 615px;
+    width: 164px;
+    height: 35px;
+}
+.detail_article_3_left_6 {
+    height: 127px;
+    display: flex
+;
+    margin-top: 70px;
+    gap: 40px;
+}
+
+.detail_article_3_left_6ab {
+    font-family: 'Roboto', 'Inter';
+    font-style: normal;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 29px;
+    color: #313B4D;
+}

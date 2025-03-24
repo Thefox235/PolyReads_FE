@@ -72,7 +72,7 @@ const EditPost = ({ initialData, onClose, onEditSuccess }) => {
   };
 
   return (
-    <div className="editPost-container">
+    <div className="addPro-container">
       <h1>Chỉnh sửa Bài Viết</h1>
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>

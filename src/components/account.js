@@ -44,6 +44,8 @@ const Account = () => {
         setPhone(user.phone || "");
     }, [user]);
 
+    console.log("Avatar URL:", user.url_image);
+
     // Handler cho các mục menu (nếu cần)
     const handleMenuClick = (target) => {
         setActiveMenu(target);
@@ -94,7 +96,6 @@ const Account = () => {
         setAddresses((prev) => [...prev, newAddress]);
         setShowCreateAddressModal(false);
     };
-
     return (
         <>
             <section className="banner">
@@ -110,9 +111,11 @@ const Account = () => {
                 <aside className="account-sidebar">
                     <div className="account-profile">
                         <img
-                            src={user.url_image || "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
+                            src={user.url_image}
                             alt="Avatar"
                             className="account-avatar"
+                            crossOrigin="anonymous"
+                            referrerPolicy="no-referrer"
                         />
                         <h2>{user.name}</h2>
                         <p>{user.email}</p>

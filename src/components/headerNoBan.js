@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from "./context/cartContext";
 const HeaderNoBan = ({ user, handleLogout }) => {
-  const { cart } = useCart();
-  const numbercart = cart.reduce((total, item) => total + item.cartQuantity, 0);
+    const { cart } = useCart();
+    const numbercart = cart.reduce((total, item) => total + item.cartQuantity, 0);
     // Functions to handle open and close elements
     const closeElement = () => {
         const element = document.querySelector(".moblie");
@@ -17,7 +17,7 @@ const HeaderNoBan = ({ user, handleLogout }) => {
         if (element) element.classList.toggle("open");
     };
     return (
-      <>
+        <>
             <header>
                 <div className="bg-header-noBan">
                     <div className="nav">
@@ -58,13 +58,13 @@ const HeaderNoBan = ({ user, handleLogout }) => {
                                                         </a>
                                                         <a href="/viewPro">
                                                             <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Quản lý sản phẩm
-                                                        </a>
-                                                        <a href="/admin/users">
-                                                            <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Quản lý người dùng
-                                                        </a>
+                                                        </a>                                               
                                                         <hr className="user-dropdown-divider" />
                                                     </>
                                                 )}
+                                                <a href="/account">
+                                                    <span style={{ color: "rgb(160, 15, 15)" }}>&gt;</span> Trang người dùng
+                                                </a>
                                                 <a href="#" onClick={handleLogout}>
                                                     ĐĂNG XUẤT
                                                 </a>
@@ -237,7 +237,7 @@ const HeaderNoBan = ({ user, handleLogout }) => {
                     </div>
                 </div>
             </header>
-            </>
-  );
+        </>
+    );
 };
 export default HeaderNoBan;

@@ -41,6 +41,7 @@ const Detail = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showUpdateModal, setshowUpdateModal] = useState(false);
   const [commentId, setCommentId] = useState();
+  const [commentsRating, setCommentsRating] = useState([]);
   const [commentUpdateCurent, setCommentUpdateCurrent] = useState("");
   const [commentUpdateStar, setCommentUpdateStar] = useState("");
   const [selectedStar, setSelectedStar] = useState();
@@ -49,9 +50,10 @@ const Detail = () => {
     filtersao.length > 0
       ? filtersao.map((item) => item.rating).reduce((acc, cur) => acc + cur, 0)
       : 0;
-  const result = (
+  const result = Math.round(
     totalRating / comments.filter((item) => item?.productId?._id === id).length
-  ).toFixed(1);
+  );
+
   const handleStarChange = (value) => {
     setSelectedStar(value);
     setCommentUpdateStar(value);
@@ -109,6 +111,7 @@ const Detail = () => {
       try {
         const data = await getComment();
         setComments(data.comments);
+        setCommentsRating(data.comments);
         console.log("Dữ liệu nhận được:", data);
       } catch (error) {
         console.error("Có lỗi xảy ra khi lấy bình luận:", error);
@@ -184,19 +187,39 @@ const Detail = () => {
     } finally {
       closeUpdateCreateModal();
     }
-    console.log(value);
   };
   const togglelike = async (id) => {
-    try {
-      const data = {
-        userId: checkuser._id,
-      };
-      const res = await toggleLikeComment(id, data);
-      alert("Yêu thích thành công");
-    } catch (error) {
-      console.log("Lỗi", error);
+    if (checkuser) {
+      try {
+        const data = {
+          userId: checkuser._id,
+        };
+  
+        // Tìm comment theo id
+        const comment = comments.find((item) => item._id === id);
+        if (!comment) {
+          alert("Không tìm thấy bình luận");
+          return;
+        }
+  
+        // Kiểm tra user đã like chưa
+        const hasLiked = comment.likedBy.includes(checkuser._id);
+  
+        // Gửi request để like hoặc dislike
+        const res = await toggleLikeComment(id, data);
+  
+        if (res) {
+          // Thông báo dựa vào trạng thái like/dislike
+          alert(hasLiked ? "Bỏ yêu thích thành công" : "Yêu thích thành công");
+        }
+      } catch (error) {
+        console.log("Lỗi", error);
+      }
+    } else {
+      alert("Đăng nhập để like");
     }
   };
+  
   //fetch category
   useEffect(() => {
     const fetchCategory = async (idCate) => {
@@ -304,22 +327,29 @@ const Detail = () => {
       img: productImages[0].url,
       quantity: number,
     };
-    console.log(data);
     addToCart(data);
-
   };
 
-  const formattedPrice = ((product.price)*(100-discountValue)/100)
-    ? ((product.price)*(100-discountValue)/100)
-      .toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-        currencyDisplay: "code",
-      })
-      .replace("VND", "VNĐ")
-    : "N/A";
-    // console.log(discountValue);
-    console.log(number);
+  const formattedPrice =
+    (product.price * (100 - discountValue)) / 100
+      ? ((product.price * (100 - discountValue)) / 100)
+          .toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+            currencyDisplay: "code",
+          })
+          .replace("VND", "VNĐ")
+      : "N/A";
+  // console.log(discountValue);
+  const filterRating = (value) => {
+    // console.log(value);
+    if (value === 0) {
+      setCommentsRating(comments);
+    } else {
+      const filter = comments.filter((item) => item.rating === value);
+      setCommentsRating(filter);
+    }
+  };
   return (
     <>
       <main>
@@ -347,16 +377,26 @@ const Detail = () => {
               </div>
               <div className="d-flex align-items-center gap-4 mb-3">
                 <div>
-                  <i className="bi bi-star-fill" />
-                  <i className="bi bi-star-fill" />
-                  <i className="bi bi-star-fill" />
-                  <i className="bi bi-star-fill" />
-                  <i className="bi bi-star" />
+                  <StarRating rating={result} />
                 </div>
-                <p style={{ margin: 0 }}>(154 đánh giá)</p>
+                <p style={{ margin: 0 }}>
+                  (
+                  {
+                    commentsRating.filter((item) => item?.productId?._id === id)
+                      .length
+                  }
+                  đánh giá)
+                </p>
                 <div>
                   <i className="bi bi-chat-left" />
-                  <span>156</span>
+                  <span>
+                    {" "}
+                    {
+                      commentsRating.filter(
+                        (item) => item?.productId?._id === id
+                      ).length
+                    }
+                  </span>
                 </div>
               </div>
               <div className="d-flex justify-content-between align-items-center">
@@ -549,15 +589,11 @@ const Detail = () => {
                 <div className="rating-summary align-items-center gap-3">
                   <div className="rating-details d-flex flex-column justify-content-center align-items-center">
                     <div>
-                      {/* <span className="rating-score fs-1">{comments.reduce((item)=>)}</span>/ */}
+                      {/* <span className="rating-score fs-1">{commentsRating.reduce((item)=>)}</span>/ */}
                       <span className="total-score fs-3">{result}</span>
                     </div>
                     <div className="star-rating">
-                      <i className="bi bi-star-fill" />
-                      <i className="bi bi-star-fill" />
-                      <i className="bi bi-star-fill" />
-                      <i className="bi bi-star-fill" />
-                      <i className="bi bi-star-fill" />
+                      <StarRating rating={result} />
                     </div>
                     <span
                       className="rating-count"
@@ -565,19 +601,20 @@ const Detail = () => {
                     >
                       (
                       {
-                        comments.filter((item) => item?.productId?._id === id)
-                          .length
-                      }{" "}
+                        commentsRating.filter(
+                          (item) => item?.productId?._id === id
+                        ).length
+                      }
                       đánh giá)
                     </span>
                   </div>
                   <div className="rating-filters dg">
-                    <button>Tất cả</button>
-                    <button>5 Sao</button>
-                    <button>4 Sao</button>
-                    <button>3 Sao</button>
-                    <button>2 Sao</button>
-                    <button>1 Sao</button>
+                    <button onClick={() => filterRating(0)}>Tất cả</button>
+                    <button onClick={() => filterRating(5)}>5 Sao</button>
+                    <button onClick={() => filterRating(4)}>4 Sao</button>
+                    <button onClick={() => filterRating(3)}>3 Sao</button>
+                    <button onClick={() => filterRating(2)}>2 Sao</button>
+                    <button onClick={() => filterRating(1)}>1 Sao</button>
                   </div>
                 </div>
                 <button className="btn-dg" onClick={() => comment()}>
@@ -593,7 +630,7 @@ const Detail = () => {
                 <div className="text-danger">Mới nhất</div>
                 <div>Bình luận hữu ích nhất</div>
               </div>
-              {comments.map((item) => {
+              {commentsRating.map((item) => {
                 if (item.productId._id === id) {
                   return (
                     <div className="review" key={item._id}>
@@ -603,7 +640,9 @@ const Detail = () => {
                       </div>
                       <div className="review-body">
                         <div className="review-stars">
-                          <StarRating rating={item.rating} />
+                          <StarRating
+                            rating={item.rating === NaN ? 0 : item.rating}
+                          />
                         </div>
                         <p className="review-text">{item.content}</p>
                         <span className="review-more">Xem thêm</span>
