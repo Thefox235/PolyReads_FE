@@ -21,7 +21,6 @@ const ArticleCard = ({ post }) => {
             <div className="article_3_right_img">
                 <Link to={`/blog/${post._id}`} >
                     <img
-
                         src={post.coverImage}
                         alt={post.title}
                     />
