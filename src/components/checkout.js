@@ -1,363 +1,187 @@
-import React, { useState, useEffect } from "react";
-import { useCart } from "./context/cartContext";
-import { useNavigate } from "react-router-dom";
-import { createOrder, getDiscounts, createOrderDetail, getAllAddresses } from "../api/server"; // API cho Order và Discount
-
+import React from "react";
+import "../asset/css/checkout.css";
 
 const Checkout = () => {
-  const {
-    cart,
-    checkout,
-    selectedItems,
-    setSelectedItems,
-  } = useCart();
-
-  const navigate = useNavigate();
-  const [discount, setDiscount] = useState([]);
-  useEffect(() => {
-    // Khi cart thay đổi, khởi tạo selectedItems với tất cả false
-    const selections = {};
-    cart.forEach((item) => {
-      // Giả sử product có trường _id
-      selections[item.product._id] = false;
-    });
-    setSelectedItems(selections);
-
-    // Lấy mã giảm giá từ API
-    const fetchDiscounts = async () => {
-      try {
-        const discountData = await getDiscounts();
-        setDiscount(discountData);
-      } catch (error) {
-        console.error("Có lỗi xảy ra khi lấy mã giảm giá:", error);
-      }
-    };
-    fetchDiscounts();
-  }, [cart]);
-
-  // Lấy thông tin user từ sessionStorage
-  const [user, setUser] = useState(() => {
-    const stored = sessionStorage.getItem("user");
-    return stored ? JSON.parse(stored) : {};
-  });
-
-  // Lấy danh sách địa chỉ giao hàng của user
-  const [addresses, setAddresses] = useState([]);
-  const [selectedAddressId, setSelectedAddressId] = useState("");
-
-  useEffect(() => {
-    // Ví dụ dùng fetch; thay bằng axios nếu cần
-    const fetchAddresses = async () => {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/address`);
-        const data = await response.json();
-        // Giả sử API trả về { addresses: [ ... ] }
-        setAddresses(data.addresses || []);
-      } catch (error) {
-        console.error("Lỗi khi lấy địa chỉ:", error);
-      }
-    };
-    fetchAddresses();
-  }, []);
-
-  // Khi danh sách địa chỉ cập nhật, tự động chọn địa chỉ mặc định nếu có
-  useEffect(() => {
-    if (addresses.length > 0 && user._id) {
-      const userAddresses = addresses.filter(
-        (addr) => String(addr.userId) === String(user._id)
-      );
-      if (userAddresses.length > 0) {
-        const defaultAddress = userAddresses.find((addr) => addr.default);
-        // Nếu có địa chỉ mặc định, chọn nó; nếu không, chọn địa chỉ đầu tiên
-        setSelectedAddressId(defaultAddress ? defaultAddress._id : userAddresses[0]._id);
-      }
-    }
-  }, [addresses, user._id]);
-
-  // Nếu bạn muốn cho phép người dùng thay đổi địa chỉ giao hàng, bạn có thể tạo giao diện
-  // chọn địa chỉ dưới dạng radio button (ví dụ bên dưới):
-  const renderAddressSelector = () => {
-    const userAddresses = addresses.filter(
-      (addr) => String(addr.userId) === String(user._id)
-    );
-    if (userAddresses.length === 0) {
-      return <p>Chưa có địa chỉ giao hàng. Vui lòng tạo địa chỉ mới.</p>;
-    }
-    return (
-      <div className="address-selector">
-        <h3>Chọn địa chỉ giao hàng</h3>
-        {userAddresses.map((addr) => (
-          <label key={addr._id} className="address-radio">
-            <input
-              type="radio"
-              name="address"
-              value={addr._id}
-              checked={selectedAddressId === addr._id}
-              onChange={() => setSelectedAddressId(addr._id)}
-            />
-            {addr.address_line}, {addr.ward}, {addr.district}, {addr.province}{" "}
-            {addr.default && <strong>(Mặc định)</strong>}
-          </label>
-        ))}
-      </div>
-    );
-  };
-
-  // Tính toán thông tin đơn hàng từ cart (chỉ sử dụng các sản phẩm được chọn theo selectedItems)
-  const numbercart = cart.reduce(
-    (total, item) => total + item.cartQuantity,
-    0
-  );
-
-  // Tính tổng tiền cho các sản phẩm tick
-  const selectedTotal = cart.reduce((acc, item) => {
-    if (selectedItems[item.product._id]) {
-      const prod = item.product;
-      // Tìm discount nếu có
-      const productDiscount = typeof prod.discount !== "undefined"
-        ? discount.find((dis) => dis && dis._id === prod.discount)
-        : null;
-      const discountPercent = productDiscount ? Number(productDiscount.value) : 0;
-      const currentPrice = Number(prod.price) * ((100 - discountPercent) / 100);
-      return acc + currentPrice * item.cartQuantity;
-    }
-    return acc;
-  }, 0);
-
-  // Tính số lượng sản phẩm được tick
-  const selectedCount = cart.reduce(
-    (acc, item) =>
-      selectedItems[item.product._id] ? acc + item.cartQuantity : acc,
-    0
-  );
-
-  const allSelected =
-    cart.length > 0 &&
-    cart.every((item) => selectedItems[item.product._id]);
-
-  const handleSelectItem = (productId) => {
-    setSelectedItems((prev) => ({
-      ...prev,
-      [productId]: !prev[productId],
-    }));
-  };
-
-  const handleSelectAll = () => {
-    if (allSelected) {
-      const newSelections = {};
-      cart.forEach((item) => {
-        newSelections[item.product._id] = false;
-      });
-      setSelectedItems(newSelections);
-    } else {
-      const newSelections = {};
-      cart.forEach((item) => {
-        newSelections[item.product._id] = true;
-      });
-      setSelectedItems(newSelections);
-    }
-  };
-
-  // Hàm xử lý thanh toán: tạo Order và Order Detail sau khi kiểm tra chọn sản phẩm, và chọn địa chỉ giao hàng
-  const handleCheckout = async () => {
-    if (selectedCount === 0) {
-      alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
-      return;
-    }
-    if (!selectedAddressId || selectedAddressId.trim() === "") {
-      alert("Vui lòng chọn địa chỉ giao hàng!");
-      return;
-    }
-    try {
-      // Tính tổng số lượng và tổng tiền cho các sản phẩm tick chọn
-      const checkedItems = cart.filter((item) => selectedItems[item.product._id]);
-      const totalQuantity = checkedItems.reduce(
-        (sum, item) => sum + item.cartQuantity,
-        0
-      );
-      const totalPrice = checkedItems.reduce(
-        (sum, item) => sum + item.price * item.cartQuantity,
-        0
-      );
-
-      // Xây dựng danh sách Order Items
-      const orderItems = checkedItems.map((item) => {
-        const prod = item.product;
-        return {
-          productId: prod._id,
-          quantily: item.cartQuantity, // Lưu ý: sử dụng "quantily" theo schema của Order Detail
-          price: item.price,
-          total: item.price * item.cartQuantity,
-        };
-      });
-
-      // Payload cho Order
-      const orderPayload = {
-        userId: user._id,
-        addressId: selectedAddressId, // Thêm địa chỉ giao hàng
-        name: "Đơn hàng của khách hàng",
-        quantity: totalQuantity,
-        img: checkedItems[0]?.img || "",
-        price: totalPrice,
-        total: totalPrice,
-        status: 0,
-        payment_status: 0,
-      };
-
-      const orderRes = await checkout(user._id, selectedAddressId);
-      
-      // Nếu hàm checkout trong CartContext tự xử lý tạo Order và Order Detail,
-      // thì phần này không cần gọi lại, nhưng nếu bạn muốn làm riêng:
-      //
-      // const orderRes = await createOrder(orderPayload);
-      // const orderId = orderRes.order._id;
-      // const orderDetailPayload = {
-      //   orderId,
-      //   items: orderItems.map((item) => ({ ...item, orderId })),
-      // };
-      // await createOrderDetail(orderDetailPayload);
-      // clearCart();
-      // alert("Đơn hàng được tạo thành công với Order ID: " + orderId);
-      // navigate(`/order/${orderId}`);
-      
-    } catch (error) {
-      console.error("Lỗi tạo đơn hàng:", error);
-      alert("Có lỗi xảy ra khi tạo đơn hàng");
-    }
-  };
-
   return (
-    <>
-      <section className="banner">
-        <div className="banner-overlay">
-          <h1>Thanh Toán</h1>
-          <p style={{ fontSize: 20, fontWeight: 400 }}>
-            <a href="/">Trang chủ</a> &gt; Thanh Toán
-          </p>
-        </div>
-      </section>
-      <div className="container mt-5 mb-5 cart-container">
-      
+    <main className="checkout-session">
+      <div
+        style={{ fontSize: "1.4rem", textAlign: "left" }}
+        className="checkout-container"
+      >
+        <h4>Thanh toán</h4>
+      </div>
+      <div class="checkout-container ">
         <div className="row">
-          <div className="col-lg-8">
-            {/* Phần xem lại đơn hàng: hiển thị danh sách sản phẩm từ cart */}
-            <div className="cart-row">
-
-              {cart && cart.length > 0 ? (
-                cart.map((item) => {
-                  const prod = item.product;
-                  return (
-                    <div className="cart-item" key={prod._id}>
-                      <input
-                        type="checkbox"
-                        className="checkbox"
-                        checked={!!selectedItems[prod._id]}
-                        onChange={() => handleSelectItem(prod._id)}
-                      />
-                      <img src={item.img} alt={prod.name} className="cart-img" />
-                      <div className="cart-info">
-                        <h6 className="book-title">{prod.name}</h6>
-                        <p className="price">
-                          {Number(prod.price).toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                        </p>
-                      </div>
-                      <div className="quantity">
-
-                        <input
-                          type="number"
-                          value={item.cartQuantity}
-                          min={1}
-                          readOnly
-                        />
-       
-                      </div>
-                      <span className="cart-price">
-                        {(prod.price * item.cartQuantity).toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
-                      </span>
+          <div className="col-md-8 order-md-1 col-12">
+            <div className="container-box">
+              <div class="border-box">
+                <span>
+                  {" "}
+                  <img
+                    src="https://s3-alpha-sig.figma.com/img/ee9a/05df/38e96fd9785a5c166c0c81ba281b7dc8?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=Kdt2xBSI75j6QNdW3xjIJJC5hLTbZ9a2Nb9-KQNMRwN8sl4gMQ5NMYbanOfRizsYhyj5kIjneqSpNQmVtI4hjcPMXPm1DlikNdwbJtIdbhEQBAfqBOfFAFST75o5yTTZG~D65v9A5F2jItpUu2-fpIEdS6rEwlKNTUacPmHLGPq4J69Z~qd6KcPa-K0rH-ch721-YwsaV0bPdRPeLaHU7SEXJi8WQI5sbf1cPTofjtEM6BwRT1nCBAcW5JwRnDUaxDNAa0FgBozLjLiHeuLMrkZkA1iM0dHcQPrea7FsWbcCLkF0goP574faTXruGMYNdUQjArHD-Lmj28VP~rj6tQ__"
+                    width={20}
+                    style={{ marginRight: "5px" }}
+                    alt=""
+                  />
+                  Các sản phẩm của bạn
+                </span>
+                <div class="item">
+                  <img
+                    src="https://s3-alpha-sig.figma.com/img/cc5a/262f/5fb08b0d0a67cd2a02caf9667529b2f5?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=qN5sQ3OhUvTnkIQupADbba-u9v1-uTqIxRwe9n1cxvof5GHFeac8Uwm9V-MCVgrmStYM9bKDVeV1OVtUws3jS-l7eLRH6VPV1mZCiloLDlEkRXOd6gM39Sg-5oeKcm444zym2OhY5zUZ3vHrG5DrjAu-4j4kdxWWhoWvVvT-gO4il5-X1Xa332cBGmgEJ9hAW7WjUDRldl~j-r6AbZO-3bo-rGXHxJSSISQOP3Pp1vnMOJgR9Vh9jLqnKDN-Sdi90eBvoMHg~VBkt1YeiIWHaL6X8NCjnMKzWjy-6C3SVm7SjYgU7W6gAcPbWApuPm731wabPjwQAbltbBhnRTxz5Q__"
+                    alt="Sách Thám tử đã chết"
+                  />
+                  <div class="item-info">
+                    <div class="item-title">
+                      Sách Thám tử đã chết - Lẻ tập 1 2 3 4 5 6 - Light Novel
                     </div>
-                  );
-                })
-              ) : (
-                <div>Giỏ hàng trống</div>
-              )}
+                    <div class="item-details">
+                      <div>Số lượng: 1</div>
+                      <div className="price">145,000 đ</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="item">
+                  <img
+                    src="https://s3-alpha-sig.figma.com/img/cc5a/262f/5fb08b0d0a67cd2a02caf9667529b2f5?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=qN5sQ3OhUvTnkIQupADbba-u9v1-uTqIxRwe9n1cxvof5GHFeac8Uwm9V-MCVgrmStYM9bKDVeV1OVtUws3jS-l7eLRH6VPV1mZCiloLDlEkRXOd6gM39Sg-5oeKcm444zym2OhY5zUZ3vHrG5DrjAu-4j4kdxWWhoWvVvT-gO4il5-X1Xa332cBGmgEJ9hAW7WjUDRldl~j-r6AbZO-3bo-rGXHxJSSISQOP3Pp1vnMOJgR9Vh9jLqnKDN-Sdi90eBvoMHg~VBkt1YeiIWHaL6X8NCjnMKzWjy-6C3SVm7SjYgU7W6gAcPbWApuPm731wabPjwQAbltbBhnRTxz5Q__"
+                    alt="Sách Thám tử đã chết"
+                  />
+                  <div class="item-info">
+                    <div class="item-title">
+                      Sách Thám tử đã chết - Lẻ tập 1 2 3 4 5 6 - Light Novel
+                    </div>
+                    <div class="item-details">
+                      <div>Số lượng: 1</div>
+                      <div className="price">145,000 đ</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="item">
+                  <img
+                    src="https://s3-alpha-sig.figma.com/img/cc5a/262f/5fb08b0d0a67cd2a02caf9667529b2f5?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=qN5sQ3OhUvTnkIQupADbba-u9v1-uTqIxRwe9n1cxvof5GHFeac8Uwm9V-MCVgrmStYM9bKDVeV1OVtUws3jS-l7eLRH6VPV1mZCiloLDlEkRXOd6gM39Sg-5oeKcm444zym2OhY5zUZ3vHrG5DrjAu-4j4kdxWWhoWvVvT-gO4il5-X1Xa332cBGmgEJ9hAW7WjUDRldl~j-r6AbZO-3bo-rGXHxJSSISQOP3Pp1vnMOJgR9Vh9jLqnKDN-Sdi90eBvoMHg~VBkt1YeiIWHaL6X8NCjnMKzWjy-6C3SVm7SjYgU7W6gAcPbWApuPm731wabPjwQAbltbBhnRTxz5Q__"
+                    alt="Sách Thám tử đã chết"
+                  />
+                  <div class="item-info">
+                    <div class="item-title">
+                      Sách Thám tử đã chết - Lẻ tập 1 2 3 4 5 6 - Light Novel
+                    </div>
+                    <div class="item-details">
+                      <div>Số lượng: 1</div>
+                      <div className="price">145,000 đ</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br />
+            <div className="paymen">
+              <div className="pttt">Phương thức thanh toán</div>
+              <div className="d-flex gap-3 pb-4">
+                <input type="radio" name="pay" id="" />
+                <label
+                  htmlFor=""
+                  className="d-flex gap-1"
+                  style={{ alignItems: "center" }}
+                >
+                  <img
+                    src="https://s3-alpha-sig.figma.com/img/f5ea/debb/02cee35ae0c3347fe5a5c14f5f0e696c?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=bFpIBjE3RVkAMrA3U02h92GIbfnThqUbGjjWsD4MFmky1F-kMJL2asrysPXqW-cFEMzNNTmuVVuSTvCSt56oOjggFxxewzKzokeNhG1XBDtJtScg1~7PynOr5zNZdViX~biwtYDf9aOmm7r3kM5N49Qevv~AIBvTyPAYK2hsXURhjDT4gzSgqTv8lwclxSS2Uqlt2-Wmb07-EnAqGgGQdQogUv~Ksy7k7c0y8IRSXtQ~D6FlpnzUAWK97PE4AW6EGLN3CmJ5pVeoe9c0OD-mq9r85zmPngAy36XCe89lP6miokn-408LgqeZl86~NUzYjgCYNaJRN4w~wNwkf3SPsQ__"
+                    width={20}
+                    alt=""
+                  />
+                  Thanh toán khi nhận hàng
+                </label>
+              </div>
+              <div className="d-flex gap-3 gap-3 pb-2">
+                <input type="radio" name="pay" id="" />
+                <label
+                  htmlFor=""
+                  className="d-flex gap-1"
+                  style={{ alignItems: "center" }}
+                >
+                  <img
+                    src="https://s3-alpha-sig.figma.com/img/a90f/7f72/2f966edbc60ed7615aed5160878529e6?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=kcXc12J-yRuZv3YRO0BFKlq1Meh52BjKkis5EFp~8HwLPecdDRmKql8q7sEiRVU1eHl2~bcW9qTxzdfk3CH~ym-ZA~lb7taZYekXLUSsrldjyA-D~cgA39HQA2JgnQHaDujIRS2gIRck9ZzdA9VYZOVZe-xP85R~wtXpdswmcqerrOAU4URXH36grwJT0zup~cI5-bDcZgOAkb1FUdqK9yCDA5kL~81xkHnHWtDfgkDR0FCrdsiRv7F2cWydiJCuR7IkHTvqbbtNHkj7M3Uy0af~VuuHbRHCoUdlwo~d60ZrYipbA~jYOVIAbE-p0HJOi84ZzuV13h6ByuqeH8N6QA__"
+                    width={20}
+                    alt=""
+                  />
+                  Thanh toán bằng VNpay
+                </label>
+              </div>
             </div>
           </div>
-          <div className="col-lg-4">
-            {/* Phần xem trước khuyến mãi, tổng tiền… */}
-            <div className="promo-section">
-              <div className="title-promotion">
-                <h4>Khuyến mãi</h4>
-                <span>
-                  Xem thêm
-                </span>
+          <div className="col-md-4 order-md-2 col-12 ">
+            <div className="container-box">
+              <div className="dc">
+                <div className="shipping-address">
+                  <div>Địa chỉ giao hàng</div>
+                  <div className="text-info">Thay đổi</div>
+                </div>
+                <hr />
+                <div>
+                  <div
+                    className="d-flex gap-2 align-items-start address"
+                    style={{ marginLeft: "15px" }}
+                  >
+                    <input
+                      type="radio"
+                      name="dc"
+                      id=""
+                      style={{ marginTop: "8px" }}
+                      checked
+                    />
+                    <label htmlFor="">
+                      Số 1234, đường Nguyễn Văn Cừ, ấp Mỹ Long, xã Mỹ Phước Tây,
+                      huyện Cai Lậy, tỉnh Tiền Giang, Việt Nam.Số 1234, đường
+                      Nguyễn Văn Cừ, ấp Mỹ Long, xã Mỹ Phước Tây, huyện Cai Lậy,
+                      tỉnh Tiền Giang, Việt Nam.
+                    </label>
+                  </div>
+                  <br />
+                  <div
+                    className="d-flex gap-2 align-items-start address"
+                    style={{ marginLeft: "15px" }}
+                  >
+                    <input
+                      type="radio"
+                      name="dc"
+                      id=""
+                      style={{ marginTop: "8px" }}
+                    />
+                    <label htmlFor="">
+                      Số 1234, đường Nguyễn Văn Cừ, ấp Mỹ Long, xã Mỹ Phước Tây,
+                      huyện Cai Lậy, tỉnh Tiền Giang, Việt Nam.Số 1234, đường
+                      Nguyễn Văn Cừ, ấp Mỹ Long, xã Mỹ Phước Tây, huyện Cai Lậy,
+                      tỉnh Tiền Giang, Việt Nam.
+                    </label>
+                  </div>
+                </div>
               </div>
-              {/* Giả sử hiển thị thông tin khuyến mãi */}
-              <div className="title-discount">
-                <h5 className="text-uppercase fw-bold">Mã giảm 50k - toàn sàn</h5>
-                <span className="text-decoration-underline">
-                  <a href="#">Chi tiết</a>
-                </span>
-              </div>
-              <p>Đơn hàng từ 550k - Xem chi tiết để biết thêm</p>
-              {/* Progress Bar */}
             </div>
-            <div className="total-section mt-2">
-              <div className="d-flex justify-content-between align-items-center">
-                <p>Tạm tính</p>
-                <span>
-                  {cart.reduce((sum, item) => sum + item.price * item.cartQuantity, 0).toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
+            <br />
+            <div className="container-box">
+              <div className="d-flex justify-content-between pb-2">
+                <span>Tạm tính</span>
+                <span>440.000 đ</span>
+              </div>
+              <div className="d-flex justify-content-between pb-2">
+                <span>Phí vận chuyển</span>
+                <span>50.000đ</span>
+              </div>
+              <div className="d-flex justify-content-between pb-2">
+                <span>Giảm giá</span>
+                <span>20.000đ</span>
+              </div>
+              <hr />
+              <div className="d-flex justify-content-between pb-2">
+                <span className="fw-medium " style={{ fontSize: "17px" }}>Tổng Số Tiền (gồm VAT)</span>
+                <span className="text-danger " style={{ fontSize: "17px" }}>
+                  440.000 VNĐ
                 </span>
               </div>
-              <div className="line-total" />
-              <div className="d-flex justify-content-between align-items-center total-footer">
-                <p><strong>Tổng Số Tiền (gồm VAT)</strong></p>
-                <span>
-                  {selectedTotal.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
-                </span>
-              </div>
-              {/* Phần chọn địa chỉ giao hàng */}
-              <div className="shipping-address mt-3">
-                <h4>Địa chỉ giao hàng</h4>
-                {addresses.length > 0 ? (
-                  addresses
-                    .filter((addr) => String(addr.userId) === String(user._id))
-                    .map((addr) => (
-                      <label key={addr._id} className="d-block mb-1">
-                        <input
-                          type="radio"
-                          name="selectedAddress"
-                          value={addr._id}
-                          checked={selectedAddressId === addr._id}
-                          onChange={() => setSelectedAddressId(addr._id)}
-                        />{" "}
-                        {addr.address_line}, {addr.ward}, {addr.district}, {addr.province}{" "}
-                        {addr.default && <span>(Mặc định)</span>}
-                      </label>
-                    ))
-                ) : (
-                  <p>Chưa có địa chỉ nào. Vui lòng tạo địa chỉ.</p>
-                )}
-              </div>
-              <button className="btn btn-danger w-100 mt-3" onClick={handleCheckout}>
-                <span className="fw-bold text-uppercase">Thanh Toán</span>
-              </button>
+                <button className="thanhtoan mt-2">THANH TOÁN</button>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </main>
   );
 };
 

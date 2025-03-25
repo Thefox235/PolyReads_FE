@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getPosts } from "../api/server"; // Điều chỉnh đường dẫn theo dự án của bạn
+import { Link } from "react-router-dom";
 
 // Component riêng cho từng card dựa trên cấu trúc HTML bạn gửi
 const ArticleCard = ({ post }) => {
@@ -12,14 +13,20 @@ const ArticleCard = ({ post }) => {
     return (
         <div className="article_3_card_silde">
             <div className="article_3_right_text_1">
+                <Link to={`/blog/${post._id}`} >
                 <span className="article_3_right_text_1a">{truncatedTitle}</span>
+                </Link>
+
             </div>
             <div className="article_3_right_img">
-                <img
+                <Link to={`/blog/${post._id}`} >
+                    <img
 
-                    src={post.coverImage}
-                    alt={post.title}
-                />
+                        src={post.coverImage}
+                        alt={post.title}
+                    />
+                </Link>
+
             </div>
             <div className="article_3_right_text_2">
                 <span className="article_3_right_text_2a">

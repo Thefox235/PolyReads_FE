@@ -1,6 +1,39 @@
 import '../asset/css/footer.css';
 import React, { useState, useEffect } from 'react';
+import {
+    getPosts,
+    getCategory
+} from '../api/server';
+import { Link } from 'react-router-dom';
+
 const Footer = () => {
+    const [posts, setPosts] = useState([]);       // Danh sách bài post
+    const [categoryName, setCategoryName] = useState([]);
+
+    useEffect(() => {
+        //cate
+        const fetchCategory = async () => {
+            try {
+                const categoryData = await getCategory();
+                setCategoryName(categoryData);
+            } catch (error) {
+                console.error('Có lỗi xảy ra khi lấy danh mục:', error);
+            }
+        };
+        fetchCategory();
+        //post
+        const fetchPosts = async () => {
+            try {
+                const data = await getPosts();
+                // Lấy 10 bài post đầu tiên
+                setPosts(data);
+            } catch (err) {
+                console.error("Lỗi khi lấy bài viết:", err);
+            }
+        };
+
+        fetchPosts();
+    }, []);
 
     return (
         <>
@@ -40,78 +73,58 @@ const Footer = () => {
                     <h5 style={{ fontWeight: "bold" }} className="text-start">
                         BÀI VIẾT NỖI BẬT
                     </h5>
-                    <div className="d-flex justify-content-center align-items-center gap-3 mt-4">
-                        <div className="image-blog-container">
-                            <img
-                                className="blog-tag-img"
-                                src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__"
-                                width={113}
-                                alt=""
-                            />
-                        </div>
-                        <div>
-                            <div
-                                className="d-flex align-items-center gap-2 ts "
-                                style={{ backgroundColor: "#FD57FD" }}
-                            >
-                                <div className="containers">
-                                    <div className="outer-circle">
-                                        <div className="inner-circle" />
+
+                    {posts && posts.length > 0 ? (
+                        (posts.slice(0, 2)).map((post, index) => {
+                            const postCate = categoryName.filter(cate => cate).find(cate => cate._id === post.tag);
+                            return (
+
+                                <div className="d-flex justify-content-center align-items-center gap-3 mt-4">
+                                    <Link to={`/blog/${post._id}`} className="image-blog-container">
+                                        <img
+                                            className="blog-tag-img"
+                                            src={post.coverImage}
+                                            width={113}
+                                            alt={post.slug}
+                                        />
+                                    </Link>
+                                    <div>
+                                        <div
+                                            className="d-flex align-items-center gap-2 ts "
+                                            style={{ backgroundColor: "#917FB3" }}
+                                        >
+                                            <div className="containers">
+                                                <div className="outer-circle">
+                                                    <div className="inner-circle" />
+                                                </div>
+                                            </div>
+                                            <p className="tag-text" style={{ marginTop: 15 }}>
+                                                {postCate && postCate.name}
+                                            </p>
+                                        </div>
+                                        <p style={{ fontWeight: "bold" }} className="text-start">
+                                            {post.title.length > 40
+                                                ? post.title.substring(0, 40) + "..."
+                                                : post.title}
+                                        </p>
+                                        <div className="d-flex justify-content-between">
+                                            <span style={{ color: "#889097", textAlign: "left", fontSize: 13 }}>
+                                                {new Date(post.createdAt).toLocaleDateString()}
+                                            </span>
+                                            <span style={{ color: "#889097", textAlign: "left", fontSize: 13 }}>
+                                                5,579 lượt xem
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                                <p className="tag-text" style={{ marginTop: 15 }}>
-                                    TIỂU SỬ
-                                </p>
-                            </div>
-                            <p style={{ fontWeight: "bold" }} className="text-start">
-                                'Mã nguồn' chuyện đời tỷ phú Bill Ga...
-                            </p>
-                            <div className="d-flex justify-content-between">
-                                <span style={{ color: "#889097", textAlign: "left", fontSize: 13 }}>
-                                    05 Dec, 2024
-                                </span>
-                                <span style={{ color: "#889097", textAlign: "left", fontSize: 13 }}>
-                                    5,579 lượt xem
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="d-flex justify-content-center align-items-center gap-3 mt-4">
-                        <div className="image-blog-container">
-                            <img
-                                className="blog-tag-img"
-                                src="https://media-hosting.imagekit.io//b1e96396c8b3453a/blog_context_10.jpg?Expires=1837258842&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=TJBOLRCdHSu9AYSw-A-K0XKBy~OfTdYQRnbAwsbWi3~DoFnmGt9mxHlg2ip4Lgj6MFKyP98pnIREH88YfXch84PIyhYkSBjgjshqhTLQL9cFKyM5KIrRqzMO0a3WfJJBFPzCuDqJr~7nb9DLlh-WZngQFPOsyv-~L8PcQGTiMEsznzho-iRtiGh2trTJFbKPw-U7ux1KD~r6VUe8ieY4zVpSXRe8FTK597DGEiJqHMEoriufkdBBNWt4AtEr8FeOVsHtlohf-Jw0NvUiuC~K~wPjRaQgJpILvDxttXNgZMDCLReMbytT1U4KHUFeLMxrQRDHy2X3apWohQqJCXKBAA__"
-                                width={113}
-                                alt=""
-                            />
-                        </div>
-                        <div>
-                            <div
-                                className="d-flex align-items-center gap-2 ts "
-                                style={{ backgroundColor: "#FF5F5F" }}
-                            >
-                                <div className="containers">
-                                    <div className="outer-circle">
-                                        <div className="inner-circle" />
-                                    </div>
-                                </div>
-                                <p className="tag-text" style={{ marginTop: 15 }}>
-                                    VIETNAM
-                                </p>
-                            </div>
-                            <p style={{ fontWeight: "bold" }} className="text-start">
-                                'Mã nguồn' chuyện đời tỷ phú Bill Ga...
-                            </p>
-                            <div className="d-flex justify-content-between">
-                                <span style={{ color: "#889097", textAlign: "left", fontSize: 13 }}>
-                                    05 Dec, 2024
-                                </span>
-                                <span style={{ color: "#889097", textAlign: "left", fontSize: 13 }}>
-                                    5,579 lượt xem
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                            );
+                        })
+                    ) : (
+                        <tr>
+                            <td colSpan="6">Đang tải bài viết...</td>
+                        </tr>
+                    )}
+
                 </div>
                 <div className="dm ">
                     <h5 style={{ fontWeight: "bold" }}>DANH MỤC</h5>

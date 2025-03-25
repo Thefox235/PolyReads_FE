@@ -41,6 +41,25 @@ export const deletePost = async (postId) => {
   }
 };
 
+// Hàm lấy chi tiết bài viết
+export const getPostById = async (id) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/post/${id}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log(response.data.post);
+    // Giả sử dữ liệu trả về dạng { posts: [...] }
+    return response.data.post;
+  } catch (error) {
+    const errMessage = error.response?.data?.message || 'Lỗi khi lấy danh sách bài viết';
+    console.error('Lỗi trong getPosts:', errMessage);
+    throw new Error(errMessage);
+  }
+};
+
+
 // Hàm lấy danh sách bài viết
 export const getPosts = async () => {
   try {
@@ -702,6 +721,7 @@ export const getProductById = async (id) => {
     throw error;
   }
 };
+
 //lấy sản phẩm tương tự
 export const getProductByCate = async (id) => {
   try {

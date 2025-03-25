@@ -1,3 +1,7 @@
+.article_5_left_text
+{
+    width: 500px;
+}
 .blog-container
 {
     width: 1200px;
@@ -480,7 +484,7 @@ border-radius: 4px;
     margin-left: 0px;
     width: 94px;
     height: 26px;
-    background: #FD57FD;
+    background: #917FB3;
     border-radius: 15px;
 }
 
@@ -524,10 +528,10 @@ border-radius: 4px;
 
 .title_nav {
     display: flex;
-    width: 1084px;
+    width: 1200px;
     height: 24px;
     margin-top: 50px;
-    gap: 565px;
+    justify-content: space-between;
 }
 
 .title_left {
@@ -549,7 +553,7 @@ border-radius: 4px;
     font-family: 'Roboto', 'Inter';
     font-style: normal;
     font-weight: 700;
-    font-size: 12px;
+    font-size: 18px;
     line-height: 15px;
     text-decoration-line: underline;
     color: #FFFFFF;
@@ -561,9 +565,9 @@ border-radius: 4px;
     display: flex;
     justify-content: center;
     justify-items: center;
-    width: 1170px;
+    width: 1200px;
     height: 618.45px;
-    gap: 65px;
+    gap: 165px;
 }
 
 .article_5_left {
@@ -573,8 +577,8 @@ border-radius: 4px;
 
 .article_5_left_img {
     display: flex;
-    width: 370px;
-    height: 370px;
+    width: 500px;
+    height: 450px;
     border-radius: 5px;
 }
 .article_5_left_img img
@@ -641,22 +645,23 @@ border-radius: 4px;
 }
 
 .article_5_right {
-    width: 203.32px;
-    height: 279.73px;
+    width: 100%;
+    height: 100%;
 }
 
 .article_5_right_top {
     display: flex;
-    gap: 20px;
-    width: 203.32px;
-    height: 279.73px;
+    flex-wrap: wrap;
+    gap: 25px;
+    width: 100%;
+    height: 100%;
 }
 
 .article_5_right_bot {
     display: flex;
-    gap: 20px;
+    gap: 30px;
     margin-top: 35px;
-    width: 203.32px;
+    width: 100%;
     height: 279.73px;
 }
 
@@ -676,6 +681,7 @@ border-radius: 4px;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 5px;
 }
 
 .article_5_right_text_1 {
@@ -686,6 +692,10 @@ border-radius: 4px;
     font-size: 16px;
     line-height: 24px;
     color: #FFFFFF;
+    display: -webkit-box;           /* Sử dụng flexbox phiên bản cũ của Webkit */
+    -webkit-box-orient: vertical;   /* Xác định chiều hiển thị của các item */
+    -webkit-line-clamp: 2;          /* Giới hạn hiển thị tối đa 3 dòng */
+    overflow: hidden;               /* Ẩn phần vượt quá */
 }
 
 .article_5_right_text_2 {
@@ -694,9 +704,9 @@ border-radius: 4px;
     font-family: 'Roboto', 'Inter';
     font-style: normal;
     font-weight: 400;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 24px;
-    color: #889097;
+    color: #888888;
 }
 
 .article_6 {

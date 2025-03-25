@@ -13,6 +13,7 @@
     "@toast-ui/react-editor": "^3.2.3",
     "@vitejs/plugin-react": "^4.3.4",
     "axios": "^1.7.2",
+    "dompurify": "^3.2.4",
     "express-session": "^1.18.0",
     "hanhchinhvn": "^1.6.0",
     "react": "^18.3.1",

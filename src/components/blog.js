@@ -188,13 +188,13 @@ const Blog = () => {
                                 return (
 
                                     <div className="card_left" key={post._id || index}>
-                                        <div className="card_left_1">
+                                        <Link to={`/blog/${post._id}`} className="card_left_1">
                                             <img
                                                 src={post.coverImage}
-                                                alt=""
+                                                alt={post.slug}
 
                                             />
-                                        </div>
+                                        </Link>
 
                                         <div className="card_left_2">
 
@@ -221,11 +221,11 @@ const Blog = () => {
 
                                             </div>
 
-                                            <div className="card_left_2_title_1">
+                                            <Link to={`/blog/${post._id}`} className="card_left_2_title_1">
                                                 <span className="card_left_2_text_1">
                                                     {post.title}
                                                 </span>
-                                            </div>
+                                            </Link>
 
                                             <div className="card_left_2_title_2">
                                                 <span className="card_left_2_text_2">{new Date(post.createdAt).toLocaleDateString()}</span>
@@ -246,6 +246,7 @@ const Blog = () => {
                                                     {post.content.length > 200
                                                         ? post.content.substring(0, 180) + "..."
                                                         : post.content}
+
                                                 </span>
                                             </div>
 
@@ -283,11 +284,11 @@ const Blog = () => {
                                     return (
 
                                         <div className="card_right_0" key={post._id || index}>
-                                            <div className="card_right_1">
+                                            <Link to={`/blog/${post._id}`} className="card_right_1">
                                                 <img
                                                     style={{ width: 113, height: 100 }}
                                                     src={post.coverImage} alt={post.title} />
-                                            </div>
+                                            </Link>
 
                                             <div className="card_right_2">
                                                 <div className="card_right_2_title_background">
@@ -308,15 +309,15 @@ const Blog = () => {
                                                         <span>{postCate && postCate.name}</span>
                                                     </span>
                                                 </div>
-                                                <div className="card_right_2_title_1">
+                                                <Link to={`/blog/${post._id}`} className="card_right_2_title_1">
                                                     <span className="card_right_2_text_1">
-                                                    {post.title.length > 35
-                                                        ? post.title.substring(0, 30) + "..."
-                                                        : post.title}
+                                                        {post.title.length > 35
+                                                            ? post.title.substring(0, 30) + "..."
+                                                            : post.title}
                                                     </span>
-                                                </div>
+                                                </Link>
                                                 <div className="card_right_2_title_2">
-                                                    <span className="card_right_2_text_2">05 Dec, 2024</span>
+                                                    <span className="card_right_2_text_2">{new Date(post.createdAt).toLocaleDateString()}</span>
                                                     <span className="card_right_2_text_3">5,579 lượt xem</span>
                                                 </div>
                                             </div>
@@ -374,130 +375,86 @@ const Blog = () => {
                         </ul>
                     </div>
                 </div>
-                <div className="article_blog">
-                    <div className="article_5_left">
-                        <div className="article_5_left_img">
-                            <img
-                                style={{ width: '370', height: '370' }}
-                                src='https://media-hosting.imagekit.io//bc7c7f487c474e47/blog_context_14.jpg?Expires=1837259782&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=fJBsoPBvGjlCMFpJt9U1WBDgnqsUXB2nIY-aqfWSHxYnDuWqrXFggWqIJWqQIcwoi4nAkhDhwOWge~F9xGNlDRGnXd1UanTVTsaAHXiZn1q4qtjibqxf3uf5LZK6dGa-8C1v1F2dr7bQUJL1ckAwnMz945r4sle-2q2rC36bW9hlogzMocr126t~i3y~QoJX9gmcEwkKDf7cCrZDK0QLsSRN4jCPGzH2WoQ9fRVY8y5uPDFy~ic9bPMtwRUV9u5WVTLiQUrGQXbtP-v8GyRhHR2QCc99B6qKACJ7onOrA5AHFYsW53qFF10bOxWZKk9t4VWG~2ENfBnxrNYRYvTk8w__' />
 
+                <div className='article_nav'>
 
-                        </div>
-                        <div className="article_5_left_text">
-                            <div className="article_5_left_text_1">
-                                <span>Mercenary Enrollment Chapter 219: Quá khứ của Ijin</span>
+                    <div className="article_blog">
+
+                        {posts && posts.length > 0 ? (
+                            (posts.slice(0, 1)).map((post, index) => {
+                                const postCate = categoryName.filter(cate => cate).find(cate => cate._id === post.tag);
+                                return (
+
+                                    <div className="article_5_left">
+                                        <Link to={`/blog/${post._id}`} className="article_5_left_img">
+                                            <img
+                                                style={{ width: '370', height: '370' }}
+                                                src={post.coverImage} alt={post.slug} />
+                                        </Link>
+                                        <div className="article_5_left_text">
+                                            <Link to={`/blog/${post._id}`} className="article_5_left_text_1">
+                                                <span>{post.title}</span>
+                                            </Link>
+                                            <div className="article_5_left_text_2">
+                                                <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                                                <span>114 lượt xem</span>
+                                            </div>
+                                            <div className="article_5_left_text_3">
+                                                <span>
+                                                    {post.content.length > 200
+                                                        ? post.content.substring(0, 200) + "..."
+                                                        : post.content}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                );
+                            })
+                        ) : (
+                            <tr>
+                                <td colSpan="6">Đang tải bài viết...</td>
+                            </tr>
+                        )}
+
+                        <div className="article_5_right">
+                            <div className="article_5_right_top">
+
+                                {posts && posts.length > 0 ? (
+                                    (posts.slice(0, 6)).map((post, index) => {
+                                        const postCate = categoryName.filter(cate => cate).find(cate => cate._id === post.tag);
+                                        return (
+
+                                            <div className="article_5_right_img" key={post._id || index}>
+                                                <Link to={`/blog/${post._id}`} className='article_5_right_img_img'>
+                                                    <img
+                                                        src={post.coverImage} alt={post.slug} />
+                                                </Link>
+                                                <div className="article_5_right_text">
+                                                    <Link to={`/blog/${post._id}`} className="article_5_right_text_1">
+                                                        <span>{post.title}</span>
+                                                    </Link>
+                                                    <div className="article_5_right_text_2">
+                                                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                                                        <span>159 lượt xem</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6">Đang tải bài viết...</td>
+                                    </tr>
+                                )}
                             </div>
-                            <div className="article_5_left_text_2">
-                                <span>13 Dec, 2024</span>
-                                <span>19 phút đọc</span>
-                                <span>114 lượt xem</span>
-                            </div>
-                            <div className="article_5_left_text_3">
-                                <span>
-                                    Mercenary Enrollment Chapter 219 sẽ là một chương đầy hành động và
-                                    hồi hộp, nêu bật chiến lược của Ijin trong trận chiến sắp tới và
-                                    sự biến đổi của anh từ một lính đánh thuê thành một ...
-                                </span>
-                            </div>
+
                         </div>
                     </div>
-                    <div className="article_5_right">
-                        <div className="article_5_right_top">
-                            <div className="article_5_right_img">
-                                <div className='article_5_right_img_img'>
-                                    <img
-                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
-                                </div>
-                                <div className="article_5_right_text">
-                                    <div className="article_5_right_text_1">
-                                        <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
-                                    </div>
-                                    <div className="article_5_right_text_2">
-                                        <span>13 Dec</span>
-                                        <span>159 lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="article_5_right_img">
-                                <div className='article_5_right_img_img'>
-                                    <img
-                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
-                                </div>
-                                <div className="article_5_right_text">
-                                    <div className="article_5_right_text_1">
-                                        <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
-                                    </div>
-                                    <div className="article_5_right_text_2">
-                                        <span>13 Dec</span>
-                                        <span>159 lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="article_5_right_img">
-                                <div className='article_5_right_img_img'>
-                                    <img
-                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
-                                </div>
-                                <div className="article_5_right_text">
-                                    <div className="article_5_right_text_1">
-                                        <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
-                                    </div>
-                                    <div className="article_5_right_text_2">
-                                        <span>13 Dec</span>
-                                        <span>159 lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="article_5_right_bot">
-                            <div className="article_5_right_img">
-                                <div className='article_5_right_img_img'>
-                                    <img
-                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
-                                </div>
-                                <div className="article_5_right_text">
-                                    <div className="article_5_right_text_1">
-                                        <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
-                                    </div>
-                                    <div className="article_5_right_text_2">
-                                        <span>13 Dec</span>
-                                        <span>159 lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="article_5_right_img">
-                                <div className='article_5_right_img_img'>
-                                    <img
-                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
-                                </div>
-                                <div className="article_5_right_text">
-                                    <div className="article_5_right_text_1">
-                                        <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
-                                    </div>
-                                    <div className="article_5_right_text_2">
-                                        <span>13 Dec</span>
-                                        <span>159 lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="article_5_right_img">
-                                <div className='article_5_right_img_img'>
-                                    <img
-                                        src="https://media-hosting.imagekit.io//e93dae2c8ce54ca3/kagurabachi-chapter-61-600x421.jpeg?Expires=1836490926&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wqDhAAAqfvwdrV7mP95ejI8O-tRidXI6JzbqF1OKIZI1wzcYmsjuZOtYgXIBj70I2SZlDj49BwtNqxq1CkHrwZpNclQSo6pZxWHlm5prrpcwyGcfLKo5YoVUBIIAE-mfML-q4MmC117l096H5tpFgEuxRnoQyhPYWPhW6ntCGsdQNsn7s7KXc100UzAJNZvUS~MZrg5qFcAfyycUSVDukyJ4fhez5GCqMCocqv1hsLDmzPg9rARgikrVXodsX0Ns~ijWg1hdibu~Lu-t3mE5fl5X50MKbRpCyBAeQWhBJY0VOYKkJeofPXxaLMaDxZTMxRFASxDI766uaN-Ih~OqcA__" alt="" />
-                                </div>
-                                <div className="article_5_right_text">
-                                    <div className="article_5_right_text_1">
-                                        <span>Kagurabachi Chapter 61: Liên minh của Chihiro v...</span>
-                                    </div>
-                                    <div className="article_5_right_text_2">
-                                        <span>13 Dec</span>
-                                        <span>159 lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
+
             </div>
             <div className='blog-container'>
                 <div className='blog_product'>

@@ -10,7 +10,9 @@ import {
   getProductByCate,
   getAuthor,
   getBanners,
-  getDiscounts
+  getDiscounts,
+  getPosts,
+  getCategory
 } from '../api/server';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from "./context/cartContext";
@@ -30,7 +32,8 @@ const Home = () => {
   // const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [authorName, setAuthorName] = useState('');
-
+  const [posts, setPosts] = useState([]);       // Danh sách bài post
+  const [categoryName, setCategoryName] = useState([]);
 
   useEffect(() => {
     // const userData = sessionStorage.getItem('user');
@@ -38,6 +41,28 @@ const Home = () => {
     // if (userData) {
     //   setUser(JSON.parse(userData));
     // }
+    //cate
+    const fetchCategory = async () => {
+      try {
+        const categoryData = await getCategory();
+        setCategoryName(categoryData);
+      } catch (error) {
+        console.error('Có lỗi xảy ra khi lấy danh mục:', error);
+      }
+    };
+    fetchCategory();
+    //post
+    const fetchPosts = async () => {
+      try {
+        const data = await getPosts();
+        // Lấy 10 bài post đầu tiên
+        setPosts(data);
+      } catch (err) {
+        console.error("Lỗi khi lấy bài viết:", err);
+      }
+    };
+
+    fetchPosts();
 
     const fetchProducts = async () => {
       try {
@@ -293,8 +318,8 @@ const Home = () => {
           style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
         >
           <div className="title_top_menu tab_link_module">
-          <h3><a href="new-arrivals" title="Sản phẩm mới">Sản phẩm mới</a></h3>
-            </div>
+            <h3><a href="new-arrivals" title="Sản phẩm mới">Sản phẩm mới</a></h3>
+          </div>
         </div>
         <div className='NewProducts'>
           {/* product start */}
@@ -367,7 +392,7 @@ const Home = () => {
           style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
         >
           <div className="title_top_menu tab_link_module">
-          <h3><a href="new-arrivals" title="Truyện Tranh">Truyện Tranh</a></h3>
+            <h3><a href="new-arrivals" title="Truyện Tranh">Truyện Tranh</a></h3>
 
           </div>
           <div className="d-flex align-items-center gap-3">
@@ -438,7 +463,7 @@ const Home = () => {
           style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
         >
           <div className="title_top_menu tab_link_module">
-          <h3><a href="new-arrivals" title="Viễn Tưởng">Viễn Tưởng</a></h3>
+            <h3><a href="new-arrivals" title="Viễn Tưởng">Viễn Tưởng</a></h3>
           </div>
           <div className="d-flex align-items-center gap-3">
             <div style={{ color: "#917fb3", fontSize: 25 }} id="pre3">
@@ -507,98 +532,62 @@ const Home = () => {
           style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
         >
           <div className="title_top_menu tab_link_module">
-          <h3><a href="new-arrivals" title="Blog">Blog</a></h3>
+            <h3><a href="/blog" title="Blog">Blog</a></h3>
           </div>
-          <div className="d-flex align-items-center gap-3">
-            <div style={{ color: "#917fb3", fontSize: 25 }}>&lt;</div>
-            <div style={{ color: "#917fb3", fontSize: 25 }}>&gt;</div>
-          </div>
+
         </div>
         <div className="mt-3 blog gap-3">
-          <div>
-            <div className="card-blog ">
-              <img
-                src="https://s3-alpha-sig.figma.com/img/2a51/eb3a/59c48b164f7129f269fbf3cd8ebc39e2?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=L7SKgo5psoI06ydBS6xntMiLAccWfWuy3TGM2okaLUKzeJK4IS22IS5m67jo6BbQHdAUhG-BkETlQcclPDdKiXuRoTugZCcKqZieeotKjj8tscekzjHdQqq-FPd0KSnEZVIEwdVAtRm6Smf-PPX6AThuDII7-eRQal6uh896e8UJa-fYuncm0v7dVwdNZaUZD0d8cE~Lm~A5mF2m5Ha8O7YUnrUd0Gcz5SSfHtV4aEvcPIQ6JxOov5B4A2BVaGGLY6AT5joo8CnBeCnLi5yfCwtEzvNojfWl7ZUcWqMUaX9c4Rx2g7yPxjl60pCsWRPkWyCu7ixbMP9gOqpgJTpGVg__"
-                alt=""
-              />
-              <div className="time d-flex justify-content-center align-items-center ">
-                <img
-                  src="https://s3-alpha-sig.figma.com/img/1983/4611/cb3cb5fd2331bf6bf0c66f20d505d876?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=V1gMxNdHeCOgWjG9Y6ZLPUzCp~FYwV8AhtstYHWot4kcJ3O2ev8w~hpHiM3SoPXhE60WMmKYjIZBJ2x4g0QVXCyNcriJoZnZaU5j3rpNuU11XHDTZRv7K1-4pK~RNXNDjL3ASb62AwD07GGf7eei6O4dEzi2GXfxY0DtbG2NDPqMucSbK8u~N94F489uUp0uJlRZ1dK3FDS5PWhC2x3AEcr1PBurnlg5AeSt-I33Q23RXWnmZBZiHXX8I4d1R3xuZXKExcl6reRIJW~mR4~e8o4bH7avZtafZZsVPJaSsvdm~FyUOQGEkBNV-jXHv~N-g8ZaB8fIQq-to~ZuTZUP9A__"
-                  alt=""
-                />
-                <div className="posting-date ">23/4/2020 </div>
+
+          {posts && posts.length > 0 ? (
+            (posts.slice(0, 3)).map((post, index) => {
+              const postCate = categoryName.filter(cate => cate).find(cate => cate._id === post.tag);
+              return (
+
                 <div>
-                  {" "}
-                  Đăng bởi: <span className="fw-bold">ABC</span>
+                  <div className="card-blog ">
+                    <img
+                      src={post.coverImage}
+                      alt={post.slug}
+                    />
+                    <Link
+                     style={{color: "#333333"}}
+                     to={`/blog/${post._id}`} className="time d-flex justify-content-center align-items-center ">
+                      <img
+                        src="https://media-hosting.imagekit.io//1130699f09b34e04/Calendar.png?Expires=1837523307&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=JWvcYCc5XEVcl9FkztGpESUdoc57i1ANIOcx9mFXsfZp2eR8vy1JZyWYsu8YlDcRsev~cLZur2h-OxDiNOxKtonGz-zAo6ltwM4IqwtjDxaDHABBOMZRj~TqtKe4LxkPi9HXD0NfARdDprPD1815EuBOJ2RwbnTbwPdPFcNdXT6QP22x63xuPqoCwhPyZa2ld7BnqML-R47a3J-ob6DKA9~W7mSUJYyNrX26HStxi9PlofOCDWu47Krfea2e~K3btCVNx33N5pwX42mBEMawpkv3O9-dwf373CosOMB6qwqnOkYB3WCZSpR9SLg8WAm~rqHjuf6Fi6IFdbF5tztPLQ__"
+                        alt="calendar"
+                      />
+                      <div className="posting-date ">{new Date(post.createdAt).toLocaleDateString()} </div>
+                      <div>
+                       
+                        Đăng bởi: <span className="fw-bold">Admin</span>
+                      </div>
+                    </Link>
+                  </div>
+                  <div className="cart-body mt-3">
+                    <h5>
+                      <Link 
+                      style={{color: "#333333"}}
+                      to={`/blog/${post._id}`}>
+                      {post.title}
+                      </Link>
+                     
+                    </h5>
+                    <p>
+                      {post.content.length > 100
+                        ? post.content.substring(0, 100) + "..."
+                        : post.content}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="cart-body mt-3">
-              <h5>
-                Yuval Noah Harari: Chúng ta cần giáo dục con trẻ như thế nào để thành
-                công nào năm 2050?
-              </h5>
-              <p>
-                Yuval Noah Harari là tác gỉả người Israel&nbsp;được biết đến nhiều qua
-                các cuốn sác...&nbsp;
-              </p>
-            </div>
-          </div>
-          <div>
-            <div className="card-blog ">
-              <img
-                src="https://s3-alpha-sig.figma.com/img/9a24/be1a/1979ba9f5480ec51c03934784d58a9aa?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=fMn2tyqM7roEWi5YhzDSTiUcwD-86YUZfOA3hG7k6gYyvl7pMdVH8bpZubGW1ikM21oOb0IXrxOPOoEbuwtpPvoY7iDswAZ6Qifc8QWGrzaI9aOn-VcF9~3Nqbvi0pt0cCgFYVWyjIbhYVR~ukFLKrICgIiC3tb7~ycRqbS2~dS149qs4-I1EZMeDyV7j6vN~9SA~TtlDsF~UPf~89j5gU3buv1F7Jw68y6LQUOEOz6tM5TDLmOjNJWensayHENu6oaxmo4wYYXHiCahxaid~~b7AjuuQlspfVACOj1dNwh5Ni3B4jXP8yA845zupihnAZZ98HpLT02IZBbyE8PFWw__"
-                alt=""
-              />
-              <div className="time d-flex justify-content-center align-items-center ">
-                <img
-                  src="https://s3-alpha-sig.figma.com/img/1983/4611/cb3cb5fd2331bf6bf0c66f20d505d876?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=V1gMxNdHeCOgWjG9Y6ZLPUzCp~FYwV8AhtstYHWot4kcJ3O2ev8w~hpHiM3SoPXhE60WMmKYjIZBJ2x4g0QVXCyNcriJoZnZaU5j3rpNuU11XHDTZRv7K1-4pK~RNXNDjL3ASb62AwD07GGf7eei6O4dEzi2GXfxY0DtbG2NDPqMucSbK8u~N94F489uUp0uJlRZ1dK3FDS5PWhC2x3AEcr1PBurnlg5AeSt-I33Q23RXWnmZBZiHXX8I4d1R3xuZXKExcl6reRIJW~mR4~e8o4bH7avZtafZZsVPJaSsvdm~FyUOQGEkBNV-jXHv~N-g8ZaB8fIQq-to~ZuTZUP9A__"
-                  alt=""
-                />
-                <div className="posting-date ">23/4/2020 </div>
-                <div>
-                  {" "}
-                  Đăng bởi: <span className="fw-bold">ABC</span>
-                </div>
-              </div>
-            </div>
-            <div className="cart-body mt-3">
-              <h5>
-                Xếp hạng kết thúc của Jujutsu Kaisen, My Hero Academia và Call of the
-                Night năm 2024
-              </h5>
-              <p>
-                Năm 2024, cái kết của một số bộ manga được yêu thích đã để lại cho
-                người...
-              </p>
-            </div>
-          </div>
-          <div>
-            <div className="card-blog ">
-              <img
-                src="https://s3-alpha-sig.figma.com/img/fab4/6ead/f404d04341eab1b042c3dd60c800f9b7?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=ZWC7ms-osv3n4YpOnCzV3KFhMIxXcRoX-1RLjKOBRrahUrDyOYvvY7Oht6YCVgbRZAFz9A00nTJFWGi1Xh3DyqjOpU0ETrVtQuZE8nkEsd1qoVkIeKH6gZXE9qFXpCxkKfj-5xxtWdp0sJ5BqoZqnL29WsloH~ltlXej0~YNkPkDRNKwbuABqMsjkXMCWqhcUgwNMgekvsTMsu3C-70hHT3nWHCe2BWnel5YADaAa6RVzBfEzMBT~o6zfIe~AhCk4oZmWRsFD18CoMeH0H~LSpJqds1g958sMntPm~FMrWNvwZYzDZcu51AybygLhbkraZgnoGgI8l~TM1cX5O5szw__"
-                alt=""
-              />
-              <div className="time d-flex justify-content-center align-items-center ">
-                <img
-                  src="https://s3-alpha-sig.figma.com/img/1983/4611/cb3cb5fd2331bf6bf0c66f20d505d876?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=V1gMxNdHeCOgWjG9Y6ZLPUzCp~FYwV8AhtstYHWot4kcJ3O2ev8w~hpHiM3SoPXhE60WMmKYjIZBJ2x4g0QVXCyNcriJoZnZaU5j3rpNuU11XHDTZRv7K1-4pK~RNXNDjL3ASb62AwD07GGf7eei6O4dEzi2GXfxY0DtbG2NDPqMucSbK8u~N94F489uUp0uJlRZ1dK3FDS5PWhC2x3AEcr1PBurnlg5AeSt-I33Q23RXWnmZBZiHXX8I4d1R3xuZXKExcl6reRIJW~mR4~e8o4bH7avZtafZZsVPJaSsvdm~FyUOQGEkBNV-jXHv~N-g8ZaB8fIQq-to~ZuTZUP9A__"
-                  alt=""
-                />
-                <div className="posting-date ">23/4/2020 </div>
-                <div>
-                  {" "}
-                  Đăng bởi: <span className="fw-bold">ABC</span>
-                </div>
-              </div>
-            </div>
-            <div className="cart-body mt-3">
-              <h5>Một số thuật ngữ sách ngoại văn bạn nên biết?</h5>
-              <p>
-                1. Movie tie-in edition Movie tie-in là thuật ngữ dùng để chỉ một cuốn
-                sách mà...
-              </p>
-            </div>
-          </div>
+
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan="6">Đang tải bài viết...</td>
+            </tr>
+          )}
+
         </div>
       </main>
 
