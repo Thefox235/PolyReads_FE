@@ -20,11 +20,11 @@ const Account = () => {
     const storedUser = sessionStorage.getItem("user");
 
     if (!storedUser) {
-      throw new Error("User not found");
+        throw new Error("User not found");
     }
     const users = JSON.parse(storedUser);
     console.log(users);
-    
+
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -44,7 +44,7 @@ const Account = () => {
             setNewPassword("");
             setConfirmNewPassword("");
         } catch (error) {
-    
+
             console.error("Lỗi khi đổi mật khẩu:", error);
             alert("Có lỗi xảy ra khi đổi mật khẩu!");
         }
@@ -291,7 +291,12 @@ const Account = () => {
                     {/* Phần nội dung hiển thị dựa trên activeMenu */}
                     {activeMenu === "address-info" && (
                         <div id="address-info">
-                            <h2>Số địa chỉ</h2>
+                            <div className="address-header">
+                                <h2>Số địa chỉ</h2>
+                                <span className="add-new-address" onClick={handleAddAddress}>
+                                    +Thêm địa chỉ mới
+                                </span>
+                            </div>
                             {addresses.filter((addr) => addr.userId === user._id).length > 0 ? (
                                 addresses.filter((addr) => addr.userId === user._id).map((addr) => (
                                     <div className="address-item" key={addr._id}>

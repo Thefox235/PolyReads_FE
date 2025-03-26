@@ -156,7 +156,7 @@ const Header = ({ user, handleLogout }) => {
                             <div>ĐĂNG NHẬP |</div>
                             <div>
                                 <img
-                                    src="https://s3-alpha-sig.figma.com/img/05e6/e546/190235f6904e7113a9ac5a3736a6c1cd?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=iE~9uj46h2zEcViWjT7vuEBeJwpKYwlr8nOn7nlZguSvxy4dUvPCLzKc~XD1fC7xZ0a-Fs1-bIjXWewm2tzh7AGqfSTeOFwLKghQNDO3MrHd1cb4XXPLrFBx~mv1jJlEC-26g5UNZ9yDYkJPbiB87tbYD9KExA15KQUnUlgDmK5UmOPw8MIA67OTak3jg9mzC7zBW3Kg0XWai4LeOWK1Bz7Bm1gCO7pQ5syc9bPd-EhqzOTO10EikmNknPCVw3nJFLC6Kq2ZQShG~QaZbjRPRK8PvyLisv7FnSz3hc6JI2xgmOaFyBMhu81YCCw-KphYieW40MIfJ4s-HQRwDhgQ9w__"
+                                    src="https://media-hosting.imagekit.io//c2caec833b6e46b1/heart0.png?Expires=1835161260&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=ECcmFiPc25rbl0Ua6OVmPhaGXj9bv48u7DJ8WIHciHUxydXUxwlSoqdw4AdC~gB53Cd89-aCTQA0T9J-Oo6gyV5UMEUPOf3oarUUO3yWii47mhIDpBoddhkZ94GvkN9s~WkQbiyqJlrJzXNUrgLLOy8lOQvn8uCB3ZL39e6x4s~2b06sSG2~plFdvQC2tBHYyqXst7J1rXRRhtIDybKKQI28vuQVwogOBL6v-SLHeIve30qQ64bMS6KBx7JPTyqkkmf93yfez076uPj489G83T4fXAPCAboBqnT8S1XETXtfQZjL-Y2WsQz3BVM9vZ9HyShpbENHzuZVlT~tdjS6EQ__"
                                     width={25}
                                     alt=""
                                 />
@@ -181,16 +181,15 @@ const Header = ({ user, handleLogout }) => {
                         </div>
                         <div className="nav-moblie ">
                             <img
-                                src="https://s3-alpha-sig.figma.com/img/5eb6/f072/7332695743681bad126d9f443d0b5617?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=dHrSDnKBQZgeMuvXwrkeQ7-46P-cHOco1Thxe0X1WVWCcuBVAQN-EI65MzjuVCBOUTv5PUcF28PSwrEMfD~pt6frsJOGKef6wMUzaXvsVZ-kMMqBW9wiuey3rBR5Z9JENIrzKbiOxsV8Wy~-PplFqf44YQfEccxCNejAA0iI9qoKFsTpzSge~LvV9frGi6DMeW6birO56K1ibUWAnuImys5izVHEWxKUXMeKCD36lvgp1HPm0bEnV-cszZJk9B3ZmfAoRtpEZSuy2xjangCUvnDXinRSg4uKwC8vw-ydc5TXKLDWBt-00eQUVBCQ012Tv1rMDUsbWA3IjXpf2~EAvw__"
+                                src="https://media-hosting.imagekit.io//4bd35604d5604946/menu0.png?Expires=1835266160&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=jWWSVjWn5qwSRqb3BJjbUQcdGArR4n~Fz1gxjDB6X8w~drbMSC2oOVI90SIO~TxCKcxQ4luWCHiGSUNvbyRcQXKe4uNyemEg67tx3~VoQrAlDHS3PDwSnuN82ZlpnDDqXorW5QjsVhbQvMfMsGQ-XJx6jo13P7OG11AqxiMUxfmoCn~9NMsEWpU1sLUAnHmFvDJKasZNQz3UUxD8uj5jmnqM6zjfSU-eQ5uxBHe1h6HKgMFTibVyrZHLs3sC0z9QzVHkBo3E60pDOdEPl-CQF3yterHzqe62hvPhmV9Iqcr2ZiHQbSIgcZyBBvTdJ0G09fta14iRrNTHXwhfYvUPYA__"
                                 height={20}
                                 alt=""
                                 className=""
                                 onclick="openElement()"
                             />
-                            <img
-                                src="https://s3-alpha-sig.figma.com/img/f070/e520/26e91c3156ef6d1240f3961be8d940f0?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=BS4OmjIC5aS2rq52JKjNfJdjRpg7VKhLXiIHD3UyvXf-Uy~C9~wcZ2Y4LAw-LjK7CfwvVPAeaoEONRoTGzF3WB~iVJukDxxtCT0KDLNejF4aUSTOfiR0w-pASHeOOmtCy9MnurSJlyKtGGBSOQUZ88M2VOMb6OxZQnypG5QujH1AxOM3IOdTMko6yFdK6dyaDak~1wcOuswsZlpMSGrgMbqxfloj62M97pognCKVNTOxiMUN19A6EZGN6d2lcFTs9~S5~aOoowPD3l74pw2HsQJtEtjPYP470IPVJZxOtCU~7YyRW5RBwAOS8p0YobWerrZAFodsY-eArlgiD~K06Q__"
-                                height={30}
-                            />
+                            <i 
+                            style={{color: 'white'}}
+                            class="bi bi-search"></i>
                         </div>
                         <div className="moblie">
                             <div className="position-relative ">
