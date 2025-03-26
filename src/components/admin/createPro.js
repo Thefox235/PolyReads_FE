@@ -124,7 +124,7 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
   const handleDeleteImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
-  console.log('discount: ', discounts);
+  // console.log('discount: ', discounts);
   return (
     <div className="addPro-container">
       <h1>Thêm sản phẩm:</h1>

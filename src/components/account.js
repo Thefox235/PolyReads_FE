@@ -1,22 +1,63 @@
 import React, { useState, useEffect } from "react";
 import "../asset/css/account.css";
 import { Link } from "react-router-dom";
-import { updateUser, getAllAddresses } from "../api/server"; // Hàm API update user đã được định nghĩa
-import CreateAddress from "./admin/createAddress"; // Import CreateAddress component
-import Modal from "./model"; // Import Modal component
-import OrderManagement from "./orderManagement"; // Import component OrderManagement
-const Account = () => {
-    const [addresses, setAddresses] = useState([]);
-    // Khởi tạo state user từ sessionStorage
+import {
+    updateUser,
+    getAllAddresses,
+    updatePassword
+    // Giả sử hàm createAddress và updateAddress đã được định nghĩa trong API
+} from "../api/server";
+import CreateAddress from "./admin/createAddress"; // Component tạo địa chỉ
+import EditAddress from "./admin/editAddress"; // Component chỉnh sửa địa chỉ (ví dụ như bạn đã tạo ở phần trước)
+import Modal from "./model"; // Component Modal
+import OrderManagement from "./orderManagement"; // Nếu có
+// Các phần xử lý user, sessionStorage,...
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { deleteAddress } from "../api/server"; // Import hàm deleteAddress (giả sử tồn tại)
 
+const Account = () => {
+    const storedUser = sessionStorage.getItem("user");
+
+    if (!storedUser) {
+      throw new Error("User not found");
+    }
+    const users = JSON.parse(storedUser);
+    console.log(users);
+    
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmNewPassword, setConfirmNewPassword] = useState("");
+
+    // Ví dụ trong handlePasswordSubmit
+    const handlePasswordSubmit = async (e) => {
+        e.preventDefault();
+        if (newPassword !== confirmNewPassword) {
+            alert("Mật khẩu mới không khớp, vui lòng kiểm tra lại!");
+            return;
+        }
+        try {
+            const data = await updatePassword(currentPassword, newPassword);
+            alert(data.message || "Đổi mật khẩu thành công!");
+            // Reset các state liên quan đến password
+            setCurrentPassword("");
+            setNewPassword("");
+            setConfirmNewPassword("");
+        } catch (error) {
+    
+            console.error("Lỗi khi đổi mật khẩu:", error);
+            alert("Có lỗi xảy ra khi đổi mật khẩu!");
+        }
+    };
+
+    const [addresses, setAddresses] = useState([]);
     const [user, setUser] = useState(() => {
         const storedUser = sessionStorage.getItem("user");
         return storedUser ? JSON.parse(storedUser) : {};
     });
 
+    // Lấy danh sách địa chỉ từ API
     useEffect(() => {
-
-        // Lấy danh sách địa chỉ từ API
         getAllAddresses()
             .then((response) => {
                 setAddresses(response);
@@ -25,51 +66,35 @@ const Account = () => {
                 console.error("Error fetching addresses:", error);
             });
     }, []);
-    // console.log(addresses);
 
-    // State active menu (nếu có nhiều phần trong Account)
+    // State menu, chỉnh sửa thông tin ...
     const [activeMenu, setActiveMenu] = useState("profile-info");
-    // State chỉnh sửa cho phần profile-info
     const [isEditing, setIsEditing] = useState(false);
-
-    // Các state cho các input cập nhật
     const [name, setName] = useState(user.name || "");
     const [email, setEmail] = useState(user.email || "");
     const [phone, setPhone] = useState(user.phone || "");
 
-    // Khi user thay đổi, cập nhật lại các giá trị cho form
     useEffect(() => {
         setName(user.name || "");
         setEmail(user.email || "");
         setPhone(user.phone || "");
     }, [user]);
 
-    console.log("Avatar URL:", user.url_image);
-
-    // Handler cho các mục menu (nếu cần)
     const handleMenuClick = (target) => {
         setActiveMenu(target);
-        // Nếu chuyển sang "profile-info", có thể reset chế độ edit
         if (target === "profile-info") {
             setIsEditing(false);
         }
     };
 
-    // Handler khi nhấn "Thay đổi": bật chế độ edit
     const handleEditClick = (e) => {
         e.preventDefault();
         setIsEditing(true);
     };
 
-    // Handler submit form cập nhật thông tin
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const payload = {
-            name,
-            email,
-            phone,
-        };
-
+        const payload = { name, email, phone };
         try {
             const updatedUser = await updateUser(user._id, payload);
             setUser(updatedUser);
@@ -82,19 +107,59 @@ const Account = () => {
         }
     };
 
+    // --- Xử lý modal tạo/chỉnh sửa địa chỉ ---
     const [showCreateAddressModal, setShowCreateAddressModal] = useState(false);
+    const [showEditAddressModal, setShowEditAddressModal] = useState(false);
+    const [editingAddress, setEditingAddress] = useState(null);
 
+    // Khi nhấn "+ Thêm địa chỉ mới"
     const handleAddAddress = () => {
         setShowCreateAddressModal(true);
     };
 
-    const handleCloseModal = () => {
+    const handleCloseCreateAddressModal = () => {
         setShowCreateAddressModal(false);
     };
 
     const handleCreateAddressSuccess = (newAddress) => {
         setAddresses((prev) => [...prev, newAddress]);
         setShowCreateAddressModal(false);
+    };
+
+    // Khi nhấn "Sửa" trên một địa chỉ trong danh sách
+    const handleEditAddress = (address) => {
+        setEditingAddress(address);
+        setShowEditAddressModal(true);
+    };
+
+    const handleCloseEditAddressModal = () => {
+        setShowEditAddressModal(false);
+        setEditingAddress(null);
+    };
+
+    const handleEditAddressSuccess = (updatedAddress) => {
+        setAddresses((prev) =>
+            prev.map((addr) =>
+                addr._id === updatedAddress._id ? updatedAddress : addr
+            )
+        );
+        setShowEditAddressModal(false);
+        setEditingAddress(null);
+    };
+
+    const handleDeleteAddress = async (addressId) => {
+        if (window.confirm("Bạn có chắc chắn muốn xóa địa chỉ này không?")) {
+            try {
+                await deleteAddress(addressId);
+                setAddresses((prev) =>
+                    prev.filter((addr) => addr._id !== addressId)
+                );
+                alert("Xóa địa chỉ thành công!");
+            } catch (err) {
+                console.error("Lỗi xóa địa chỉ:", err);
+                alert("Có lỗi xảy ra khi xóa địa chỉ!");
+            }
+        }
     };
     return (
         <>
@@ -182,7 +247,7 @@ const Account = () => {
                                         </a>
                                     )}
                                 </div>
-                                <label>Email</label>
+                                <label className="account-label">Email</label>
                                 <div className="account-input">
                                     <input
                                         type="email"
@@ -197,7 +262,7 @@ const Account = () => {
                                         </a>
                                     )}
                                 </div>
-                                <label>Số điện thoại</label>
+                                <label className="account-label">Số điện thoại</label>
                                 <div className="account-input">
                                     <input
                                         type="text"
@@ -223,19 +288,13 @@ const Account = () => {
                             </form>
                         </div>
                     )}
-
+                    {/* Phần nội dung hiển thị dựa trên activeMenu */}
                     {activeMenu === "address-info" && (
                         <div id="address-info">
-                            <div className="address-header">
-                                <h2>Số địa chỉ</h2>
-                                <span className="add-new-address" onClick={handleAddAddress}>
-                                    +Thêm địa chỉ mới
-                                </span>
-                            </div>
-
-                            {addresses.filter(addr => addr.userId === user._id).length > 0 ? (
-                                addresses.filter(addr => addr.userId === user._id).map((addr) => (
-                                    <div className="address-item" key={addr.id}>
+                            <h2>Số địa chỉ</h2>
+                            {addresses.filter((addr) => addr.userId === user._id).length > 0 ? (
+                                addresses.filter((addr) => addr.userId === user._id).map((addr) => (
+                                    <div className="address-item" key={addr._id}>
                                         <div>
                                             <strong>{addr.name}</strong> | <strong>{addr.phone}</strong>
                                             {addr.default && (
@@ -248,26 +307,62 @@ const Account = () => {
                                                 {addr.ward}, {addr.district}, {addr.province}
                                             </p>
                                         </div>
-                                        <span className="address-edit">Sửa</span>
+                                        <div className="address-actions">
+                                            <span
+                                                className="address-edit"
+                                                onClick={() => handleEditAddress(addr)}
+                                            >
+                                                Sửa
+                                            </span>
+                                            <span className="address-divider"> | </span>
+                                            <span
+                                                className="address-delete"
+                                                onClick={() => handleDeleteAddress(addr._id)}
+                                            >
+                                                <FontAwesomeIcon icon={faTrash} />
+                                            </span>
+                                        </div>
                                     </div>
                                 ))
                             ) : (
                                 <p>Chưa có địa chỉ nào.</p>
                             )}
-
                         </div>
                     )}
-
                     {activeMenu === "password-change" && (
                         <div id="password-change">
                             <h2>Đổi mật khẩu</h2>
-                            <form>
+                            <form className="account-form" onSubmit={handlePasswordSubmit}>
                                 <label className="account-label">Mật khẩu hiện tại</label>
-                                <input className="account-input" type="password" placeholder="Mật khẩu hiện tại" required />
+                                <input
+                                    className="account-input"
+                                    type="password"
+                                    placeholder="Mật khẩu hiện tại"
+                                    value={currentPassword}
+                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    required
+                                />
+
                                 <label className="account-label">Mật khẩu mới</label>
-                                <input className="account-input" type="password" placeholder="Mật khẩu mới" required />
+                                <input
+                                    className="account-input"
+                                    type="password"
+                                    placeholder="Mật khẩu mới"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    required
+                                />
+
                                 <label className="account-label">Nhập lại mật khẩu mới</label>
-                                <input className="account-input" type="password" placeholder="Nhập lại mật khẩu mới" required />
+                                <input
+                                    className="account-input"
+                                    type="password"
+                                    placeholder="Nhập lại mật khẩu mới"
+                                    value={confirmNewPassword}
+                                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                    required
+                                />
+
                                 <br />
                                 <button className="account-button" type="submit">
                                     Lưu thay đổi
@@ -275,6 +370,7 @@ const Account = () => {
                             </form>
                         </div>
                     )}
+
                     {activeMenu === "order-management" && (
                         <OrderManagement userId={user._id} />
                     )}
@@ -310,12 +406,24 @@ const Account = () => {
                             </div>
                         </div>
                     )}
+                    {/* Modal cho CreateAddress */}
                     {showCreateAddressModal && (
-                        <Modal onClose={handleCloseModal}>
+                        <Modal onClose={handleCloseCreateAddressModal}>
                             <CreateAddress
-                                userId={user._id} // đảm bảo đây là một chuỗi hợp lệ (24 ký tự hex) từ backend
+                                userId={user._id}
                                 onSubmit={handleCreateAddressSuccess}
-                                onClose={handleCloseModal}
+                                onClose={handleCloseCreateAddressModal}
+                            />
+                        </Modal>
+                    )}
+
+                    {/* Modal cho EditAddress */}
+                    {showEditAddressModal && editingAddress && (
+                        <Modal onClose={handleCloseEditAddressModal}>
+                            <EditAddress
+                                initialAddress={editingAddress}
+                                onSubmit={handleEditAddressSuccess}
+                                onClose={handleCloseEditAddressModal}
                             />
                         </Modal>
                     )}

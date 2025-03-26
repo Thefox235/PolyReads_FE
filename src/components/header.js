@@ -10,7 +10,6 @@ const Header = ({ user, handleLogout }) => {
     const { cart } = useCart();
     const numbercart = cart.reduce((total, item) => total + item.cartQuantity, 0);
     const a = useLocation();
-    console.log(a);
     // Fetch banner: Lọc ra những banner có trạng thái active và có position là 'header-banner'
     useEffect(() => {
         const fetchBanners = async () => {

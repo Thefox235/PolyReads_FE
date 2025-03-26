@@ -35,3 +35,7 @@
     cursor: pointer;
   }
   
+  .modal-header
+  {
+    background-color: #917fb3 !important;
+  }

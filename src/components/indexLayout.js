@@ -19,7 +19,6 @@ function IndexLayout() {
   };
 
   const location = useLocation();
-  console.log(user);
   // Danh sách các đường dẫn mà bạn không muốn hiển thị header
   const noHeaderPaths = ['/login', '/register', '/detail'];
 

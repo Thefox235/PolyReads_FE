@@ -1,5 +1,4 @@
 import "../asset/css/detail.css";
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -14,11 +13,13 @@ import {
   deleteComment,
   updateComment,
   toggleLikeComment,
+  getPublisherById
 } from "../api/server";
 import { Link } from "react-router-dom";
 import { useCart } from "./context/cartContext";
 import { getImages } from "../api/server";
 import Modal from "./model";
+import CreatePro from "./admin/createPro";
 import { useForm } from "react-hook-form";
 import { convertTime } from "../utils/Converter";
 import StarRating from "../utils/StarRating";
@@ -33,6 +34,7 @@ const Detail = () => {
   const [images, setImages] = useState([]);
   const [categoryName, setCategoryName] = useState("");
   const [authorName, setAuthorName] = useState("");
+  const [publisherName, setPublisherName] = useState("");
   const [number, setNumber] = useState(1);
   const [discountValue, setDiscounts] = useState([]);
   const [comments, setComments] = useState([]);
@@ -50,10 +52,11 @@ const Detail = () => {
     filtersao.length > 0
       ? filtersao.map((item) => item.rating).reduce((acc, cur) => acc + cur, 0)
       : 0;
-  const result = Math.round(
+  const resultTemp = Math.round(
     totalRating / comments.filter((item) => item?.productId?._id === id).length
   );
 
+  const result = resultTemp === isNaN ? 0 : resultTemp;
   const handleStarChange = (value) => {
     setSelectedStar(value);
     setCommentUpdateStar(value);
@@ -112,7 +115,7 @@ const Detail = () => {
         const data = await getComment();
         setComments(data.comments);
         setCommentsRating(data.comments);
-        console.log("Dữ liệu nhận được:", data);
+
       } catch (error) {
         console.error("Có lỗi xảy ra khi lấy bình luận:", error);
       }
@@ -136,6 +139,7 @@ const Detail = () => {
   const idCate = product.category ? product.category : "N/A";
   const idAuthor = product.ahutor ? product.author : "N/A";
   const idDiscount = product.discount ? product.discount : "N/A";
+  const idPublisher = product.publisher ? product.publisher : "N/A";
   useEffect(() => {
     const fetchProductCate = async () => {
       try {
@@ -194,20 +198,20 @@ const Detail = () => {
         const data = {
           userId: checkuser._id,
         };
-  
+
         // Tìm comment theo id
         const comment = comments.find((item) => item._id === id);
         if (!comment) {
           alert("Không tìm thấy bình luận");
           return;
         }
-  
+
         // Kiểm tra user đã like chưa
         const hasLiked = comment.likedBy.includes(checkuser._id);
-  
+
         // Gửi request để like hoặc dislike
         const res = await toggleLikeComment(id, data);
-  
+
         if (res) {
           // Thông báo dựa vào trạng thái like/dislike
           alert(hasLiked ? "Bỏ yêu thích thành công" : "Yêu thích thành công");
@@ -219,7 +223,7 @@ const Detail = () => {
       alert("Đăng nhập để like");
     }
   };
-  
+
   //fetch category
   useEffect(() => {
     const fetchCategory = async (idCate) => {
@@ -227,8 +231,11 @@ const Detail = () => {
         const data = await getCategory(idCate); // Hàm getCategory() của bạn, trả về đối tượng danh mục
         const dataAuthor = await getAuthor(idAuthor);
         const dataDiscount = await getDiscountById(idDiscount);
+        const dataPublisher = await getPublisherById(idPublisher);
+
         setCategoryName(data[0].name);
         setAuthorName(dataAuthor[0].name);
+        setPublisherName(dataPublisher.name);
         setDiscounts(dataDiscount.value);
         // console.log(data[0].name);
       } catch (error) {
@@ -275,7 +282,7 @@ const Detail = () => {
   };
   const comment = () => {
     if (checkuser === null) {
-      alert("Vui lòng đánh giá để bình luận");
+      alert("Vui lòng đăng nhập để bình luận");
     } else {
       openCreateModal();
     }
@@ -409,7 +416,7 @@ const Detail = () => {
                   <li>Số trang: {product.pages}</li>
                   <li>Hình thức: {product.format}</li>
                   <li>Kích Thước Bao Bì: {product.size} cm</li>
-                  <li>NXB: {product.publisher}</li>
+                  <li>NXB: {publisherName} </li>
                 </ul>
               </div>
             </div>
@@ -544,7 +551,7 @@ const Detail = () => {
               </div>
               <div className="tt">
                 <div className="tt1">NXB</div>
-                <div className="tt2">{product.publisher}</div>
+                <div className="tt2">{publisherName}</div>
               </div>
               <div className="tt">
                 <div className="tt1">Năm XB</div>
@@ -590,7 +597,7 @@ const Detail = () => {
                   <div className="rating-details d-flex flex-column justify-content-center align-items-center">
                     <div>
                       {/* <span className="rating-score fs-1">{commentsRating.reduce((item)=>)}</span>/ */}
-                      <span className="total-score fs-3">{result}</span>
+                      <span className="total-score fs-3">{result | 0 }</span>
                     </div>
                     <div className="star-rating">
                       <StarRating rating={result} />

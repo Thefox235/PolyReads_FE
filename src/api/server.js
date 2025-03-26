@@ -1,14 +1,41 @@
 // api.js
 import axios from 'axios';
-const BASE_URL = 'http://localhost:3000'; 
+const BASE_URL = 'http://localhost:3000';
 const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+// đổi mật khẩu
+export const updatePassword = async (oldPassword, newPassword) => {
+  // Lấy thông tin user từ sessionStorage
+  const storedUser = sessionStorage.getItem("user");
+
+  if (!storedUser) {
+    throw new Error("User not found");
+  }
+  const user = JSON.parse(storedUser);
+  const email = user.email;
+  const token = user.token; // Giả sử token được lưu trong thuộc tính "token"
+
+  const payload = {
+    email,
+    oldPassword,
+    newPassword,
+  };
+
+  const response = await axios.post(`${BASE_URL}/users/changepass`, payload, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+  console.log(payload);
+  return response.data;
+};
+
 //comment
 export const getComment = async () => {
   const response = await axios.get(`${BASE_URL}/comment`);
   return response.data;
 };
-export const toggleLikeComment = async(id,data)=>{
-  const response = await axios.put(`${BASE_URL}/comment/${id}/toggle-like`,data);
+export const toggleLikeComment = async (id, data) => {
+  const response = await axios.put(`${BASE_URL}/comment/${id}/toggle-like`, data);
   return response.data;
 }
 export const createComment = async (comment) => {
@@ -112,7 +139,7 @@ export const createPost = async (postData) => {
 };
 //lấy chi tiết order
 export const getOrderDetail = async (orderId) => {
-  const response = await axios.get(`${BASE_URL}/order/${orderId}`);
+  const response = await axios.get(`${BASE_URL}/order-detail/${orderId}`);
   return response.data; // Ví dụ: { order: { ... } }
 }
 //sửa oreder
@@ -143,11 +170,15 @@ export const createAddress = async (addressData) => {
   console.log(addressData);
   return response.data;
 };
-
+// Hàm xóa địa chỉ 
+export const deleteAddress = async (id) => {
+  const response = await axios.delete(`${BASE_URL}/address/${id}`);
+  return response.data; // Trả về thông tin địa chỉ đã xóa
+}
 // Hàm cập nhật địa chỉ theo ID (nếu cần)
 export const updateAddress = async (id, addressData) => {
   const response = await axios.put(`${BASE_URL}/address/${id}`, addressData);
-  return response.data;
+  return response.data.address;
 };
 // hàm lấy tất cả order
 export const getAllOrder = async () => {
@@ -568,19 +599,37 @@ export const getCategoryById = async (id) => {
 //hàm xóa sản phẩm 
 export const deleteProduct = async (id) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/product/delete/${id}`);
+    // Lấy token từ sessionStorage (giả sử dữ liệu user đã được lưu trong sessionStorage)
+    const storedUser = sessionStorage.getItem("user");
+    const token = storedUser ? JSON.parse(storedUser).token : "";
+    
+    const response = await axios.delete(`${BASE_URL}/product/delete/${id}`, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : ""
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Có lỗi xảy ra khi xóa sản phẩm:', error);
     throw error;
   }
-}
+};
 // Hàm cập nhật sản phẩm
 export const updateProduct = async (id, productData, images) => {
   try {
+    // Lấy token từ sessionStorage
+    const storedUser = sessionStorage.getItem("user");
+    const token = storedUser ? JSON.parse(storedUser).token : "";
+    
     // Đóng gói productData và images vào object requestBody
     const requestBody = { productData, images };
-    const response = await axios.put(`${BASE_URL}/product/${id}`, requestBody);
+    
+    const response = await axios.put(`${BASE_URL}/product/${id}`, requestBody, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : ""
+      }
+    });
+    
     // Giả sử backend trả về kết quả với key "product"
     return response.data.product;
   } catch (error) {
@@ -588,7 +637,6 @@ export const updateProduct = async (id, productData, images) => {
     throw error;
   }
 };
-
 // Hàm lấy danh sách danh mục
 export const getCategories = async () => {
   try {
@@ -613,14 +661,24 @@ export const getAuthors = async () => {
 // Hàm tạo sản phẩm
 export const createProduct = async (productData, images) => {
   try {
-    // Đóng gói cả productData và images vào một object gửi đi
-    const response = await axios.post(`${BASE_URL}/product/add`, { productData, images });
+    // Lấy thông tin token từ user trong sessionStorage
+    const storedUser = sessionStorage.getItem("user");
+    const token = storedUser ? JSON.parse(storedUser).token : "";
+
+    // Gửi request kèm theo header Authorization với Bearer token
+    const response = await axios.post(
+      `${BASE_URL}/product/add`,
+      { productData, images },
+      {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      }
+    );
     console.log(response.data.productNew);
-    // Trả về đối tượng sản phẩm (chỉ chứa thông tin cơ bản)
-    // Bạn có thể không có dữ liệu ảnh trong response
     return response.data.productNew;
   } catch (error) {
-    console.error('Có lỗi xảy ra khi thêm sản phẩm:', error);
+    console.error("Có lỗi xảy ra khi thêm sản phẩm:", error);
     throw error;
   }
 };
@@ -679,7 +737,7 @@ export const Register = async (userData) => {
       }
       return acc;
     }, {});
-    
+
     console.log('Sending user data:', payload);
     const response = await axios.post(`${BASE_URL}/users/register`, payload);
     console.log('Response data:', response.data);
@@ -714,7 +772,7 @@ export const getProductHot = async () => {
 export const getProductById = async (id) => {
   try {
     const response = await axios.get(`${BASE_URL}/product/${id}`);
-    console.log('API response:', response.data.productNew); // Kiểm tra dữ liệu trả về từ API
+    // console.log('API response:', response.data.productNew); // Kiểm tra dữ liệu trả về từ API
     return response.data.productNew;
   } catch (error) {
     console.error(`Có lỗi xảy ra khi lấy sản phẩm với ID ${id}:`, error);

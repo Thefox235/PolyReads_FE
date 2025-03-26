@@ -62,6 +62,7 @@ function App() {
           {/* Các route admin có thể đặt ở đây nếu muốn dùng chung layout */}
           <Route element={<AdminLayout />}>
             {/* <Route path="/viewOrder" element={<PrivateRoute element={ViewOrder} roles={['1']} />} /> */}
+
             <Route path="/viewPro" element={<PrivateRoute element={ViewPro} roles={['1']} />} />
             <Route path="/viewCate" element={<PrivateRoute element={ViewCate} roles={['1']} />} />
             <Route path="/viewAuthor" element={<PrivateRoute element={ViewAuthor} roles={['1']} />} />

@@ -1,12 +1,13 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const Logout = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     sessionStorage.removeItem('user');
-    navigate('/login'); // Chuyển hướng đến trang đăng nhập
+    
+    window.location.href = '/login';// Chuyển hướng đến trang đăng nhập
   };
 
   return (

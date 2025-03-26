@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { getAllOrder, deleteOrder, updateOrder } from "../../api/server"; // API cần có updateOrder, deleteOrder
-import ViewOrderDetail from "./viewOrder-detail"; // Component hiển thị chi tiết đơn hàng trong modal
+import { getAllOrder, deleteOrder, updateOrder } from "../../api/server";
+import ViewOrderDetail from "./viewOrder-detail"; // Modal hiển thị chi tiết đơn hàng
 import "../../asset/css/adminPro.css";
 
 const ViewOrder = ({ userId }) => {
   const [orders, setOrders] = useState([]);
   const [editingOrderId, setEditingOrderId] = useState(null);
   const [editedStatus, setEditedStatus] = useState(null);
-  // State để hiển thị modal chi tiết đơn hàng
+  // Thay vì chỉ lưu orderId, lưu toàn bộ đơn hàng được chọn
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [showOrderDetailModal, setShowOrderDetailModal] = useState(false);
-  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   const statusOptions = [
     { value: 0, label: "Đang xử lý" },
@@ -29,20 +29,20 @@ const ViewOrder = ({ userId }) => {
       }
     };
     fetchOrders();
-  });
+  }, []);
 
-  // Callback mở modal chi tiết khi nhấn vào mã đơn hàng
-  const handleViewDetail = (orderId) => {
-    setSelectedOrderId(orderId);
+  // Khi nhấn vào mã đơn hàng, lưu cả đối tượng đơn hàng (bao gồm total)
+  const handleViewDetail = (order) => {
+    setSelectedOrder(order);
     setShowOrderDetailModal(true);
   };
 
   const closeOrderDetailModal = () => {
     setShowOrderDetailModal(false);
-    setSelectedOrderId(null);
+    setSelectedOrder(null);
   };
 
-  // Hàm xử lý trình inline edit trạng thái (nếu cần)
+  // Hàm xử lý chỉnh sửa trạng thái (nếu cần)
   const handleEditClick = (order) => {
     setEditingOrderId(order._id);
     setEditedStatus(order.status);
@@ -69,7 +69,9 @@ const ViewOrder = ({ userId }) => {
     try {
       await deleteOrder(orderId);
       alert("Đơn hàng đã được xóa");
-      setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== orderId)
+      );
     } catch (error) {
       alert("Xóa đơn hàng thất bại");
       console.error("Lỗi xóa đơn hàng:", error);
@@ -106,7 +108,7 @@ const ViewOrder = ({ userId }) => {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      handleViewDetail(order._id);
+                      handleViewDetail(order);
                     }}
                     className="order-id"
                   >
@@ -151,7 +153,11 @@ const ViewOrder = ({ userId }) => {
                   </button>
                   <button
                     onClick={() => {
-                      if (window.confirm("Bạn có chắc chắn muốn xóa đơn hàng này không?")) {
+                      if (
+                        window.confirm(
+                          "Bạn có chắc chắn muốn xóa đơn hàng này không?"
+                        )
+                      ) {
                         handleDelete(order._id);
                       }
                     }}
@@ -169,10 +175,14 @@ const ViewOrder = ({ userId }) => {
           )}
         </tbody>
       </table>
-      
-      {/* Modal hiển thị chi tiết đơn hàng */}
-      {showOrderDetailModal && selectedOrderId && (
-        <ViewOrderDetail orderId={selectedOrderId} onClose={closeOrderDetailModal} />
+
+      {/* Modal chi tiết đơn hàng */}
+      {showOrderDetailModal && selectedOrder && (
+        <ViewOrderDetail
+          orderId={selectedOrder._id}
+          orderTotal={selectedOrder.total}  // Truyền tổng tiền đơn hàng vào modal
+          onClose={closeOrderDetailModal}
+        />
       )}
     </div>
   );
