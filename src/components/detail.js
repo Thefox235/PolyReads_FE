@@ -373,7 +373,7 @@ const Detail = () => {
           )}
           <div className="content">
             <div className="content-1">
-              <h3>{product.name}</h3>
+              <h3>{product.title}</h3>
               <div className="d-flex align-items-center gap-4">
                 <p>
                   <span className="fw-bold">Tác giả</span>: {authorName}

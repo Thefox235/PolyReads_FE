@@ -324,7 +324,7 @@ const Account = () => {
                                                 className="address-delete"
                                                 onClick={() => handleDeleteAddress(addr._id)}
                                             >
-                                                <FontAwesomeIcon icon={faTrash} />
+                                                <i class="bi bi-trash"></i>
                                             </span>
                                         </div>
                                     </div>
