@@ -12,6 +12,7 @@ export const CartProvider = ({ children }) => {
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
+  // Một số state và hàm khác vẫn giữ nguyên (selectedItems dùng cho Cart – ở trang giỏ hàng)
   const [selectedItems, setSelectedItems] = useState({});
 
   useEffect(() => {
@@ -78,7 +79,8 @@ export const CartProvider = ({ children }) => {
     setCart([]);
   };
 
-  // Hàm checkout: Tạo Order và Order Detail. Bổ sung addressId cho order.
+  // Hàm checkout: Tạo Order và Order Detail.
+  // Ở phiên bản mới này, chúng ta sẽ dùng toàn bộ cart (không dựa vào selectedItems)
   const checkout = async (userId, addressId) => {
     try {
       if (!userId || userId.trim() === "") {
@@ -90,8 +92,10 @@ export const CartProvider = ({ children }) => {
         return;
       }
 
-      // Tính toán tổng số lượng và tổng tiền (chỉ cho các sản phẩm đã tick)
-      const checkedItems = cart.filter((item) => selectedItems[item.product._id]);
+      // Dùng toàn bộ cart mà không lọc theo selectedItems
+      const checkedItems = cart;
+
+      // Tính tổng số lượng và tổng tiền từ toàn bộ các sản phẩm trong cart
       const totalQuantity = checkedItems.reduce(
         (sum, item) => sum + item.cartQuantity,
         0
@@ -101,13 +105,14 @@ export const CartProvider = ({ children }) => {
         0
       );
 
-      // Tạo danh sách order items từ cart (Mỗi order item chứa các thuộc tính cần thiết)
+      // Xây dựng danh sách order items theo yêu cầu của Order Detail:
+      // Lưu ý: theo thông báo lỗi, schema Order Detail yêu cầu trường "quantily" (không phải "quantity") và "price".
       const orderItems = checkedItems.map((item) => {
         const prod = item.product;
         return {
           productId: prod._id,
-          quantily: item.cartQuantity || 1, // dùng "quantily" theo schema của Order Detail
-          price: item.price,
+          quantily: item.cartQuantity || 1, // dùng "quantily" theo schema
+          price: item.price,                // đảm bảo trường price có giá trị
           total: item.price * item.cartQuantity,
         };
       });
@@ -115,9 +120,9 @@ export const CartProvider = ({ children }) => {
       // Payload cho Order chính
       const orderPayload = {
         userId: userId,
-        addressId: addressId, // Thêm thông tin địa chỉ giao hàng
+        addressId: addressId,
         name: "Đơn hàng của khách hàng",
-        quantity: totalQuantity,
+        quantity: totalQuantity, // Nếu schema Order cũng dùng "quantity", giữ nguyên
         img: checkedItems[0]?.img || "",
         price: totalPrice,
         total: totalPrice,
@@ -125,22 +130,24 @@ export const CartProvider = ({ children }) => {
         payment_status: 0,
       };
 
+      // Tạo Order và lấy Order ID trả về
       const orderRes = await createOrder(orderPayload);
       const orderId = orderRes.order._id;
 
-      // Thêm orderId vào mỗi order item để tạo Order Detail
+      // Tạo payload cho Order Detail (đính kèm orderId cho từng item)
       const orderDetailPayload = {
         orderId,
         items: orderItems.map((item) => ({ ...item, orderId })),
       };
-
+      console.log(orderDetailPayload);
       await createOrderDetail(orderDetailPayload);
-
-      clearCart();
+      clearCart(); // Xóa giỏ hàng sau khi đặt đơn
       return orderId;
     } catch (error) {
       console.error("Lỗi tạo đơn hàng:", error);
-      alert("Có lỗi xảy ra khi tạo đơn hàng, hãy kiểm tra console để biết thêm chi tiết");
+      alert(
+        "Có lỗi xảy ra khi tạo đơn hàng. Vui lòng kiểm tra console để biết thêm chi tiết"
+      );
     }
   };
 

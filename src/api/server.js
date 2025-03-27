@@ -2,6 +2,15 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000';
 const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+export const createVNPAYPaymentIntent = async (payload) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/payment/create-vnpay`, payload);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // đổi mật khẩu
 export const updatePassword = async (oldPassword, newPassword) => {
   // Lấy thông tin user từ sessionStorage

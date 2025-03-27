@@ -134,10 +134,7 @@ const handleCheckout = () => {
     alert("Vui lòng tick chọn sản phẩm bạn muốn mua!");
     return;
   }
-  if (!selectedAddressId || selectedAddressId.trim() === "") {
-    alert("Vui lòng chọn địa chỉ giao hàng!");
-    return;
-  }
+
   
   // Lấy các sản phẩm được tick chọn từ cart
   const checkedItems = cart.filter((item) => selectedItems[item.product._id]);
