@@ -1,0 +1,138 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+  
+  /* From Uiverse.io by PriyanshuGupta28 */
+  .rating {
+    display: inline-block;
+  }
+  
+  .rating input {
+    display: none;
+  }
+  
+  .rating label {
+    float: right;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.3s;
+  }
+  
+  .rating label:before {
+    content: '\2605';
+    font-size: 30px;
+  }
+  
+  .rating input:checked~label,
+  .rating label:hover,
+  .rating label:hover~label {
+    color: yellow;
+    transition: color 0.3s;
+  }
+  
+  .favorite-container {
+    position: relative;
+  
+    text-align: center;
+    margin: 50px auto;
+  }
+
+  .item img {
+    max-width: 120px;
+  }
+  
+  .item-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 45px;
+  }
+  
+  .item-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .item-details {
+    display: flex;
+    align-items: center;
+  }
+  
+  .item-details .price {
+    margin-left: 10px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  
+  .paymen {
+    background-color: #F7F7F7;
+    text-align: left;
+    padding: 20px;
+  }
+  
+  .pttt {
+    font-size: 18px;
+    font-weight: 500;
+    padding-bottom: 30px;
+  }
+  
+  .dc {
+    text-align: left;
+    border: 1px solid #ddd;
+    padding: 10px;
+  }
+  
+  .shipping-address {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    font-weight: 500;
+  }
+  
+  .shipping-address .text-info {
+    color: #007bff;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .shipping-address .text-info:hover {
+    text-decoration: underline;
+  }
+  
+  .address:last-child {
+    padding-bottom: 60px;
+  }
+  
+
+  .searchyt{
+    padding:8px 10px;
+    width: 400px;
+  }
+  .addcart-moblie{
+    display: none;
+  }
+  @media (max-width: 768px) {
+    .addcart{
+      font-size: 14px !important;
+    }
+    .addcart-moblie{
+      display: block;
+    }
+    .addcart-table{
+      display: none;
+    }
+  }
+  

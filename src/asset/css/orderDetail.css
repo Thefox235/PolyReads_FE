@@ -1,3 +1,31 @@
+.custom-table,
+.custom-table th,
+.custom-table td,
+.custom-table thead th,
+.custom-table tbody td,
+.custom-table tfoot td {
+  border: none !important;           /* Loại bỏ đường viền */
+  background-color: transparent !important;  /* Loại bỏ màu nền */
+}
+.orderDetail-summary
+{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  flex-direction: column;
+}
+.order-detail-img
+{
+  width: 66px;
+  height: 95px;
+}
+.order-detail-img img
+{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+}
 .order-detail-modal {
     position: fixed;
     top: 0;

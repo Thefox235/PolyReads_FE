@@ -2,6 +2,31 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000';
 const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+
+//get order by id
+export const getOrderById = async (id) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/order/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin đơn hàng:", error.response ? error.response.data : error.message);
+    throw error;
+  }
+}
+//
+export const createPayment = async (paymentPayload) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/payment/create`,
+      paymentPayload
+    );
+    // Giả sử backend trả về dạng: { payment: { ... } }
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi tạo payment:", error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
 export const createVNPAYPaymentIntent = async (payload) => {
   try {
     const response = await axios.post(`${BASE_URL}/payment/create-vnpay`, payload);

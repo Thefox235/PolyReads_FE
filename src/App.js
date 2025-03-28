@@ -25,6 +25,9 @@ import Checkout from './components/checkout';
 import ViewOrder from './components/admin/viewOrder';
 import ViewPost from './components/admin/viewPost';
 import BlogDetail from './components/blog_detail';
+import PaymentResult from './components/paymetResult';
+import EditOrder from './components/admin/editOrder';
+import Favourite from './components/favorite';
 // import ViewOrder from './components/admin/viewOrder';
 
 function App() {
@@ -43,10 +46,13 @@ function App() {
             <Route path="/viewCate" element={<PrivateRoute element={ViewCate} roles={['1']} />} />
             <Route path="/viewBrand" element={<PrivateRoute element={ViewBrand} roles={['1']} />} /> */}
           </Route>
-
+          <Route path="/paymentResult" element={<PaymentResult />} />
+          <Route path="/editOrder" element={<EditOrder />} />
           {/* Các route không cần header (hoặc có layout khác) */}
           <Route element={<MainLayout />}>
-            <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout" element={<Checkout />} />
+            <Route path="/favorite" element={<Favourite />} />
+
             <Route path="/account" element={<Account />} />
             <Route path="/forgotPassword" element={<ForgotPassword />} />
             <Route path="/blog" element={<Blog />} />

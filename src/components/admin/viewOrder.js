@@ -1,37 +1,46 @@
-import React, { useState, useEffect } from "react";
-import { getAllOrder, deleteOrder, updateOrder } from "../../api/server";
+import React, { useState, useEffect } from 'react';
+import { getAllOrder, deleteOrder, updateOrder } from '../../api/server';
 import ViewOrderDetail from "./viewOrder-detail"; // Modal hiển thị chi tiết đơn hàng
+import EditOrder from "./editOrder"; // Modal chỉnh sửa đơn hàng
 import "../../asset/css/adminPro.css";
+
+// Nếu bạn đã khai báo các statusOptions trong EditOrder, có thể định nghĩa lại tại đây nếu cần
+const statusOptions = [
+  { value: 0, label: "Đang xử lý" },
+  { value: 1, label: "Đang giao" },
+  { value: 2, label: "Hoàn tất" },
+  { value: -1, label: "Bị hủy" },
+  { value: 3, label: "Đổi trả" },
+];
 
 const ViewOrder = ({ userId }) => {
   const [orders, setOrders] = useState([]);
-  const [editingOrderId, setEditingOrderId] = useState(null);
-  const [editedStatus, setEditedStatus] = useState(null);
-  // Thay vì chỉ lưu orderId, lưu toàn bộ đơn hàng được chọn
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [error, setError] = useState(null);
+
+  // State cho modal hiển thị chi tiết đơn hàng
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showOrderDetailModal, setShowOrderDetailModal] = useState(false);
 
-  const statusOptions = [
-    { value: 0, label: "Đang xử lý" },
-    { value: 1, label: "Đang giao" },
-    { value: 2, label: "Hoàn tất" },
-    { value: -1, label: "Bị hủy" },
-    { value: 3, label: "Đổi trả" },
-  ];
+  // State cho modal chỉnh sửa đơn hàng (EditOrder)
+  const [selectedEditOrder, setSelectedEditOrder] = useState(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const data = await getAllOrder();
         setOrders(data);
-      } catch (error) {
-        console.error("Lỗi lấy đơn hàng:", error);
+      } catch (err) {
+        console.error("Lỗi lấy đơn hàng:", err);
+        setError("Lỗi lấy đơn hàng");
+      } finally {
+        setLoadingOrders(false);
       }
     };
     fetchOrders();
   }, []);
 
-  // Khi nhấn vào mã đơn hàng, lưu cả đối tượng đơn hàng (bao gồm total)
+  // Mở modal chi tiết đơn hàng
   const handleViewDetail = (order) => {
     setSelectedOrder(order);
     setShowOrderDetailModal(true);
@@ -42,29 +51,16 @@ const ViewOrder = ({ userId }) => {
     setSelectedOrder(null);
   };
 
-  // Hàm xử lý chỉnh sửa trạng thái (nếu cần)
-  const handleEditClick = (order) => {
-    setEditingOrderId(order._id);
-    setEditedStatus(order.status);
+  // Mở modal chỉnh sửa đơn hàng (EditOrder)
+  const handleEditOrder = (order) => {
+    setSelectedEditOrder(order);
   };
 
-  const handleStatusChange = async (e, orderId) => {
-    const newStatus = Number(e.target.value);
-    setEditedStatus(newStatus);
-    try {
-      const updatedOrder = await updateOrder(orderId, { status: newStatus });
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === orderId ? updatedOrder.order : order
-        )
-      );
-      setEditingOrderId(null);
-    } catch (error) {
-      console.error("Lỗi cập nhật trạng thái:", error);
-      alert("Có lỗi khi cập nhật trạng thái đơn hàng.");
-    }
+  const closeEditOrderModal = () => {
+    setSelectedEditOrder(null);
   };
 
+  // Handler xóa đơn hàng
   const handleDelete = async (orderId) => {
     try {
       await deleteOrder(orderId);
@@ -72,11 +68,25 @@ const ViewOrder = ({ userId }) => {
       setOrders((prevOrders) =>
         prevOrders.filter((order) => order._id !== orderId)
       );
-    } catch (error) {
+    } catch (err) {
       alert("Xóa đơn hàng thất bại");
-      console.error("Lỗi xóa đơn hàng:", error);
+      console.error("Lỗi xóa đơn hàng:", err);
     }
   };
+
+  // Callback khi cập nhật đơn hàng thành công ở modal EditOrder
+  const onUpdateSuccess = (updatedOrder) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order._id === updatedOrder._id ? updatedOrder : order
+      )
+    );
+    closeEditOrderModal();
+  };
+
+  if (loadingOrders) {
+    return <div>Đang tải đơn hàng...</div>;
+  }
 
   return (
     <div className="admin-product">
@@ -85,16 +95,16 @@ const ViewOrder = ({ userId }) => {
           Đơn hàng: {orders.length} đơn hàng
         </span>
       </div>
+      {error && <div className="alert alert-danger">{error}</div>}
       <table className="admin-product__table">
         <thead>
           <tr>
             <th>STT</th>
-            <th>Mã đơn hàng</th>
-            <th>Khách hàng</th>
-            <th>Số lượng</th>
-            <th>Tổng tiền</th>
+            <th>Khách Hàng</th>
+            <th>Địa Chỉ</th>
+            <th>Ngày Tạo Đơn</th>
+            <th>Tổng Tiền</th>
             <th>Trạng thái</th>
-            <th>Ngày tạo</th>
             <th>Thao tác</th>
           </tr>
         </thead>
@@ -104,7 +114,8 @@ const ViewOrder = ({ userId }) => {
               <tr key={order._id}>
                 <td>{index + 1}</td>
                 <td>
-                  <a
+                  {/* Nhấn vào mã đơn hàng để xem chi tiết */}
+                  {/* <a
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
@@ -113,10 +124,14 @@ const ViewOrder = ({ userId }) => {
                     className="order-id"
                   >
                     {order._id}
-                  </a>
+                  </a> */}
+                 {order.userId && order.userId.name}<br/>
+                 Phone: {order.userId && order.userId.phone}
                 </td>
-                <td>{order.userId && order.userId.name}</td>
-                <td>{order.quantity}</td>
+                <td
+                 style={{maxWidth: "250px"}}
+                >{order.addressId && (order.addressId.address_line)+' '+(order.addressId.ward)+' '+(order.addressId.province)+' '+(order.addressId.district)}</td>
+                <td>{new Date(order.date).toLocaleString("vi-VN")}</td>
                 <td>
                   {order.total &&
                     order.total.toLocaleString("vi-VN", {
@@ -125,27 +140,16 @@ const ViewOrder = ({ userId }) => {
                     })}
                 </td>
                 <td>
-                  {editingOrderId === order._id ? (
-                    <select
-                      value={editedStatus}
-                      onChange={(e) => handleStatusChange(e, order._id)}
-                    >
-                      {statusOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
+                  {
                     statusOptions.find(
                       (opt) => String(opt.value) === String(order.status)
                     )?.label || "Khác"
-                  )}
+                  }
                 </td>
-                <td>{new Date(order.date).toLocaleString("vi-VN")}</td>
+      
                 <td>
                   <button
-                    onClick={() => handleEditClick(order)}
+                    onClick={() => handleEditOrder(order)}
                     className="fix"
                     style={{ marginRight: "5px" }}
                   >
@@ -153,11 +157,7 @@ const ViewOrder = ({ userId }) => {
                   </button>
                   <button
                     onClick={() => {
-                      if (
-                        window.confirm(
-                          "Bạn có chắc chắn muốn xóa đơn hàng này không?"
-                        )
-                      ) {
+                      if (window.confirm("Bạn có chắc chắn muốn xóa đơn hàng này không?")) {
                         handleDelete(order._id);
                       }
                     }}
@@ -170,7 +170,7 @@ const ViewOrder = ({ userId }) => {
             ))
           ) : (
             <tr>
-              <td colSpan="8">Đang tải đơn hàng...</td>
+              <td colSpan="7">Không có đơn hàng nào.</td>
             </tr>
           )}
         </tbody>
@@ -180,8 +180,17 @@ const ViewOrder = ({ userId }) => {
       {showOrderDetailModal && selectedOrder && (
         <ViewOrderDetail
           orderId={selectedOrder._id}
-          orderTotal={selectedOrder.total}  // Truyền tổng tiền đơn hàng vào modal
+          orderTotal={selectedOrder.total}
           onClose={closeOrderDetailModal}
+        />
+      )}
+
+      {/* Modal chỉnh sửa đơn hàng */}
+      {selectedEditOrder && (
+        <EditOrder
+          orderId={selectedEditOrder._id}
+          onClose={closeEditOrderModal}
+          onUpdateSuccess={onUpdateSuccess}
         />
       )}
     </div>

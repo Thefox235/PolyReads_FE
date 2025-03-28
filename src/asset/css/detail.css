@@ -407,18 +407,6 @@ main {
     object-fit: cover;
 }
 
-.card {
-    width: 200px;
-    /* Điều chỉnh kích thước card theo ý muốn */
-    border: 0 !important;
-    padding: 10px;
-    text-align: center;
-    /* transform: translate(-100px, 0); */
-    flex-shrink: 0;
-
-
-}
-
 .related-products {
     display: grid;
     grid-template-columns: repeat(5, 1fr);

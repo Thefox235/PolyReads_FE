@@ -429,19 +429,6 @@ main {
     white-space: nowrap;
 }
 
-.card {
-    width: 200px;
-    /* Điều chỉnh kích thước card theo ý muốn */
-    border: 0 !important;
-    padding: 10px;
-    text-align: center;
-    /* transform: translate(-100px, 0); */
-    flex-shrink: 0;
-    animation: scroll 2s ease-in-out infinite alternate;
-    transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
-
-}
-
 a {
     text-decoration: none !important;
 }

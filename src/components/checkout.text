@@ -6,16 +6,6 @@ import "../asset/css/checkout.css";
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  // Nếu bạn chuyển dữ liệu đơn hàng qua location state (ví dụ từ giỏ hàng)
-  const userId = sessionStorage.getItem("user") ? JSON.parse(sessionStorage.getItem("user"))._id : null;
-  const orderData = location.state;
-  const hasOrderData =
-    orderData && orderData.orderItems && orderData.orderItems.length > 0;
-  // Nếu có đơn hàng, hiển thị danh sách sản phẩm và tổng tiền
-  const orderItems = hasOrderData ? orderData.orderItems : [];
-  const totalPrice = hasOrderData ? Math.round(orderData.totalPrice) : 0;
-
   const { checkout } = useCart();
 
   // Lấy danh sách địa chỉ từ API
@@ -30,14 +20,11 @@ const Checkout = () => {
         const res = await getAllAddresses();
         // Giả sử API trả về dạng { addresses: [...] } hoặc mảng trực tiếp
         const allAddresses = res.addresses || res;
-        const userAddresss = allAddresses.filter((addr) => addr.userId === userId);
-        setAddresses(userAddresss);
+        setAddresses(allAddresses);
         if (allAddresses.length > 0) {
           // Lấy địa chỉ mặc định nếu có, hoặc địa chỉ đầu tiên
           const defaultAddress = allAddresses.find((addr) => addr.default === true);
-          setSelectedAddressId(
-            defaultAddress ? defaultAddress._id : allAddresses[0]._id
-          );
+          setSelectedAddressId(defaultAddress ? defaultAddress._id : allAddresses[0]._id);
         }
       } catch (error) {
         console.error("Error fetching addresses:", error);
@@ -52,6 +39,7 @@ const Checkout = () => {
     setSelectedPaymentMethod(e.target.value);
   };
 
+  // Hàm thanh toán online (VNPay)
   const handleOnlinePayment = async () => {
     try {
       // Lấy thông tin user từ sessionStorage
@@ -61,40 +49,27 @@ const Checkout = () => {
         return;
       }
       const user = JSON.parse(storedUser);
-  
       if (!selectedAddressId.trim()) {
         alert("Vui lòng chọn địa chỉ giao hàng!");
         return;
       }
-  
-      // Tạo đơn hàng qua hàm checkout
+      // Tạo đơn hàng qua hàm checkout (sử dụng toàn bộ cart)
       const orderId = await checkout(user._id, selectedAddressId);
       if (!orderId) {
         alert("Đơn hàng không được tạo, vui lòng thử lại!");
         return;
       }
-  
-      // Tạo payload để gửi lên backend cho thanh toán VNPay
+
+      // Payload cho Payment Intent của VNPay, bạn nên thay "amount" bằng tổng tiền của đơn hàng
       const payload = {
-        orderId,     
-        amount: totalPrice,
-        language: "vn",
+        orderId,
+        amount: 0, // 0 ở đây là placeholder, bạn có thể thay bằng giá trị đúng từ đơn hàng nếu có
         orderInfo: "Thanh toán đơn hàng tại Shop",
-        bankCode: ""
       };
-  
-      // Log dữ liệu payload trước khi gửi để kiểm tra
-      console.log("Payload gửi lên BE:", payload);
-      
-      // Gọi API createVNPAYPaymentIntent để post payload đến backend
-      // const data = null;
+
       const data = await createVNPAYPaymentIntent(payload);
-      
-      // Log kết quả trả về từ backend
-      console.log("Dữ liệu trả về từ BE:", data);
-      
       if (data && data.paymentUrl) {
-        window.location.href = data.paymentUrl;
+        window.location.href = data.paymentUrl; // chuyển hướng đến trang thanh toán VNPay
       } else {
         alert("Không thể tạo thanh toán online, vui lòng thử lại sau!");
       }
@@ -140,6 +115,7 @@ const Checkout = () => {
     }
   };
 
+
   return (
     <>
       {/* Banner */}
@@ -161,23 +137,18 @@ const Checkout = () => {
         </div>
       ) : (
         <main className="checkout-session">
-          <div
-            className="checkout-container"
-            style={{ fontSize: "1.4rem", textAlign: "left" }}
-          >
+          <div className="checkout-container" style={{ fontSize: "1.4rem", textAlign: "left" }}>
             <h4>Thanh toán</h4>
           </div>
           <div className="checkout-container">
             <div className="row">
               {/* Cột sản phẩm và lựa chọn phương thức thanh toán */}
               <div className="col-md-8 order-md-1 col-12">
+                {/* Hiển thị danh sách sản phẩm trong đơn hàng */}
                 <div className="container-box">
                   <div className="border-box">
                     <span>
-                      <i
-                        className="bi bi-box-seam-fill"
-                        style={{ marginRight: 10 }}
-                      ></i>
+                      <i className="bi bi-box-seam-fill" style={{ marginRight: 10 }}></i>
                       Các sản phẩm của bạn
                     </span>
                     {orderItems.map((item) => (
@@ -214,11 +185,7 @@ const Checkout = () => {
                         checked={selectedPaymentMethod === "cash"}
                         onChange={() => setSelectedPaymentMethod("cash")}
                       />
-                      <label
-                        htmlFor="cash"
-                        className="d-flex gap-1"
-                        style={{ alignItems: "center" }}
-                      >
+                      <label htmlFor="cash" className="d-flex gap-1" style={{ alignItems: "center" }}>
                         <i className="bi bi-cash-coin"></i> Thanh toán khi nhận hàng
                       </label>
                     </div>
@@ -230,11 +197,7 @@ const Checkout = () => {
                         checked={selectedPaymentMethod === "vnpay"}
                         onChange={() => setSelectedPaymentMethod("vnpay")}
                       />
-                      <label
-                        htmlFor="vnpay"
-                        className="d-flex gap-1"
-                        style={{ alignItems: "center" }}
-                      >
+                      <label htmlFor="vnpay" className="d-flex gap-1" style={{ alignItems: "center" }}>
                         <i className="bi bi-credit-card-2-back"></i> Thanh toán bằng thẻ
                       </label>
                     </div>
@@ -263,7 +226,7 @@ const Checkout = () => {
                             value={addr._id}
                             style={{ marginTop: "8px" }}
                             checked={selectedAddressId === addr._id}
-                            onChange={(e) => setSelectedAddressId(e.target.value)}
+                            onChange={handleAddressChange}
                           />
                           <label>
                             {addr.address_line || addr.street},{" "}
