@@ -17,12 +17,13 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from "./context/cartContext";
 const Home = () => {
+  sessionStorage.clear('cart')
   //banner
   const [activeBanners, setActiveBanners] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   //product
-  const { addToCart } = useCart();
+  const { addToCart, clearCart } = useCart();
   const [products, setProducts] = useState([]);
   const [discounts, setDiscounts] = useState([]);
   const [productHot, setProductHot] = useState([]);
@@ -42,6 +43,7 @@ const Home = () => {
     //   setUser(JSON.parse(userData));
     // }
     //cate
+    // clearCart();
     const fetchCategory = async () => {
       try {
         const categoryData = await getCategory();
@@ -213,6 +215,15 @@ const Home = () => {
     return () => { if (intervalId) clearInterval(intervalId); };
   }, [activeBanners, currentIndex, isLoading]);
 
+  const addCart = (product, productImages) => {
+    console.log(product, productImages);
+    const data = {
+      product: product,
+      img: productImages.url,
+      quantity: 1,
+    };
+    addToCart(data);
+  };
   // const handleLogout = () => {
   //   sessionStorage.removeItem('user');
   //   navigate('/login');
@@ -220,7 +231,6 @@ const Home = () => {
   // console.log(mangas);
   // console.log(products);
   // console.log(images);
-
   return (
     <>
 
@@ -411,21 +421,16 @@ const Home = () => {
             {mangas && mangas.length > 0 && images && images.length > 0 && authorName && authorName.length > 0 ? (
               mangas.map(product => {
                 const productImage = images.find(image => image.productId === product._id);
-                const productDiscount = discounts.filter(dis => dis).find((dis) => dis._id === product.discount);
+                const productDiscount = discounts
+                  .filter(dis => dis)
+                  .find(dis => dis._id === product.discount);
                 // Tính current price nếu có discount
                 const discountPercent = productDiscount ? Number(productDiscount.value) : 0;
                 const currentPrice = Number(product.price) * ((100 - discountPercent) / 100);
-                const productAuthor = authorName.find(
-                  (author) => author._id === product.author
-                );
+                const productAuthor = authorName.find(author => author._id === product.author);
                 return (
-
                   <div className="san-pham-item" key={product._id}>
-                    <img
-                      src={productImage.url}
-                      alt={product.name}
-
-                    />
+                    <img src={productImage.url} alt={product.name} />
                     <Link to={`/product/${product._id}`} className="sach-title">
                       {product.name}
                     </Link>
@@ -442,11 +447,22 @@ const Home = () => {
                           currency: "VND"
                         })}
                       </div>
-                      <div className="shop-name">{productAuthor ? productAuthor.name : ''}</div>
+                      <div className="shop-name">
+                        {productAuthor ? productAuthor.name : ''}
+                      </div>
                     </div>
-                    <div className="add-to-cart">THÊM VÀO GIỎ</div>
+                    <div
+                      className="add-to-cart"
+                      onClick={() => {
+                        // Gọi hàm addCart với product và ảnh của sản phẩm
+                        addCart(product, productImage);
+                      }}
+            
+                      style={{ cursor: 'pointer' }}
+                    >
+                      THÊM VÀO GIỎ
+                    </div>
                   </div>
-
                 );
               })
             ) : (
@@ -513,7 +529,16 @@ const Home = () => {
                       </div>
                       <div className="shop-name">{productAuthor ? productAuthor.name : ''}</div>
                     </div>
-                    <div className="add-to-cart">THÊM VÀO GIỎ</div>
+                    <div
+                      className="add-to-cart"
+                      onClick={() => {
+                        // Gọi hàm addCart với product và ảnh của sản phẩm
+                        addCart(product, productImage);
+                      }}            
+                      style={{ cursor: 'pointer' }}
+                    >
+                      THÊM VÀO GIỎ
+                    </div>
                   </div>
 
                 );
@@ -550,27 +575,27 @@ const Home = () => {
                       alt={post.slug}
                     />
                     <Link
-                     style={{color: "#333333"}}
-                     to={`/blog/${post._id}`} className="time d-flex justify-content-center align-items-center ">
+                      style={{ color: "#333333" }}
+                      to={`/blog/${post._id}`} className="time d-flex justify-content-center align-items-center ">
                       <img
                         src="https://media-hosting.imagekit.io//1130699f09b34e04/Calendar.png?Expires=1837523307&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=JWvcYCc5XEVcl9FkztGpESUdoc57i1ANIOcx9mFXsfZp2eR8vy1JZyWYsu8YlDcRsev~cLZur2h-OxDiNOxKtonGz-zAo6ltwM4IqwtjDxaDHABBOMZRj~TqtKe4LxkPi9HXD0NfARdDprPD1815EuBOJ2RwbnTbwPdPFcNdXT6QP22x63xuPqoCwhPyZa2ld7BnqML-R47a3J-ob6DKA9~W7mSUJYyNrX26HStxi9PlofOCDWu47Krfea2e~K3btCVNx33N5pwX42mBEMawpkv3O9-dwf373CosOMB6qwqnOkYB3WCZSpR9SLg8WAm~rqHjuf6Fi6IFdbF5tztPLQ__"
                         alt="calendar"
                       />
                       <div className="posting-date ">{new Date(post.createdAt).toLocaleDateString()} </div>
                       <div>
-                       
+
                         Đăng bởi: <span className="fw-bold">Admin</span>
                       </div>
                     </Link>
                   </div>
                   <div className="cart-body mt-3">
                     <h5>
-                      <Link 
-                      style={{color: "#333333"}}
-                      to={`/blog/${post._id}`}>
-                      {post.title}
+                      <Link
+                        style={{ color: "#333333" }}
+                        to={`/blog/${post._id}`}>
+                        {post.title}
                       </Link>
-                     
+
                     </h5>
                     <p>
                       {post.content.length > 100
