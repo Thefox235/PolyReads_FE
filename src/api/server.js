@@ -786,7 +786,7 @@ export const Register = async (userData) => {
 export const getProducts = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/product/`);
-    return response.data.proNew;
+    return response.data.products;
   } catch (error) {
     console.error('Có lỗi xảy ra khi lấy sản phẩm:', error);
     throw error;

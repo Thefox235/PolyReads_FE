@@ -118,7 +118,7 @@ const ViewCate = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="3">Đang tải danh mục...</td>
+              <td colSpan="5">Đang tải danh mục...</td>
             </tr>
           )}
         </tbody>

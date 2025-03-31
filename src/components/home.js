@@ -17,7 +17,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from "./context/cartContext";
 const Home = () => {
-  sessionStorage.clear('cart')
+
   //banner
   const [activeBanners, setActiveBanners] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -30,18 +30,18 @@ const Home = () => {
   const [mangas, setManga] = useState([]);
   const [fantasys, setFantasy] = useState([]);
   const [images, setImages] = useState([]);
-  // const [user, setUser] = useState(null);
+  const [user, setUser] = useState('');
   const navigate = useNavigate();
   const [authorName, setAuthorName] = useState('');
   const [posts, setPosts] = useState([]);       // Danh sách bài post
   const [categoryName, setCategoryName] = useState([]);
 
   useEffect(() => {
-    // const userData = sessionStorage.getItem('user');
-
-    // if (userData) {
-    //   setUser(JSON.parse(userData));
-    // }
+    const userData = sessionStorage.getItem('user');
+    // console.log(userData);
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
     //cate
     // clearCart();
     const fetchCategory = async () => {
@@ -224,10 +224,10 @@ const Home = () => {
     };
     addToCart(data);
   };
-  // const handleLogout = () => {
-  //   sessionStorage.removeItem('user');
-  //   navigate('/login');
-  // };
+  const handleLogout = () => {
+    sessionStorage.removeItem('user');
+    navigate('/login');
+  };
   // console.log(mangas);
   // console.log(products);
   // console.log(images);
@@ -549,7 +549,7 @@ const Home = () => {
           </div>
         </div>
         {/* Product End */}
-        {/* product end */}
+        
         <br />
         <br />
         <div

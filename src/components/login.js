@@ -34,6 +34,7 @@ const AuthForm = () => {
         setShowOtpModal(true);
       } else {
         sessionStorage.setItem('user', JSON.stringify(result));
+        console.log(sessionStorage.getItem('user'));
         if (result.role === "1") {
           window.location.href = '/viewPro';
         } else {
@@ -64,6 +65,7 @@ const AuthForm = () => {
           setShowOtpModal(true);
         } else {
           sessionStorage.setItem('user', JSON.stringify(result));
+          console.log(sessionStorage.getItem('user'));
           if (result.role === "1") {
             window.location.href = '/viewPro';
           } else {
