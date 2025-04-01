@@ -13,13 +13,15 @@ import {
   deleteComment,
   updateComment,
   toggleLikeComment,
-  getPublisherById
+  getPublisherById,
+  postFavorite,
+  getFavorite
+
 } from "../api/server";
 import { Link } from "react-router-dom";
 import { useCart } from "./context/cartContext";
 import { getImages } from "../api/server";
 import Modal from "./model";
-import CreatePro from "./admin/createPro";
 import { useForm } from "react-hook-form";
 import { convertTime } from "../utils/Converter";
 import StarRating from "../utils/StarRating";
@@ -47,6 +49,8 @@ const Detail = () => {
   const [commentUpdateCurent, setCommentUpdateCurrent] = useState("");
   const [commentUpdateStar, setCommentUpdateStar] = useState("");
   const [selectedStar, setSelectedStar] = useState();
+  const [isFavorite, setIsFavorite] = useState(false);
+
   const filtersao = comments.filter((item) => item?.productId?._id === id);
   const totalRating =
     filtersao.length > 0
@@ -81,6 +85,7 @@ const Detail = () => {
     reset();
     setCommentUpdateCurrent("");
   };
+
   const openUpdateCreateModal = () => setshowUpdateModal(true);
   useEffect(() => {
     const fetchData = async () => {
@@ -108,7 +113,30 @@ const Detail = () => {
     };
 
     fetchData();
+
+    const fetchFavoriteStatus = async () => {
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      if (!user) {
+        return;
+      }
+      try {
+        const favResult = await getFavorite(); // API này trả về đối tượng có danh sách favorites
+        // Giả sử favResult.favorites là mảng với mỗi item chứa property productId (với _id)
+        if (favResult && favResult.favorites) {
+          const found = favResult.favorites.find(
+            (item) => item.productId && item.productId._id === id
+          );
+          setIsFavorite(!!found);
+        }
+      } catch (error) {
+        console.error("Error fetching favorites", error);
+      }
+    };
+
+    fetchFavoriteStatus();
+
   }, [id]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -340,12 +368,12 @@ const Detail = () => {
   const formattedPrice =
     (product.price * (100 - discountValue)) / 100
       ? ((product.price * (100 - discountValue)) / 100)
-          .toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-            currencyDisplay: "code",
-          })
-          .replace("VND", "VNĐ")
+        .toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
+          currencyDisplay: "code",
+        })
+        .replace("VND", "VNĐ")
       : "N/A";
   // console.log(discountValue);
   const filterRating = (value) => {
@@ -357,6 +385,35 @@ const Detail = () => {
       setCommentsRating(filter);
     }
   };
+
+  const favorite = async () => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    // Nếu người dùng chưa đăng nhập
+    if (!user) {
+      alert("Vui lòng đăng nhập để thêm vào yêu thích");
+      return;
+    }
+    // Nếu sản phẩm chưa có trong danh sách yêu thích thì thêm
+    if (!isFavorite) {
+      const data = {
+        userId: user._id,
+        productId: id,
+      };
+      try {
+        const result = await postFavorite(data);
+        if (result) {
+          alert("Thêm yêu thích thành công!");
+          setIsFavorite(true);
+        } else {
+          console.error(`Thêm yêu thích thất bại!`);
+        }
+      } catch (error) {
+        console.error("Lỗi khi thêm yêu thích:", error);
+      }
+    }
+    // Nếu sản phẩm đã có, bạn có thể chọn hành động khác (ví dụ: xóa khỏi yêu thích) theo nhu cầu.
+  };
+
   return (
     <>
       <main>
@@ -474,15 +531,18 @@ const Detail = () => {
                     <div style={{ fontSize: 13 }}>Mã giảm phí vận ch...</div>
                   </div>
                 </div>
-                <div className="d-flex align-items-center mt-2 mb-2 gap-2">
+                <div onClick={favorite} className="d-flex align-items-center mt-2 mb-2 gap-2" style={{ cursor: "pointer" }}>
                   <img
+                    // Sử dụng cùng một icon nhưng thay đổi filter: nếu đã yêu thích thì hiển thị đầy đủ màu, nếu chưa thì áp dụng grayscale
                     src="https://media-hosting.imagekit.io//c2caec833b6e46b1/heart0.png?Expires=1835161260&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=ECcmFiPc25rbl0Ua6OVmPhaGXj9bv48u7DJ8WIHciHUxydXUxwlSoqdw4AdC~gB53Cd89-aCTQA0T9J-Oo6gyV5UMEUPOf3oarUUO3yWii47mhIDpBoddhkZ94GvkN9s~WkQbiyqJlrJzXNUrgLLOy8lOQvn8uCB3ZL39e6x4s~2b06sSG2~plFdvQC2tBHYyqXst7J1rXRRhtIDybKKQI28vuQVwogOBL6v-SLHeIve30qQ64bMS6KBx7JPTyqkkmf93yfez076uPj489G83T4fXAPCAboBqnT8S1XETXtfQZjL-Y2WsQz3BVM9vZ9HyShpbENHzuZVlT~tdjS6EQ__"
-                    alt=""
+                    alt="Favorite"
                     width={23}
                     className="img-fluid"
+                    style={{ filter: isFavorite ? "none" : "grayscale(100%)" }}
                   />
-                  <div className="">Thêm vào yêu thích</div>
+                  <div>Thêm vào yêu thích</div>
                 </div>
+
                 <div className="quantity">
                   <div className="fs-6">Số lượng</div>
                   <button onClick={pre}>-</button>
@@ -597,7 +657,7 @@ const Detail = () => {
                   <div className="rating-details d-flex flex-column justify-content-center align-items-center">
                     <div>
                       {/* <span className="rating-score fs-1">{commentsRating.reduce((item)=>)}</span>/ */}
-                      <span className="total-score fs-3">{result | 0 }</span>
+                      <span className="total-score fs-3">{result | 0}</span>
                     </div>
                     <div className="star-rating">
                       <StarRating rating={result} />
@@ -771,9 +831,9 @@ const Detail = () => {
             <div className="list-product">
               <div className="products-wrapper">
                 {productByCate &&
-                productByCate.length > 0 &&
-                images &&
-                images.length > 0 ? (
+                  productByCate.length > 0 &&
+                  images &&
+                  images.length > 0 ? (
                   productByCate.map((product) => {
                     const productImage = images.find(
                       (image) => image.productId === product._id
@@ -897,7 +957,7 @@ const Detail = () => {
                   borderRadius: "5px",
                   padding: "10px",
                 }}
-                // onClick={() => onsubmit()}
+              // onClick={() => onsubmit()}
               >
                 Gửi bình luận
               </button>
@@ -990,7 +1050,7 @@ const Detail = () => {
                   borderRadius: "5px",
                   padding: "10px",
                 }}
-                // onClick={() => onsubmit()}
+              // onClick={() => onsubmit()}
               >
                 Gửi bình luận
               </button>

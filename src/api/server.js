@@ -2,6 +2,33 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000';
 const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+//favorite sreach
+export const getFavoriteSearch = async (userId, keyword) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/favorite/search`, {
+      params: { userId, keyword },
+    });
+    return response.data; // giả sử backend trả về { favorites: [...] }
+  } catch (error) {
+    console.error("Error in getFavoriteSearch:", error);
+    throw error;
+  }
+};
+
+export const getFavorite = async () => {
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  const response = await axios.get(`${BASE_URL}/favorite/user/${user._id}`);
+  return response.data;
+};
+export const deleteFavorite = async (id) => {
+  const response = await axios.delete(`${BASE_URL}/favorite/${id}`);
+  return response.data;
+};
+export const postFavorite = async (data) => {
+  const response = await axios.post(`${BASE_URL}/favorite`, data);
+  console.log(data);
+  return response.data;
+};
 //sreach
 export const getProductSearch = async (params) => {
   try {

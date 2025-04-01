@@ -27,7 +27,7 @@ import ViewPost from './components/admin/viewPost';
 import BlogDetail from './components/blog_detail';
 import PaymentResult from './components/paymetResult';
 import EditOrder from './components/admin/editOrder';
-import Favourite from './components/favorite';
+import Favorite from './components/favorite';
 import Product from './components/product';
 // import ViewOrder from './components/admin/viewOrder';
 
@@ -52,7 +52,7 @@ function App() {
           {/* Các route không cần header (hoặc có layout khác) */}
           <Route element={<MainLayout />}>
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/favorite" element={<Favourite />} />
+            <Route path="/favorite" element={<Favorite />} />
             <Route path="/product" element={<Product />} />
             <Route path="/account" element={<Account />} />
             <Route path="/forgotPassword" element={<ForgotPassword />} />
