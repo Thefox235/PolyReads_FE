@@ -3,6 +3,9 @@ import { getBanners } from '../api/server'; // API lấy banner
 import '../asset/css/header.css';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from "./context/cartContext";
+import SearchForm from "./sreachForm"; // Import phía trên
+import CategoryNavDropdown from "./CategoryNavDropdown";
+
 const Header = ({ user, handleLogout }) => {
     const [activeBanners, setActiveBanners] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -72,13 +75,10 @@ const Header = ({ user, handleLogout }) => {
                         </div>
                         <div className=" justify-content-between align-items-start w-100 custom-menu ">
                             <div className="custom-sreach-input position-relative">
-                                <div className="sreach-icon">
+                                {/* <div className="sreach-icon">
                                     <i className="bi bi-search" />
-                                </div>
-                                <input
-                                    type="text"
-                                    placeholder="Đăng ký và nhận voucher bạn mới đến 70k!"
-                                />
+                                </div> */}
+                                <SearchForm />
                             </div>
                             <nav className="d-flex align-items-center custom-nav">
                                 <li>Tiếng Việt</li>
@@ -187,9 +187,9 @@ const Header = ({ user, handleLogout }) => {
                                 className=""
                                 onclick="openElement()"
                             />
-                            <i 
-                            style={{color: 'white'}}
-                            class="bi bi-search"></i>
+                            <i
+                                style={{ color: 'white' }}
+                                class="bi bi-search"></i>
                         </div>
                         <div className="moblie">
                             <div className="position-relative ">
@@ -227,39 +227,14 @@ const Header = ({ user, handleLogout }) => {
                                     <i className="bi bi-list" />
                                     <button className="border-0 dropdown-btn">Tất cả thể loại</button>
                                     <div className="dropdown-content">
-                                        <a href="#">
-                                            <span style={{ color: "#a00f0f" }}>&gt;</span>Tất cả
-                                        </a>
-                                        <a href="#">
-                                            <span style={{ color: "#a00f0f" }}>&gt;</span>Viễn tưởng
-                                        </a>
-                                        <a href="#">
-                                            <span style={{ color: "#a00f0f" }}>&gt;</span>Nonfictions
-                                        </a>
-                                        <a href="">
-                                            <span style={{ color: "#a00f0f" }}>&gt;</span>Thơ ca
-                                        </a>
-                                        <a href="">
-                                            <span style={{ color: "#a00f0f" }}>&gt;</span>Manga, novel
-                                        </a>
-                                        <a href="">
-                                            <span style={{ color: "#a00f0f" }}>&gt;</span>Art, Photography
-                                            &amp; Design
-                                        </a>
-                                        <a href="">
-                                            <span style={{ color: "#a00f0f" }}>&gt;</span>Ngôn ngữ, Sách
-                                            tham khảo
-                                        </a>
-                                        <a href="">
-                                            <span style={{ color: "#a00f0f" }}>&gt;</span>Sách giáo khoa
-                                        </a>
-                                        <a href="">
-                                            <span style={{ color: "#a00f0f" }}>&gt;</span>Sách về Việt Nam
-                                        </a>
+                                        <CategoryNavDropdown />
                                     </div>
                                 </div>
                                 <div className="d-flex gap-3">
-                                    <p>Allbook</p>
+                                    <Link
+                                    style={{ color: "#333333" }}
+                                        to={'/product'}
+                                    >Allbook</Link>
                                     <p>Sách mới</p>
                                     <p>FAQ</p>
                                     <Link style={{ color: "#212529" }} to={'/contact'}> Liên hệ</Link>

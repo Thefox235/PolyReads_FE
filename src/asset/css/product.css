@@ -104,6 +104,14 @@
     -ms-overflow-style: none;  /* IE và Edge */
        /* Tự động hiển thị scrollbar theo chiều dọc khi nội dung vượt quá */
   }
+  .sidebar-item ul li a{
+    color: #333333;
+}
+.sidebar-item ul li a:hover{
+    color: #917FB3;
+    font-weight: bolder;
+}
+
 .title_top_menu_product h3{
     margin: 0;
     font-size: 18px;

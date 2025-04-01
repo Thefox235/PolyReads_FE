@@ -1,7 +1,7 @@
 
 import '../asset/css/header.css';
 import '../asset/css/sanpham.css';
-
+// import { PulsatingButton } from "@/registry/magicui/pulsating-button";
 import React, { useState, useEffect } from 'react';
 import {
   getImages,
@@ -393,7 +393,30 @@ const Home = () => {
         <div className="mt-2 d-flex align-items-center justify-content-center gap-3 overflow-hidden container-card3"></div>
         <br />
         <div className="d-flex justify-content-center">
-          <button className="btn-xt">Xem thêm</button>{" "}
+          <Link
+            to={'/product'}
+          >
+
+            <div className="container-button">
+              <a href="#" className="button-page">
+                <div className="button__content">
+                  <span className="button__text">Xem thêm</span>
+                  <i className="ri-corner-right-down-line" />
+                  <div className="button__reflection-1" />
+                  <div className="button__reflection-2" />
+                </div>
+                <img src="https://media-hosting.imagekit.io/efe5cf484a8c4cbf/tako.png?Expires=1838103475&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=VOGs6KVA9jzeBzQekUMYe5jcCHdOZqYCXmGXlqgABIxY6e0Y0nEXC5gL0DE4koB9lRzBOoU4p87MM0w6XHgDBFGhByzF~ZxV9DreZmY~3s2nxwviPs8O0oe1rrZM63Vb149b8mlAH-6ZOgzhnxVfTq4e21J8rmVpRd37CXJKS5SdBtj6bsSl1LHNp5HtwWHl2Dp7oxDp9znKGmcyeEEMlR4fVaPz4~pZOzKFkyUhcq8064xjSXuuoXv6qm5GjKXcZ2spQGENTYzI9gTuwN~jtR3Cf4jQU1LTXvuzhVmiAXPcI0XGq731mhGM-pYxEgHipyEcITK~rLEkSee545Womw__" alt="" className="button__star-1" />
+                <img src="https://media-hosting.imagekit.io/efe5cf484a8c4cbf/tako.png?Expires=1838103475&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=VOGs6KVA9jzeBzQekUMYe5jcCHdOZqYCXmGXlqgABIxY6e0Y0nEXC5gL0DE4koB9lRzBOoU4p87MM0w6XHgDBFGhByzF~ZxV9DreZmY~3s2nxwviPs8O0oe1rrZM63Vb149b8mlAH-6ZOgzhnxVfTq4e21J8rmVpRd37CXJKS5SdBtj6bsSl1LHNp5HtwWHl2Dp7oxDp9znKGmcyeEEMlR4fVaPz4~pZOzKFkyUhcq8064xjSXuuoXv6qm5GjKXcZ2spQGENTYzI9gTuwN~jtR3Cf4jQU1LTXvuzhVmiAXPcI0XGq731mhGM-pYxEgHipyEcITK~rLEkSee545Womw__" alt="" className="button__star-2" />
+                <img src="https://media-hosting.imagekit.io/5bfea4b205154cde/cookie.png?Expires=1838103475&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Jn1lUc~x0dEfASlc-FINzjW9WdQN7wbK4ijzr-TAMju0DYFkzcC-GsII6zpMsewrdZjYNc-oa8Wg82Wb~TqbXcx5saUwOQDuDmj1ByZ4B~xLz4Us-THvloLSu3zb8oyoRu0ydci-oA-ZuSQndORcIG1YRgh3QIK8mWVIZf2iXDyrW~e~KUCH~Q1wSETdXHj8UB4tpj3q0VnFrlsg9QSh1u0TtIikcZuf0nv~-GB3pzkU80zNALNClbRJxNiPRqz6BknN0iUiAfffFwnt5nFtTau2cCEiAPl516ldreksPUVp5AYLO3xvOU3hc0XrES7cuE6a8NSKIuyQ3-8ASQirLQ__" alt="" className="button__circle-1" />
+                <img src="https://media-hosting.imagekit.io/5bfea4b205154cde/cookie.png?Expires=1838103475&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Jn1lUc~x0dEfASlc-FINzjW9WdQN7wbK4ijzr-TAMju0DYFkzcC-GsII6zpMsewrdZjYNc-oa8Wg82Wb~TqbXcx5saUwOQDuDmj1ByZ4B~xLz4Us-THvloLSu3zb8oyoRu0ydci-oA-ZuSQndORcIG1YRgh3QIK8mWVIZf2iXDyrW~e~KUCH~Q1wSETdXHj8UB4tpj3q0VnFrlsg9QSh1u0TtIikcZuf0nv~-GB3pzkU80zNALNClbRJxNiPRqz6BknN0iUiAfffFwnt5nFtTau2cCEiAPl516ldreksPUVp5AYLO3xvOU3hc0XrES7cuE6a8NSKIuyQ3-8ASQirLQ__" alt="" className="button__circle-2" />
+                <img src="https://media-hosting.imagekit.io/2cf2571ba18c4284/tako2.png?Expires=1838103475&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Uw1IC84qGFkaBjWuh07~yZJrWxpbc3EPMD2J~vf9nGidrgSona-Wn3Z1~u-WPG140wDbEG-yGPq4jDsIG2FWvAvExzao6bTHm926~G8PUgj83nfd5tzWgfwEak03OarmjUt978P-eNanqnNYylH4IK6B8Pry4M--rUHT7s8~fIa4BWK0CeaQH7LktmOrAwVI3QqI6sUD0aYgS3HuCH-8S9gJRpZCGNWAJdWphav~HlqZgA6uIcqHFSDH6koGIsNLyaxQJ7MlRLgG3-EpB9QnKrFrHGbrwfNa68LnE9TzBr8nn0tpVn8VwkjLhxF7KMdqFFfWOSCe0l-v~WpodJhkYA__" alt="" className="button__diamond" />
+                <img src="https://media-hosting.imagekit.io/2cf2571ba18c4284/tako2.png?Expires=1838103475&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Uw1IC84qGFkaBjWuh07~yZJrWxpbc3EPMD2J~vf9nGidrgSona-Wn3Z1~u-WPG140wDbEG-yGPq4jDsIG2FWvAvExzao6bTHm926~G8PUgj83nfd5tzWgfwEak03OarmjUt978P-eNanqnNYylH4IK6B8Pry4M--rUHT7s8~fIa4BWK0CeaQH7LktmOrAwVI3QqI6sUD0aYgS3HuCH-8S9gJRpZCGNWAJdWphav~HlqZgA6uIcqHFSDH6koGIsNLyaxQJ7MlRLgG3-EpB9QnKrFrHGbrwfNa68LnE9TzBr8nn0tpVn8VwkjLhxF7KMdqFFfWOSCe0l-v~WpodJhkYA__" alt="" className="button__triangle" />
+                <div className="button__shadow" />
+              </a>
+            </div>
+
+
+          </Link>
         </div>
         <br />
         <br />
@@ -457,7 +480,7 @@ const Home = () => {
                         // Gọi hàm addCart với product và ảnh của sản phẩm
                         addCart(product, productImage);
                       }}
-            
+
                       style={{ cursor: 'pointer' }}
                     >
                       THÊM VÀO GIỎ
@@ -534,7 +557,7 @@ const Home = () => {
                       onClick={() => {
                         // Gọi hàm addCart với product và ảnh của sản phẩm
                         addCart(product, productImage);
-                      }}            
+                      }}
                       style={{ cursor: 'pointer' }}
                     >
                       THÊM VÀO GIỎ
@@ -549,7 +572,7 @@ const Home = () => {
           </div>
         </div>
         {/* Product End */}
-        
+
         <br />
         <br />
         <div

@@ -2,6 +2,64 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000';
 const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+//sreach
+export const getProductSearch = async (params) => {
+  try {
+    // params chứa các key: field, keyword, page, limit (ví dụ)
+    const response = await axios.get(`${BASE_URL}/product/search`, { params });
+    return response.data.products; // API của bạn trả về { products: [...] }
+  } catch (error) {
+    console.error("Error in getProductSearch:", error);
+    throw error;
+  }
+};
+
+// Hàm lọc tác giả theo category – giả sử backend trả về danh sách tác giả theo query parameter category
+export const getFilteredAuthors = async (params) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/product/filter-authors`, { params });
+    return response.data.authors;
+  } catch (error) {
+    console.error("Lỗi khi lọc tác giả:", error);
+    throw error;
+  }
+};
+
+// Hàm lọc nhà xuất bản theo category
+export const getFilteredPublishers = async (params) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/product/filter-publishers`, { params });
+    return response.data.publishers;
+  } catch (error) {
+    console.error("Lỗi khi lọc nhà xuất bản:", error);
+    throw error;
+  }
+};
+
+//filter product
+export const getProductFilter = async (params) => {
+  try {
+    // params là một object chứa các tham số lọc, ví dụ: {category, author, publisher, page, limit}
+    const response = await axios.get(`${BASE_URL}/product/filter`, { params });
+    // Axios tự phân tích JSON, trả về dữ liệu ở response.data
+    return response.data.products;
+  } catch (error) {
+    console.error("Lỗi khi lọc sản phẩm:", error);
+    throw error;
+  }
+};
+//getProByCataPage
+export const getProByCataPage = async (id ,page = 1, limit = 20) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/product/cate-page/${id}?page=${page}&limit=${limit}`);
+    // Axios tự động chuyển dữ liệu sang JSON và gán vào response.data
+    return response.data.products;
+  }
+  catch (error) {
+    console.error("Lỗi khi lấy danh sách sản phẩm theo danh mục:", error.response ? error.response.data : error.message);
+    throw error;
+  }
+} 
 //get product page// Giả sử BASE_URL được export từ file config hoặc định nghĩa sẵn
 export const getProductPage = async (page = 1, limit = 20) => {
   try {

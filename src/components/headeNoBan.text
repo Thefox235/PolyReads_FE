@@ -2,7 +2,6 @@ import '../asset/css/header.css';
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import { useCart } from "./context/cartContext";
-import SearchForm from "./sreachForm"; // Import phía trên
 import CategoryNavDropdown from "./CategoryNavDropdown";
 const HeaderNoBan = ({ user, handleLogout }) => {
     const { cart } = useCart();
@@ -40,8 +39,10 @@ const HeaderNoBan = ({ user, handleLogout }) => {
                                 <div className="sreach-icon">
                                     <i className="bi bi-search" />
                                 </div>
-                               <SearchForm />
-
+                                <input
+                                    type="text"
+                                    placeholder="Đăng ký và nhận voucher bạn mới đến 70k!"
+                                />
                             </div>
                             <nav className="d-flex align-items-center custom-nav">
                                 <li>Tiếng Việt</li>
