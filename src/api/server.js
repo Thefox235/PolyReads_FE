@@ -2,7 +2,18 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000';
 const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
-
+//get product page// Giả sử BASE_URL được export từ file config hoặc định nghĩa sẵn
+export const getProductPage = async (page = 1, limit = 20) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/product/page?page=${page}&limit=${limit}`);
+    // Axios tự động chuyển dữ liệu sang JSON và gán vào response.data
+    // Giả sử server trả về dữ liệu theo cấu trúc: { products: [...] }
+    return response.data.products;
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách sản phẩm:", error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
 //get order by id
 export const getOrderById = async (id) => {
   try {
