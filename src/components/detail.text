@@ -52,8 +52,7 @@ const Detail = () => {
   const [commentUpdateStar, setCommentUpdateStar] = useState("");
   const [selectedStar, setSelectedStar] = useState();
   const [isFavorite, setIsFavorite] = useState(false);
-  const [currentOrderId, setCurrentOrderId] = useState(null);
-  
+
   const filtersao = comments.filter((item) => item?.productId?._id === id);
   const totalRating =
     filtersao.length > 0

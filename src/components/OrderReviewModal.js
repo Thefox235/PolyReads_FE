@@ -12,13 +12,10 @@ const getCurrentUser = () => {
 };
 
 const OrderReviewModal = ({ order, onClose }) => {
-  // State để lưu trữ orderDetails được fetch nếu order không có chi tiết
-  const [orderDetails, setOrderDetails] = useState(
-    order.orderDetails || []
-  );
+  // State để lưu trữ orderDetails; nếu order không có, fetch từ API.
+  const [orderDetails, setOrderDetails] = useState(order.orderDetails || []);
   const [loadingDetails, setLoadingDetails] = useState(false);
-
-  // Nếu order.orderDetails không tồn tại, fetch từ API
+  // console.log(order);
   useEffect(() => {
     if (!order.orderDetails || order.orderDetails.length === 0) {
       const fetchDetails = async () => {
@@ -37,15 +34,39 @@ const OrderReviewModal = ({ order, onClose }) => {
     }
   }, [order]);
 
-  // Sử dụng luôn orderDetails để đánh giá; không cần fallback vì nếu không có, chúng ta đã fetch ở trên.
+  // Sử dụng orderDetails để xác định các sản phẩm cần đánh giá
   const productsToReview = orderDetails;
 
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  // State lưu trữ dữ liệu đánh giá riêng cho từng sản phẩm:
+  // key là productId, value là { rating, comment }
+  const [reviewsData, setReviewsData] = useState({});
 
+  // Khi danh sách sản phẩm thay đổi, khởi tạo dữ liệu đánh giá mặc định (rating mặc định 5, comment = "")
+  useEffect(() => {
+    if (productsToReview && productsToReview.length > 0) {
+      const newReviews = {};
+      productsToReview.forEach((detail) => {
+        const prodId = detail?.productId?._id || detail.productId;
+        if (prodId && !newReviews[prodId]) {
+          newReviews[prodId] = { rating: 5, comment: "" };
+        }
+      });
+      setReviewsData(newReviews);
+    }
+  }, [productsToReview]);
+
+  const [submitting, setSubmitting] = useState(false);
   const currentUser = getCurrentUser();
 
+  // Hàm xử lý cập nhật dữ liệu đánh giá cho từng sản phẩm
+  const handleReviewChange = (prodId, field, value) => {
+    setReviewsData((prev) => ({
+      ...prev,
+      [prodId]: { ...prev[prodId], [field]: value },
+    }));
+  };
+
+  // Hàm gửi bình luận, lặp qua từng sản phẩm và gửi API riêng lẻ
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!currentUser) {
@@ -58,20 +79,29 @@ const OrderReviewModal = ({ order, onClose }) => {
     }
     setSubmitting(true);
     try {
-      // Gửi bình luận cho mỗi sản phẩm trong orderDetails
+      // Vòng lặp qua mỗi sản phẩm trong order
       for (const detail of productsToReview) {
-        // Lấy product id từ detail; Nếu productId là object thì dùng _id, nếu không thì dùng luôn
         const prodId = detail?.productId?._id || detail.productId;
         if (!prodId) {
           console.warn("Không tìm thấy productId ở chi tiết:", detail);
           continue;
         }
-
+        const review = reviewsData[prodId];
+        if (!review) {
+          console.warn("Không có dữ liệu đánh giá cho sản phẩm:", prodId);
+          continue;
+        }
+        // Kiểm tra dữ liệu: comment phải có ít nhất 5 ký tự
+        if (!review.comment || review.comment.trim().length < 5) {
+          alert("Vui lòng nhập bình luận (ít nhất 5 ký tự) cho sản phẩm " + prodId);
+          continue;
+        }
         const payload = {
           userId: currentUser._id,
+          orderId: order._id,            // Thêm orderId vào payload
           productId: prodId,
-          content: comment,
-          rating: Number(rating),
+          content: review.comment.trim(),
+          rating: Number(review.rating)
         };
         console.log("Gửi payload:", payload);
         await createComment(payload);
@@ -88,17 +118,11 @@ const OrderReviewModal = ({ order, onClose }) => {
 
   return (
     <div className="modal show d-block" tabIndex="-1">
-      <div className="modal-dialog modal-md">
+      <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header bg-info text-white">
-            <h5 className="modal-title">
-              Đánh giá đơn hàng: {order._id}
-            </h5>
-            <button
-              type="button"
-              className="close text-white"
-              onClick={onClose}
-            >
+            <h5 className="modal-title">Đánh giá đơn hàng: {order._id}</h5>
+            <button type="button" className="close text-white" onClick={onClose}>
               <span>&times;</span>
             </button>
           </div>
@@ -109,39 +133,52 @@ const OrderReviewModal = ({ order, onClose }) => {
           ) : (
             <form onSubmit={handleReviewSubmit}>
               <div className="modal-body">
-                <p>
-                  Vui lòng đánh giá tất cả các sản phẩm trong đơn hàng với
-                  cùng nội dung.
-                </p>
-                <div className="form-group">
-                  <label htmlFor="rating">Số sao:</label>
-                  <select
-                    id="rating"
-                    className="form-control"
-                    value={rating}
-                    onChange={(e) => setRating(e.target.value)}
-                  >
-                    {[5, 4, 3, 2, 1].map((r) => (
-                      <option key={r} value={r}>
-                        {r} sao
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label htmlFor="comment">Bình luận:</label>
-                  <textarea
-                    id="comment"
-                    className="form-control"
-                    rows="3"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder="Nhập bình luận (từ 5 đến 500 ký tự)"
-                    required
-                    minLength={5}
-                    maxLength={500}
-                  ></textarea>
-                </div>
+                <p>Vui lòng đánh giá từng sản phẩm riêng biệt:</p>
+                {productsToReview.map((detail) => {
+                  const prodId = detail?.productId?._id || detail.productId;
+                  // Giả sử các detail có chứa thông tin sản phẩm ở trường productId
+                  return (
+                    <div key={prodId} className="product-review-item">
+                      <h6>
+                        Sản phẩm:{" "}
+                        {detail.productId?.name ||
+                          "Tên sản phẩm chưa có (cần populate)"}
+                      </h6>
+                      <div className="form-group">
+                        <label>Số sao:</label>
+                        <select
+                          className="form-control"
+                          value={reviewsData[prodId]?.rating || 5}
+                          onChange={(e) =>
+                            handleReviewChange(prodId, "rating", e.target.value)
+                          }
+                        >
+                          {[5, 4, 3, 2, 1].map((r) => (
+                            <option key={r} value={r}>
+                              {r} sao
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Bình luận:</label>
+                        <textarea
+                          className="form-control"
+                          rows="3"
+                          value={reviewsData[prodId]?.comment || ""}
+                          onChange={(e) =>
+                            handleReviewChange(prodId, "comment", e.target.value)
+                          }
+                          placeholder="Nhập bình luận (từ 5 đến 500 ký tự)"
+                          required
+                          minLength={5}
+                          maxLength={500}
+                        ></textarea>
+                      </div>
+                      <hr />
+                    </div>
+                  );
+                })}
               </div>
               <div className="modal-footer">
                 <button
@@ -152,11 +189,7 @@ const OrderReviewModal = ({ order, onClose }) => {
                 >
                   Đóng
                 </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={submitting}
-                >
+                <button type="submit" className="btn btn-primary" disabled={submitting}>
                   {submitting ? "Đang gửi..." : "Gửi đánh giá"}
                 </button>
               </div>

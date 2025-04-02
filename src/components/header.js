@@ -239,7 +239,10 @@ const Header = ({ user, handleLogout }) => {
                                         style={{ color: "#333333" }}
                                         to={'/product'}
                                     >Allbook</Link>
-                                    <p>Sách mới</p>
+                                    <Link
+                                        style={{ color: '#333333' }}
+                                        to={'/blog'}
+                                    >Blog</Link>
                                     <p>FAQ</p>
                                     <Link style={{ color: "#212529" }} to={'/contact'}> Liên hệ</Link>
                                 </div>

@@ -7,13 +7,14 @@ import {
     updatePassword
     // Giả sử hàm createAddress và updateAddress đã được định nghĩa trong API
 } from "../api/server";
-import CreateAddress from "./admin/createAddress"; // Component tạo địa chỉ
-import EditAddress from "./admin/editAddress"; // Component chỉnh sửa địa chỉ (ví dụ như bạn đã tạo ở phần trước)
+
 import Modal from "./model"; // Component Modal
 import OrderManagement from "./orderManagement"; // Nếu có
 // Các phần xử lý user, sessionStorage,...
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import CreateAddress from "./admin/createAddress"; // Component tạo địa chỉ
+import EditAddress from "./admin/editAddress"; // Component chỉnh sửa địa chỉ (ví dụ như bạn đã tạo ở phần trước)
 import { deleteAddress } from "../api/server"; // Import hàm deleteAddress (giả sử tồn tại)
 
 const Account = () => {

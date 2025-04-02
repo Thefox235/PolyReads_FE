@@ -29,6 +29,7 @@ import PaymentResult from './components/paymetResult';
 import EditOrder from './components/admin/editOrder';
 import Favorite from './components/favorite';
 import Product from './components/product';
+import Dashboard from './components/admin/dashboard';
 // import ViewOrder from './components/admin/viewOrder';
 
 function App() {
@@ -69,7 +70,7 @@ function App() {
           {/* Các route admin có thể đặt ở đây nếu muốn dùng chung layout */}
           <Route element={<AdminLayout />}>
             {/* <Route path="/viewOrder" element={<PrivateRoute element={ViewOrder} roles={['1']} />} /> */}
-
+            <Route path="/dashboard" element={<PrivateRoute element={Dashboard} roles={['1']} />} />
             <Route path="/viewPro" element={<PrivateRoute element={ViewPro} roles={['1']} />} />
             <Route path="/viewCate" element={<PrivateRoute element={ViewCate} roles={['1']} />} />
             <Route path="/viewAuthor" element={<PrivateRoute element={ViewAuthor} roles={['1']} />} />

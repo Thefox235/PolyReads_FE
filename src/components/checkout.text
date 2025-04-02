@@ -6,6 +6,16 @@ import "../asset/css/checkout.css";
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  // Nếu bạn chuyển dữ liệu đơn hàng qua location state (ví dụ từ giỏ hàng)
+  const userId = sessionStorage.getItem("user") ? JSON.parse(sessionStorage.getItem("user"))._id : null;
+  const orderData = location.state;
+  const hasOrderData =
+    orderData && orderData.orderItems && orderData.orderItems.length > 0;
+  // Nếu có đơn hàng, hiển thị danh sách sản phẩm và tổng tiền
+  const orderItems = hasOrderData ? orderData.orderItems : [];
+  const totalPrice = hasOrderData ? Math.round(orderData.totalPrice) : 0;
+
   const { checkout } = useCart();
 
   // Lấy danh sách địa chỉ từ API
@@ -14,17 +24,28 @@ const Checkout = () => {
   // State cho phương thức thanh toán: "vnpay" (online) hoặc "cash" (COD)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("vnpay");
 
+  // Lấy danh sách địa chỉ từ API và đặt giá trị selectedAddressId theo user:
+  // (Chỉ lấy các địa chỉ của user hiện tại)
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
         const res = await getAllAddresses();
         // Giả sử API trả về dạng { addresses: [...] } hoặc mảng trực tiếp
         const allAddresses = res.addresses || res;
-        setAddresses(allAddresses);
-        if (allAddresses.length > 0) {
-          // Lấy địa chỉ mặc định nếu có, hoặc địa chỉ đầu tiên
-          const defaultAddress = allAddresses.find((addr) => addr.default === true);
-          setSelectedAddressId(defaultAddress ? defaultAddress._id : allAddresses[0]._id);
+        // Lọc ra các địa chỉ thuộc user
+        const userAddresses = allAddresses.filter(
+          (addr) => String(addr.userId) === String(userId)
+        );
+        setAddresses(userAddresses);
+        if (userAddresses.length > 0) {
+          // Tìm địa chỉ mặc định, nếu có
+          const defaultAddress = userAddresses.find(
+            (addr) => addr.default === true
+          );
+          // Nếu có địa chỉ default, chọn nó; nếu không, chọn địa chỉ đầu tiên
+          setSelectedAddressId(
+            defaultAddress ? defaultAddress._id : userAddresses[0]._id
+          );
         }
       } catch (error) {
         console.error("Error fetching addresses:", error);
@@ -32,14 +53,13 @@ const Checkout = () => {
     };
 
     fetchAddresses();
-  }, []);
+  }, [userId]);
 
   // Xử lý thay đổi phương thức thanh toán
   const handleChangePaymentMethod = (e) => {
     setSelectedPaymentMethod(e.target.value);
   };
 
-  // Hàm thanh toán online (VNPay)
   const handleOnlinePayment = async () => {
     try {
       // Lấy thông tin user từ sessionStorage
@@ -49,27 +69,42 @@ const Checkout = () => {
         return;
       }
       const user = JSON.parse(storedUser);
+
       if (!selectedAddressId.trim()) {
         alert("Vui lòng chọn địa chỉ giao hàng!");
         return;
       }
-      // Tạo đơn hàng qua hàm checkout (sử dụng toàn bộ cart)
-      const orderId = await checkout(user._id, selectedAddressId);
+
+      // Giả sử dữ liệu chuyển sang Checkout gồm cả checkedItems
+      // Ví dụ: trả về orderData từ location.state chứa { orderItems, totalPrice, selectedAddressId, checkedItems }
+      const orderData = location.state;
+      if (!orderData || !orderData.checkedItems) {
+        alert("Không có thông tin sản phẩm được chọn!");
+        return;
+      }
+
+      // Gọi hàm checkout, truyền thêm đối số checkedItems
+      const orderId = await checkout(user._id, selectedAddressId, orderData.checkedItems);
       if (!orderId) {
         alert("Đơn hàng không được tạo, vui lòng thử lại!");
         return;
       }
 
-      // Payload cho Payment Intent của VNPay, bạn nên thay "amount" bằng tổng tiền của đơn hàng
+      // Tạo payload để gửi lên backend cho thanh toán VNPay
       const payload = {
         orderId,
-        amount: 0, // 0 ở đây là placeholder, bạn có thể thay bằng giá trị đúng từ đơn hàng nếu có
+        amount: totalPrice,
+        language: "vn",
         orderInfo: "Thanh toán đơn hàng tại Shop",
+        bankCode: ""
       };
 
+      console.log("Payload gửi lên BE:", payload);
       const data = await createVNPAYPaymentIntent(payload);
+      console.log("Dữ liệu trả về từ BE:", data);
+
       if (data && data.paymentUrl) {
-        window.location.href = data.paymentUrl; // chuyển hướng đến trang thanh toán VNPay
+        window.location.href = data.paymentUrl;
       } else {
         alert("Không thể tạo thanh toán online, vui lòng thử lại sau!");
       }
@@ -79,7 +114,6 @@ const Checkout = () => {
     }
   };
 
-  // Hàm thanh toán khi nhận hàng (COD)
   const handleCashPayment = async () => {
     try {
       const storedUser = sessionStorage.getItem("user");
@@ -92,11 +126,16 @@ const Checkout = () => {
         alert("Vui lòng chọn địa chỉ giao hàng!");
         return;
       }
-      // Tạo đơn hàng trực tiếp qua hàm checkout
-      const orderId = await checkout(user._id, selectedAddressId);
+      const orderData = location.state;
+      if (!orderData || !orderData.checkedItems) {
+        alert("Không có thông tin sản phẩm được chọn!");
+        return;
+      }
+      // Gọi hàm checkout với đối số checkedItems
+      const orderId = await checkout(user._id, selectedAddressId, orderData.checkedItems);
       if (orderId) {
         alert("Đơn hàng được tạo thành công với mã đơn: " + orderId);
-        navigate(`/order/${orderId}`);
+        navigate(`/account`);
       } else {
         alert("Tạo đơn hàng thất bại, vui lòng thử lại!");
       }
@@ -106,7 +145,6 @@ const Checkout = () => {
     }
   };
 
-  // Hàm xử lý khi nhấn nút thanh toán dựa theo phương thức đã chọn
   const handlePayment = () => {
     if (selectedPaymentMethod === "vnpay") {
       handleOnlinePayment();
@@ -114,7 +152,6 @@ const Checkout = () => {
       handleCashPayment();
     }
   };
-
 
   return (
     <>
@@ -137,18 +174,23 @@ const Checkout = () => {
         </div>
       ) : (
         <main className="checkout-session">
-          <div className="checkout-container" style={{ fontSize: "1.4rem", textAlign: "left" }}>
+          <div
+            className="checkout-container"
+            style={{ fontSize: "1.4rem", textAlign: "left" }}
+          >
             <h4>Thanh toán</h4>
           </div>
           <div className="checkout-container">
             <div className="row">
               {/* Cột sản phẩm và lựa chọn phương thức thanh toán */}
               <div className="col-md-8 order-md-1 col-12">
-                {/* Hiển thị danh sách sản phẩm trong đơn hàng */}
                 <div className="container-box">
                   <div className="border-box">
                     <span>
-                      <i className="bi bi-box-seam-fill" style={{ marginRight: 10 }}></i>
+                      <i
+                        className="bi bi-box-seam-fill"
+                        style={{ marginRight: 10 }}
+                      ></i>
                       Các sản phẩm của bạn
                     </span>
                     {orderItems.map((item) => (
@@ -185,7 +227,11 @@ const Checkout = () => {
                         checked={selectedPaymentMethod === "cash"}
                         onChange={() => setSelectedPaymentMethod("cash")}
                       />
-                      <label htmlFor="cash" className="d-flex gap-1" style={{ alignItems: "center" }}>
+                      <label
+                        htmlFor="cash"
+                        className="d-flex gap-1"
+                        style={{ alignItems: "center" }}
+                      >
                         <i className="bi bi-cash-coin"></i> Thanh toán khi nhận hàng
                       </label>
                     </div>
@@ -197,7 +243,11 @@ const Checkout = () => {
                         checked={selectedPaymentMethod === "vnpay"}
                         onChange={() => setSelectedPaymentMethod("vnpay")}
                       />
-                      <label htmlFor="vnpay" className="d-flex gap-1" style={{ alignItems: "center" }}>
+                      <label
+                        htmlFor="vnpay"
+                        className="d-flex gap-1"
+                        style={{ alignItems: "center" }}
+                      >
                         <i className="bi bi-credit-card-2-back"></i> Thanh toán bằng thẻ
                       </label>
                     </div>
@@ -226,7 +276,7 @@ const Checkout = () => {
                             value={addr._id}
                             style={{ marginTop: "8px" }}
                             checked={selectedAddressId === addr._id}
-                            onChange={handleAddressChange}
+                            onChange={(e) => setSelectedAddressId(e.target.value)}
                           />
                           <label>
                             {addr.address_line || addr.street},{" "}

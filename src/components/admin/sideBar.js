@@ -49,7 +49,7 @@ const SideBar = () => {
                         <div className="overlap-21">
                             <div className="text-wrapper-69">General</div>
                         </div>
-                        <Link to={'/dashBoard'} className="div-2">
+                        <Link to={'/dashboard'} className="div-2">
                             <div className="text-wrapper-70">
                                 <a style={{ color: "white" }} href="/index.html">
                                     Dashboard

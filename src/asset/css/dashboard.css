@@ -1,0 +1,166 @@
+.dashboard-title
+{
+    font-family: "Inter-Medium", Helvetica;
+    font-weight: 500;
+    color: #333333;
+    font-size: 27px;
+    letter-spacing: 0;
+    line-height: normal;
+    padding: 15px 30px 0px;
+    font-weight: 600;
+}
+
+.dashboard-subtitle
+{
+    font-size: 1rem;
+    font-weight: normal;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.dashboard-content
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.dashboard-card
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.summary-cards .card
+{
+    flex: 1;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    min-width: 200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.summary-cards .card .dashboard-icon i
+{
+    font-size: 60px;
+    color: #2A2F4F;
+}
+.summary-cards .card .dashboard-title-content
+{
+    color: #2A2F4F;
+}
+
+/* File: dashboard.css */
+
+  
+  /* Bảng Recent Activity */
+  .recent-activity {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 15px;
+    overflow-x: auto;
+  }
+  
+  .recent-activity h2 {
+    margin-top: 0;
+    padding-left: 15px;
+    color: #333;
+  }
+  
+  .recent-activity table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .recent-activity th,
+  .recent-activity td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+  }
+  
+  /* Phần biểu đồ */
+  .charts {
+    display: flex
+;
+    gap: 15px;
+    padding: 0 15px;
+    margin-bottom: 30px;
+    height: 350px;
+    flex-wrap: wrap;
+    flex-direction: column-reverse;
+  }
+  
+  /* Container cho biểu đồ tròn và biểu đồ cột có kích thước cố định */
+  .chart-doughnut-container,
+  .chart-bar-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    flex: 1 1 300px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chart-doughnut-container {
+    height: 350px;
+    width: 350px;
+    position: relative;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    overflow: hidden; /* Đảm bảo phần thừa ẩn đi */
+  }
+  .chart-doughnut-container canvas {
+    max-width: 80% !important;
+    max-height: 80% !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .chart-bar-container {
+    height: 320px;
+    position: relative;
+  }
+  
+  /* Bảng Recent Activity */
+  .recent-activity {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 15px;
+    overflow-x: auto;
+  }
+  
+  .recent-activity h2 {
+    margin-top: 0;
+    padding-left: 15px;
+    color: #333;
+  }
+  
+  .recent-activity table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .recent-activity th,
+  .recent-activity td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+  }
+  
+  /* Responsive: điều chỉnh layout cho màn hình nhỏ */
+  @media (max-width: 768px) {
+    .charts {
+      flex-direction: column;
+    }
+    .summary-cards .card {
+      flex: 1 1 100%;
+    }
+  }
+  

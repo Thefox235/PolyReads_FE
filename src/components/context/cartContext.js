@@ -85,7 +85,7 @@ export const CartProvider = ({ children }) => {
 
   // Hàm checkout: tạo Order và Order Detail với toàn bộ sản phẩm trong giỏ hàng, 
   // áp dụng discount bằng cách gọi getDiscounts từ server và so sánh với iD discount của product.
-  const checkout = async (userId, addressId) => {
+  const checkout = async (userId, addressId, checkedItems, paymentMethod = "vnpay") => {
     try {
       if (!userId || userId.trim() === "") {
         alert("Bạn chưa đăng nhập hoặc userId không hợp lệ!");
@@ -96,10 +96,7 @@ export const CartProvider = ({ children }) => {
         return;
       }
   
-      // Sử dụng toàn bộ cart
-      const checkedItems = cart;
-  
-      // Lấy danh sách discount từ server
+      // Lấy danh sách discount từ server (giả sử getDiscounts đã có)
       const discountList = await getDiscounts();
   
       // Xây dựng danh sách order items, áp dụng giảm giá nếu có
@@ -122,7 +119,7 @@ export const CartProvider = ({ children }) => {
       const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantily, 0);
       const totalPrice = orderItems.reduce((sum, item) => sum + item.total, 0);
   
-      // Payload cho Order chính
+      // Payload cho Order chính (với trạng thái pending, payment_status pending)
       const orderPayload = {
         userId: userId,
         addressId: addressId,
@@ -131,46 +128,61 @@ export const CartProvider = ({ children }) => {
         img: checkedItems[0]?.img || "",
         price: totalPrice,
         total: totalPrice,
-        status: 0,            // Ví dụ: 0 = pending
-        payment_status: 0,    // 0 = pending
+        status: 0,            // 0 = pending
+        payment_status: 0,    // Đang chờ thanh toán
       };
   
       // Gọi API tạo Order và lấy orderId
       const orderRes = await createOrder(orderPayload);
       const orderId = orderRes.order._id;
   
-      // Tạo payload cho Order Detail và gọi API để tạo Order Detail
+      // Tạo payload cho Order Detail và gọi API tạo Order Detail
       const orderDetailPayload = {
         orderId,
         items: orderItems.map((item) => ({ ...item, orderId })),
       };
       await createOrderDetail(orderDetailPayload);
   
-      // Tạo Payment record ngay lúc checkout với status "pending"
-      // Bạn cần có API tạo Payment hoặc gọi trực tiếp model nếu đang dùng server-side logic
-      // Giả sử có hàm createPayment (bạn có thể viết hàm này trong controller/payment.controller.js)
-      const paymentPayload = {
-        amount: totalPrice,
-        currency: "vnd",         // hoặc "usd" tùy yêu cầu
-        status: "pending",
-        method: "vnpay",
-        // các trường bổ sung nếu cần
-      };
-  
-      const paymentRes = await createPayment(paymentPayload);
-      const paymentId = paymentRes.payment._id;
-  
-      // Cập nhật PaymentId cho Order
-      await updateOrder(orderId, { paymentId });
-  
-      // Lưu orderId và paymentId vào sessionStorage (cho các bước thanh toán online sau này)
+      // Xử lý phần Payment dựa theo phương thức thanh toán
+      if (paymentMethod === "vnpay") {
+        const paymentPayload = {
+          amount: totalPrice,
+          currency: "vnd",  // hoặc "usd"
+          status: "pending", // Đang chờ thanh toán từ VNPay
+          method: "vnpay",
+        };
+        const paymentRes = await createPayment(paymentPayload);
+        const paymentId = paymentRes.payment._id;
+        // Cập nhật PaymentId cho Order
+        await updateOrder(orderId, { paymentId });
+        // Lưu paymentId vào sessionStorage (nếu cần)
+        sessionStorage.setItem("paymentId", paymentId);
+      } else if (paymentMethod === "cash") {
+        // Nếu COD, có thể tạo Payment record với method "cash" và status "pending" hoặc "success"
+        const paymentPayload = {
+          amount: totalPrice,
+          currency: "vnd",
+          status: "failed", // Bạn có thể điều chỉnh status tùy theo nghiệp vụ COD
+          method: "cash",
+        };
+        const paymentRes = await createPayment(paymentPayload);
+        const paymentId = paymentRes.payment._id;
+        await updateOrder(orderId, { paymentId, payment_method: "cash" });
+      }
+      // Lưu orderId vào sessionStorage cho các bước thanh toán online sau nếu cần
       sessionStorage.setItem("orderId", orderId);
-      sessionStorage.setItem("paymentId", paymentId);
   
-      // Xóa giỏ hàng
-      clearCart();
+      // Cập nhật lại giỏ hàng: loại bỏ những mặt hàng đã được thanh toán
+      setCart((prevCart) =>
+        prevCart.filter(
+          (item) =>
+            !checkedItems.some(
+              (checkedItem) => checkedItem._id === item._id
+            )
+        )
+      );
   
-      // Trả về orderId để tiếp tục xử lý thanh toán online
+      // Trả về orderId
       return orderId;
     } catch (error) {
       console.error("Lỗi tạo đơn hàng:", error);

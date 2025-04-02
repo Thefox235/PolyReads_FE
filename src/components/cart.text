@@ -128,65 +128,53 @@ const Cart = () => {
       setSelectedItems(newSelections);
     }
   };
-  // Hàm xử lý thanh toán
-  const handleCheckout = async () => {
-    if (selectedCount === 0) {
-      alert("Vui lòng tick chọn sản phẩm bạn muốn mua!");
-      return;
-    }
-    if (!selectedAddressId || selectedAddressId.trim() === "") {
-      alert("Vui lòng chọn địa chỉ giao hàng!");
-      return;
-    }
-    try {
-      // Lấy các sản phẩm được tick chọn từ cart
-      const checkedItems = cart.filter((item) => selectedItems[item.product._id]);
-      // Xây dựng danh sách order items dựa trên dữ liệu từ giỏ hàng
-      const orderItems = checkedItems.map((item) => {
-        const prod = item.product;
-        const productDiscount = discount.find((dis) => dis && dis._id === prod.discount);
-        const discountPercent = productDiscount ? Number(productDiscount.value) : 0;
-        // Tính giá sau discount; đảm bảo rằng prod.price có giá trị hợp lệ
-        const currentPrice = Number(prod.price) * ((100 - discountPercent) / 100);
-        return {
-          productId: prod._id,
-          quantily: item.cartQuantity || 1, // Sử dụng "quantily" theo schema order_detail
-          price: currentPrice,
-          total: currentPrice * (item.cartQuantity || 1),
-        };
-      });
-      // Tính tổng số lượng và tổng tiền từ danh sách orderItems
-      const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantily, 0);
-      const totalPrice = orderItems.reduce((sum, item) => sum + item.total, 0);
-      // Payload cho Order gồm địa chỉ giao hàng và thông tin khác
-      const orderPayload = {
-        userId: user._id,
-        addressId: selectedAddressId,
-        name: "Đơn hàng của khách hàng",
-        quantity: totalQuantity,
-        img: checkedItems[0]?.img || "",
-        price: totalPrice, // Giá đơn hàng tính từ orderItems
-        total: totalPrice,
-        status: 0,
-        payment_status: 0,
-      };
-      // Tạo Order và lấy Order ID
-      const orderRes = await createOrder(orderPayload);
-      const orderId = orderRes.order._id;
-      // Thêm orderId vào từng order item để tạo Order Detail payload
-      const orderDetailPayload = {
-        orderId,
-        items: orderItems.map((item) => ({ ...item, orderId })),
-      };
-      await createOrderDetail(orderDetailPayload);
-      clearCart();
-      alert("Đơn hàng được tạo thành công với Order ID: " + orderId);
-      navigate(`/order/${orderId}`);
-    } catch (error) {
-      console.error("Lỗi tạo đơn hàng:", error);
-      alert("Có lỗi xảy ra khi tạo đơn hàng");
-    }
+  // Hàm xử lý thanh toán (sửa lại)
+const handleCheckout = () => {
+  if (selectedCount === 0) {
+    alert("Vui lòng tick chọn sản phẩm bạn muốn mua!");
+    return;
+  }
+
+  
+  // Lấy các sản phẩm được tick chọn từ cart
+  const checkedItems = cart.filter((item) => selectedItems[item.product._id]);
+
+  // Xây dựng danh sách order items dựa trên dữ liệu từ giỏ hàng
+  const orderItems = checkedItems.map((item) => {
+    const prod = item.product;
+    const productDiscount = discount.find(
+      (dis) => dis && dis._id === prod.discount
+    );
+    const discountPercent = productDiscount ? Number(productDiscount.value) : 0;
+    // Tính giá sau discount
+    const currentPrice = Number(prod.price) * ((100 - discountPercent) / 100);
+    return {
+      productId: prod._id,
+      quantily: item.cartQuantity || 1, // Sử dụng "quantily" theo schema của Order Detail
+      price: currentPrice,
+      total: currentPrice * (item.cartQuantity || 1),
+      name: prod.name,
+      img: item.img,
+    };
+  });
+
+  // Tính tổng số lượng và tổng tiền từ danh sách orderItems
+  const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantily, 0);
+  const totalPrice = orderItems.reduce((sum, item) => sum + item.total, 0);
+
+  // Xây dựng đối tượng chứa thông tin thanh toán cần chuyển sang trang Checkout
+  const checkoutData = {
+    orderItems,        // Danh sách sản phẩm (đã tick) trong giỏ hàng
+    totalQuantity,     // Tổng số lượng sản phẩm
+    totalPrice,        // Tổng tiền
+    selectedAddressId, // Địa chỉ giao hàng được chọn
+    // Bạn có thể bổ sung thêm dữ liệu như thông tin user nếu cần
   };
+
+  // Chuyển hướng sang trang Checkout, chuyển dữ liệu qua state
+  navigate("/checkout", { state: checkoutData });
+};
+
   return (
     <>
       <section className="banner">

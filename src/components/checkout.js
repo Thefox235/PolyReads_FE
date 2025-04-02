@@ -1,57 +1,127 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getAllAddresses, createVNPAYPaymentIntent } from "../api/server";
-import { useCart } from "../components/context/cartContext"; // Đường dẫn thay đổi theo project của bạn
+import { getAllAddresses, createVNPAYPaymentIntent, deleteAddress } from "../api/server";
+import { useCart } from "../components/context/cartContext"; // Điều chỉnh đường dẫn theo project của bạn
+import CreateAddress from "./admin/createAddress"; // Component tạo địa chỉ
+import EditAddress from "./admin/editAddress";     // Component chỉnh sửa địa chỉ
+import Modal from "./model"; // Component Modal
 import "../asset/css/checkout.css";
 
 const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // Nếu bạn chuyển dữ liệu đơn hàng qua location state (ví dụ từ giỏ hàng)
-  const userId = sessionStorage.getItem("user") ? JSON.parse(sessionStorage.getItem("user"))._id : null;
+  // Lấy userId từ sessionStorage
+  const userId = sessionStorage.getItem("user")
+    ? JSON.parse(sessionStorage.getItem("user"))._id
+    : null;
+  // Dữ liệu đơn hàng được chuyển qua location.state (ví dụ từ trang Cart)
   const orderData = location.state;
   const hasOrderData =
     orderData && orderData.orderItems && orderData.orderItems.length > 0;
-  // Nếu có đơn hàng, hiển thị danh sách sản phẩm và tổng tiền
+  // Nếu có dữ liệu đơn hàng thì lấy danh sách sản phẩm và tổng tiền
   const orderItems = hasOrderData ? orderData.orderItems : [];
   const totalPrice = hasOrderData ? Math.round(orderData.totalPrice) : 0;
 
+  // Lấy hàm checkout từ Cart Context (xử lý tạo đơn hàng, payment, cập nhật giỏ hàng, …)
   const { checkout } = useCart();
 
-  // Lấy danh sách địa chỉ từ API
+  // --- Quản lý địa chỉ giao hàng ---
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
-  // State cho phương thức thanh toán: "vnpay" (online) hoặc "cash" (COD)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("vnpay");
 
+  // Các state và hàm điều khiển modal cho phần CRUD địa chỉ
+  const [showCreateAddressModal, setShowCreateAddressModal] = useState(false);
+  const [showEditAddressModal, setShowEditAddressModal] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(null);
+
+  // Lấy danh sách địa chỉ từ API và tự động chọn địa chỉ mặc định (nếu có) hoặc chọn địa chỉ đầu tiên
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
         const res = await getAllAddresses();
-        // Giả sử API trả về dạng { addresses: [...] } hoặc mảng trực tiếp
+        // Nếu API trả về dạng { addresses: [...] } hoặc mảng trực tiếp
         const allAddresses = res.addresses || res;
-        const userAddresss = allAddresses.filter((addr) => addr.userId === userId);
-        setAddresses(userAddresss);
-        if (allAddresses.length > 0) {
-          // Lấy địa chỉ mặc định nếu có, hoặc địa chỉ đầu tiên
-          const defaultAddress = allAddresses.find((addr) => addr.default === true);
+        // Lọc ra các địa chỉ của user hiện tại (so sánh chuỗi)
+        const userAddresses = allAddresses.filter(
+          (addr) => String(addr.userId) === String(userId)
+        );
+        setAddresses(userAddresses);
+        if (userAddresses.length > 0) {
+          // Tìm địa chỉ mặc định (default === true), nếu có thì chọn nó, nếu không thì chọn địa chỉ đầu tiên
+          const defaultAddress = userAddresses.find((addr) => addr.default === true);
           setSelectedAddressId(
-            defaultAddress ? defaultAddress._id : allAddresses[0]._id
+            defaultAddress ? defaultAddress._id : userAddresses[0]._id
           );
         }
       } catch (error) {
         console.error("Error fetching addresses:", error);
       }
     };
-
     fetchAddresses();
-  }, []);
+  }, [userId]);
 
-  // Xử lý thay đổi phương thức thanh toán
+  // --- Các hàm xử lý modal CRUD địa chỉ ---
+  const handleAddAddress = () => {
+    setShowCreateAddressModal(true);
+  };
+
+  const handleCloseCreateAddressModal = () => {
+    setShowCreateAddressModal(false);
+  };
+
+  const handleCreateAddressSuccess = (newAddress) => {
+    setAddresses((prev) => [...prev, newAddress]);
+    // Nếu chưa có địa chỉ nào được chọn, cập nhật với địa chỉ mới tạo
+    if (!selectedAddressId) {
+      setSelectedAddressId(newAddress._id);
+    }
+    setShowCreateAddressModal(false);
+  };
+
+  const handleEditAddress = (address) => {
+    setEditingAddress(address);
+    setShowEditAddressModal(true);
+  };
+
+  const handleCloseEditAddressModal = () => {
+    setShowEditAddressModal(false);
+    setEditingAddress(null);
+  };
+
+  const handleEditAddressSuccess = (updatedAddress) => {
+    setAddresses((prev) =>
+      prev.map((addr) => (addr._id === updatedAddress._id ? updatedAddress : addr))
+    );
+    setShowEditAddressModal(false);
+    setEditingAddress(null);
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa địa chỉ này không?")) {
+      try {
+        await deleteAddress(addressId);
+        setAddresses((prev) =>
+          prev.filter((addr) => addr._id !== addressId)
+        );
+        alert("Xóa địa chỉ thành công!");
+        // Nếu địa chỉ đang được chọn bị xóa, cập nhật lại selectedAddressId
+        if (selectedAddressId === addressId && addresses.length > 0) {
+          setSelectedAddressId(addresses[0]._id);
+        }
+      } catch (err) {
+        console.error("Lỗi xóa địa chỉ:", err);
+        alert("Có lỗi xảy ra khi xóa địa chỉ!");
+      }
+    }
+  };
+
+  // --- Xử lý phương thức thanh toán ---
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("vnpay");
   const handleChangePaymentMethod = (e) => {
     setSelectedPaymentMethod(e.target.value);
   };
 
+  // Hàm xử lý thanh toán online (VNPay)
   const handleOnlinePayment = async () => {
     try {
       // Lấy thông tin user từ sessionStorage
@@ -61,38 +131,44 @@ const Checkout = () => {
         return;
       }
       const user = JSON.parse(storedUser);
-  
+
       if (!selectedAddressId.trim()) {
         alert("Vui lòng chọn địa chỉ giao hàng!");
         return;
       }
-  
-      // Tạo đơn hàng qua hàm checkout
-      const orderId = await checkout(user._id, selectedAddressId);
+
+      // Dữ liệu đơn hàng được chuyển qua location.state phải chứa cả trường checkedItems
+      const orderData = location.state;
+      if (!orderData || !orderData.checkedItems) {
+        alert("Không có thông tin sản phẩm được chọn!");
+        return;
+      }
+
+      // Gọi hàm checkout, truyền thêm checkedItems (danh sách các sản phẩm tick được chọn)
+      const orderId = await checkout(
+        user._id,
+        selectedAddressId,
+        orderData.checkedItems,
+        "vnpay"  // hoặc selectedPaymentMethod nếu nó có giá trị "vnpay"
+      );
       if (!orderId) {
         alert("Đơn hàng không được tạo, vui lòng thử lại!");
         return;
       }
-  
+
       // Tạo payload để gửi lên backend cho thanh toán VNPay
       const payload = {
-        orderId,     
+        orderId,
         amount: totalPrice,
         language: "vn",
         orderInfo: "Thanh toán đơn hàng tại Shop",
         bankCode: ""
       };
-  
-      // Log dữ liệu payload trước khi gửi để kiểm tra
+
       console.log("Payload gửi lên BE:", payload);
-      
-      // Gọi API createVNPAYPaymentIntent để post payload đến backend
-      // const data = null;
       const data = await createVNPAYPaymentIntent(payload);
-      
-      // Log kết quả trả về từ backend
       console.log("Dữ liệu trả về từ BE:", data);
-      
+
       if (data && data.paymentUrl) {
         window.location.href = data.paymentUrl;
       } else {
@@ -104,7 +180,7 @@ const Checkout = () => {
     }
   };
 
-  // Hàm thanh toán khi nhận hàng (COD)
+  // Hàm xử lý thanh toán COD (thanh toán khi nhận hàng)
   const handleCashPayment = async () => {
     try {
       const storedUser = sessionStorage.getItem("user");
@@ -117,11 +193,22 @@ const Checkout = () => {
         alert("Vui lòng chọn địa chỉ giao hàng!");
         return;
       }
-      // Tạo đơn hàng trực tiếp qua hàm checkout
-      const orderId = await checkout(user._id, selectedAddressId);
+      const orderData = location.state;
+      if (!orderData || !orderData.checkedItems) {
+        alert("Không có thông tin sản phẩm được chọn!");
+        return;
+      }
+      // Gọi hàm checkout với checkedItems
+      const orderId = await checkout(
+        user._id,
+        selectedAddressId,
+        orderData.checkedItems,
+        "cash"  // hoặc selectedPaymentMethod nếu nó có giá trị "cash"
+      );
+
       if (orderId) {
         alert("Đơn hàng được tạo thành công với mã đơn: " + orderId);
-        navigate(`/order/${orderId}`);
+        navigate(`/account`);
       } else {
         alert("Tạo đơn hàng thất bại, vui lòng thử lại!");
       }
@@ -169,7 +256,7 @@ const Checkout = () => {
           </div>
           <div className="checkout-container">
             <div className="row">
-              {/* Cột sản phẩm và lựa chọn phương thức thanh toán */}
+              {/* Cột danh sách sản phẩm và phương thức thanh toán */}
               <div className="col-md-8 order-md-1 col-12">
                 <div className="container-box">
                   <div className="border-box">
@@ -247,7 +334,11 @@ const Checkout = () => {
                   <div className="dc">
                     <div className="shipping-address">
                       <div>Địa chỉ giao hàng</div>
-                      <div className="text-info">Thay đổi</div>
+                      <div className=""
+                        style={{ color: '#007bff' }}
+                        onClick={handleAddAddress}>
+                        <i class="bi bi-plus-circle"></i> Địa chỉ
+                      </div>
                     </div>
                     <hr />
                     {addresses && addresses.length > 0 ? (
@@ -265,12 +356,21 @@ const Checkout = () => {
                             checked={selectedAddressId === addr._id}
                             onChange={(e) => setSelectedAddressId(e.target.value)}
                           />
-                          <label>
+                          <label style={{ flex: 1 }}>
                             {addr.address_line || addr.street},{" "}
                             {addr.ward ? addr.ward + ", " : ""}
                             {addr.district ? addr.district + ", " : ""}
                             {addr.city || addr.province}
                           </label>
+                          <button className="btn btn-link p-0" onClick={() => handleEditAddress(addr)}>
+                            Sửa
+                          </button>
+                          <button
+                            className="btn btn-link text-danger p-0"
+                            onClick={() => handleDeleteAddress(addr._id)}
+                          >
+                            <i class="bi bi-trash"></i>
+                          </button>
                         </div>
                       ))
                     ) : (
@@ -311,6 +411,28 @@ const Checkout = () => {
             </div>
           </div>
         </main>
+      )}
+
+      {/* Modal cho CreateAddress */}
+      {showCreateAddressModal && (
+        <Modal onClose={handleCloseCreateAddressModal}>
+          <CreateAddress
+            userId={userId}
+            onSubmit={handleCreateAddressSuccess}
+            onClose={handleCloseCreateAddressModal}
+          />
+        </Modal>
+      )}
+
+      {/* Modal cho EditAddress */}
+      {showEditAddressModal && editingAddress && (
+        <Modal onClose={handleCloseEditAddressModal}>
+          <EditAddress
+            initialAddress={editingAddress}
+            onSubmit={handleEditAddressSuccess}
+            onClose={handleCloseEditAddressModal}
+          />
+        </Modal>
       )}
     </>
   );

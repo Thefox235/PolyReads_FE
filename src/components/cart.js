@@ -135,7 +135,6 @@ const handleCheckout = () => {
     return;
   }
 
-  
   // Lấy các sản phẩm được tick chọn từ cart
   const checkedItems = cart.filter((item) => selectedItems[item.product._id]);
 
@@ -160,7 +159,7 @@ const handleCheckout = () => {
 
   // Tính tổng số lượng và tổng tiền từ danh sách orderItems
   const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantily, 0);
-  const totalPrice = orderItems.reduce((sum, item) => sum + item.total, 0);
+  const totalPrice = orderItems.reduce((sum, item) => sum + item.total, 0);  
 
   // Xây dựng đối tượng chứa thông tin thanh toán cần chuyển sang trang Checkout
   const checkoutData = {
@@ -168,6 +167,7 @@ const handleCheckout = () => {
     totalQuantity,     // Tổng số lượng sản phẩm
     totalPrice,        // Tổng tiền
     selectedAddressId, // Địa chỉ giao hàng được chọn
+    checkedItems
     // Bạn có thể bổ sung thêm dữ liệu như thông tin user nếu cần
   };
 
