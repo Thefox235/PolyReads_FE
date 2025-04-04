@@ -704,7 +704,8 @@ const Detail = () => {
                   Ưu đãi liên quan
                   <span className="fw-normal text-primary"> Xem thêm&gt;</span>
                 </div>
-                <div className="d-flex gap-1 mt-3">
+
+                {/* <div className="d-flex gap-1 mt-3">
                   <div className="discount-card d-flex align-items-center border p-1 gap-2">
                     <div className="discount-icon">
                       <img
@@ -725,7 +726,8 @@ const Detail = () => {
                     />
                     <div style={{ fontSize: 13 }}>Mã giảm phí vận ch...</div>
                   </div>
-                </div>
+                </div> */}
+
                 <div onClick={favorite} className="d-flex align-items-center mt-2 mb-2 gap-2" style={{ cursor: "pointer" }}>
                   <img
                     // Sử dụng cùng một icon nhưng thay đổi filter: nếu đã yêu thích thì hiển thị đầy đủ màu, nếu chưa thì áp dụng grayscale

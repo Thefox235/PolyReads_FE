@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getAllAddresses, createVNPAYPaymentIntent, deleteAddress, calculateShippingRates, getProductById } from "../api/server";
+import { getAllAddresses, createVNPAYPaymentIntent, deleteAddress, calculateShippingRates, getProductById, createZALOPAYPaymentIntent } from "../api/server";
 import { useCart } from "../components/context/cartContext"; // Điều chỉnh đường dẫn theo project của bạn
 import CreateAddress from "./admin/createAddress"; // Component tạo địa chỉ
 import EditAddress from "./admin/editAddress";     // Component chỉnh sửa địa chỉ
@@ -58,28 +58,28 @@ const Checkout = () => {
 
   // Ví dụ: tính tổng trọng lượng của cả đơn hàng
   let totalWeight = 0;
-let totalWidth = 0;
-let totalHeight = 0;
-let totalLength = 0;
+  let totalWidth = 0;
+  let totalHeight = 0;
+  let totalLength = 0;
 
-if (products && products.length > 0) {
-  // Giả sử mỗi product trong mảng `products` ứng với một orderItem
-  products.forEach((prod) => {
-    // Tìm order item tương ứng qua productId
-    const orderItem = orderItems.find(item => item.productId === prod._id);
-    if (orderItem) {
-      // Nhân trọng lượng với số lượng
-      totalWeight += Number(prod.weight || 0) * orderItem.quantily;
-      
-      // Tách kích thước của sản phẩm
-      const { width, height, length } = parseSize(prod.size);
-      // Nhân kích thước với số lượng (giả sử đóng gói theo hàng)
-      totalWidth += width * orderItem.quantily;
-      totalHeight += height * orderItem.quantily;
-      totalLength += length * orderItem.quantily;
-    }
-  });
-}
+  if (products && products.length > 0) {
+    // Giả sử mỗi product trong mảng `products` ứng với một orderItem
+    products.forEach((prod) => {
+      // Tìm order item tương ứng qua productId
+      const orderItem = orderItems.find(item => item.productId === prod._id);
+      if (orderItem) {
+        // Nhân trọng lượng với số lượng
+        totalWeight += Number(prod.weight || 0) * orderItem.quantily;
+
+        // Tách kích thước của sản phẩm
+        const { width, height, length } = parseSize(prod.size);
+        // Nhân kích thước với số lượng (giả sử đóng gói theo hàng)
+        totalWidth += width * orderItem.quantily;
+        totalHeight += height * orderItem.quantily;
+        totalLength += length * orderItem.quantily;
+      }
+    });
+  }
 
   useEffect(() => {
     // Chỉ gọi API nếu người dùng đã chọn địa chỉ
@@ -294,6 +294,67 @@ if (products && products.length > 0) {
       alert("Có lỗi xảy ra khi thanh toán online, vui lòng kiểm tra console!");
     }
   };
+  const redirectUrl = `${window.location.origin}/paymentResult?paymentMethod=${selectedPaymentMethod}`;
+  // Hàm xử lý thanh toán online với ZaloPay
+  const handleZaloPayment = async () => {
+    try {
+      // Lấy thông tin user từ sessionStorage
+      const storedUser = sessionStorage.getItem("user");
+      if (!storedUser) {
+        alert("Bạn cần đăng nhập!");
+        return;
+      }
+      const user = JSON.parse(storedUser);
+
+      if (!selectedAddressId.trim()) {
+        alert("Vui lòng chọn địa chỉ giao hàng!");
+        return;
+      }
+
+      // Lấy thông tin đơn hàng từ location.state (đảm bảo bao gồm checkedItems)
+      const orderData = location.state;
+      if (!orderData || !orderData.checkedItems) {
+        alert("Không có thông tin sản phẩm được chọn!");
+        return;
+      }
+
+      // Gọi hàm checkout để tạo đơn hàng, truyền thêm paymentMethod là "zalopay"
+      const orderId = await checkout(
+        user._id,
+        selectedAddressId,
+        orderData.checkedItems,
+        shippingFee,
+        "zalopay"
+      );
+      if (!orderId) {
+        alert("Đơn hàng không được tạo, vui lòng thử lại!");
+        return;
+      }
+
+      // Tạo payload để gửi lên backend cho thanh toán ZaloPay
+      const payload = {
+        orderId,
+        amount: finalTotal, // Số tiền cần thanh toán (sản phẩm + ship)
+        orderInfo: "Thanh toán đơn hàng tại Shop qua ZaloPay",
+        redirectUrl: redirectUrl,  // URL chuyển hướng sau thanh toán
+        ipnUrl:'https://abc123.ngrok.io/api/payment/callback'    // URL callback để nhận thông báo từ ZaloPay
+      };
+
+      console.log("Payload gửi lên BE cho ZaloPay:", payload);
+      const data = await createZALOPAYPaymentIntent(payload);
+      console.log("Dữ liệu trả về từ BE:", data);
+
+      if (data && data.paymentUrl) {
+        // Chuyển hướng người dùng đến trang thanh toán của ZaloPay
+        window.location.href = data.paymentUrl;
+      } else {
+        alert("Không thể tạo giao dịch thanh toán Zalopay, vui lòng thử lại sau!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi thanh toán online ZaloPay:", error);
+      alert("Có lỗi xảy ra khi thanh toán online ZaloPay, vui lòng kiểm tra console!");
+    }
+  };
 
   // Hàm xử lý thanh toán COD (thanh toán khi nhận hàng)
   const handleCashPayment = async () => {
@@ -338,6 +399,8 @@ if (products && products.length > 0) {
   const handlePayment = () => {
     if (selectedPaymentMethod === "vnpay") {
       handleOnlinePayment();
+    } else if (selectedPaymentMethod === "zalopay") {
+      handleZaloPayment();
     } else {
       handleCashPayment();
     }
@@ -409,6 +472,7 @@ if (products && products.length > 0) {
                 <div className="paymen">
                   <div className="payment-box">
                     <div className="pttt">Phương thức thanh toán</div>
+
                     <div className="d-flex gap-3 pb-4">
                       <input
                         type="radio"
@@ -425,7 +489,8 @@ if (products && products.length > 0) {
                         <i className="bi bi-cash-coin"></i> Thanh toán khi nhận hàng
                       </label>
                     </div>
-                    <div className="d-flex gap-3 pb-2">
+
+                    <div className="d-flex gap-3 pb-4">
                       <input
                         type="radio"
                         name="pay"
@@ -438,11 +503,36 @@ if (products && products.length > 0) {
                         className="d-flex gap-1"
                         style={{ alignItems: "center" }}
                       >
-                        <i className="bi bi-credit-card-2-back"></i> Thanh toán bằng thẻ
+                        <img
+                          src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Icon-VNPAY-QR.png"
+                          width={20}
+                        /> Thanh toán bằng vnPay
                       </label>
                     </div>
+
+                    <div className="d-flex gap-3 pb-2">
+                      <input
+                        type="radio"
+                        name="pay"
+                        id="zalopay"
+                        checked={selectedPaymentMethod === "zalopay"}
+                        onChange={() => setSelectedPaymentMethod("zalopay")}
+                      />
+                      <label
+                        htmlFor="zalopay"
+                        className="d-flex gap-1"
+                        style={{ alignItems: "center" }}
+                      >
+                        <img 
+                       src="https://s3.thoainguyentek.com/2021/11/zalopay-logo.png"
+                       width={20}
+                       /> Thanh toán bằng ZaloPay
+                      </label>
+                    </div>
+
                   </div>
                 </div>
+
               </div>
               {/* Cột địa chỉ giao hàng và tóm tắt đơn hàng */}
               <div className="col-md-4 order-md-2 col-12">
