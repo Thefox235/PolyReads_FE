@@ -2,6 +2,68 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000';
 const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+//lấy thời gian + phí vận chuyển
+export const calculateShippingRates = async (shipmentPayload) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/shipping/rates`, shipmentPayload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error calculating shipping rates:", error);
+    throw error;
+  }
+};
+
+/**
+ * Hàm lấy danh sách thành phố từ server (server sẽ gọi Goship API bên dưới)
+ */
+export const getCities = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/shipping/cities`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data; // giả sử server trả về dữ liệu dạng: { data: [ { code, name, ... }, ... ] }
+  } catch (error) {
+    console.error("Error in getCities:", error);
+    throw error;
+  }
+};
+
+/**
+ * Hàm lấy danh sách quận/huyện cho một thành phố cụ thể
+ * @param {string} cityCode - mã của thành phố
+ */
+export const getDistrictsByCity = async (cityCode) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/shipping/cities/${cityCode}/districts`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error in getDistrictsByCity:", error);
+    throw error;
+  }
+};
+
+/**
+ * Hàm lấy danh sách phường/xã cho một quận/huyện cụ thể
+ * @param {string} districtCode - mã của quận/huyện
+ */
+export const getWardsByDistrict = async (districtCode) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/shipping/districts/${districtCode}/wards`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error in getWardsByDistrict:", error);
+    throw error;
+  }
+};
+
 //favorite sreach
 export const getFavoriteSearch = async (userId, keyword) => {
   try {
@@ -278,22 +340,22 @@ export const updateOrder = async (orderId, updateData) => {
   return response.data; // Ví dụ: { order: { ... } }
 };
 //api lấy địa chỉ
-export const getProvinces = async () => {
-  const response = await axios.get(ADDR_URL);
-  return response.data.results; // Trả về danh sách tỉnh/thành phố
-};
+// export const getProvinces = async () => {
+//   const response = await axios.get(ADDR_URL);
+//   return response.data.results; // Trả về danh sách tỉnh/thành phố
+// };
 
-// Lấy danh sách quận/huyện theo province_code
-export const getDistrictsByProvince = async (provinceCode) => {
-  const response = await axios.get(`${ADDR_URL}/district/${provinceCode}`);
-  return response.data.results; // Trả về danh sách quận/huyện
-};
+// // Lấy danh sách quận/huyện theo province_code
+// export const getDistrictsByProvince = async (provinceCode) => {
+//   const response = await axios.get(`${ADDR_URL}/district/${provinceCode}`);
+//   return response.data.results; // Trả về danh sách quận/huyện
+// };
 
-// Lấy danh sách xã/phường theo district_code
-export const getWardsByDistrict = async (districtCode) => {
-  const response = await axios.get(`${ADDR_URL}/ward/${districtCode}`);
-  return response.data.results; // Trả về danh sách xã/phường
-};
+// // Lấy danh sách xã/phường theo district_code
+// export const getWardsByDistrict = async (districtCode) => {
+//   const response = await axios.get(`${ADDR_URL}/ward/${districtCode}`);
+//   return response.data.results; // Trả về danh sách xã/phường
+// };
 // Hàm tạo địa chỉ mới
 export const createAddress = async (addressData) => {
   const response = await axios.post(`${BASE_URL}/address`, addressData);

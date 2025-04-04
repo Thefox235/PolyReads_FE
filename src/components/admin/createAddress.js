@@ -1,86 +1,105 @@
-import React, { useState } from "react";
-import tinh_tp from "hanhchinhvn/dist/tinh_tp.json";
-import quan_huyen from "hanhchinhvn/dist/quan_huyen.json";
-import xa_phuong from "hanhchinhvn/dist/xa_phuong.json";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { createAddress, getCities, getDistrictsByCity, getWardsByDistrict } from "../../api/server"; // Hàm tạo địa chỉ trên backend
 import CustomSelect from "./customSelect";
-import { createAddress } from "../../api/server";
 
 const CreateAddress = ({ onSubmit, userId, onClose }) => {
-  const [districts, setDistricts] = useState([]);
+  // Các state chứa mảng dữ liệu sau khi gọi API
+  const [cities, setCities] = useState([]);         // Danh sách thành phố
+  const [districts, setDistricts] = useState([]);     // Danh sách quận/huyện
   const [wards, setWards] = useState([]);
-
+  // Danh sách phường/xã
+  console.log(districts);
+  
+  // State chứa dữ liệu form
   const [formData, setFormData] = useState({
-    userId: userId || "",               // Cần đảm bảo đây là một ObjectId hợp lệ
-    name: "",                           // Tên người nhận
+    userId: userId || "",
+    name: "",
     phone: "",
     address_line: "",
-    city: "",                           // Sẽ gán từ Tỉnh/Thành phố
-    province: "",                       // Lưu mã của Tỉnh/Thành phố
-    provinceName: "",
-    district: "",                       // Mã Quận/Huyện
+    city: "",       // Mã của thành phố (được CustomSelect trả về)
+    cityName: "",   // Tên của thành phố (lookup từ mảng cities)
+    district: "",   // Mã của quận/huyện
     districtName: "",
-    ward: "",                           // Mã Xã/Phường
+    ward: "",       // Mã của phường/xã
     wardName: "",
     default: false,
   });
 
-  const handleProvinceChange = (value) => {
-    setFormData((prev) => ({
+  // Khi component mount, load danh sách thành phố từ API
+  useEffect(() => {
+    async function fetchCities() {
+      try {
+        const response = await getCities(); // Ví dụ trả về { data: { data: [ ... ] } }
+        setCities(response.data || []);
+      } catch (error) {
+        console.error("Lỗi load cities:", error);
+      }
+    }
+    fetchCities();
+  }, []);
+
+  // Khi chọn thành phố
+  const handleCityChange = async (selectedCityId) => {
+    console.log("Selected city id:", selectedCityId);
+    // So sánh bằng property `id`
+    const selectedCity = cities.find(
+      city => String(city.id) === String(selectedCityId)
+    );
+    console.log("Lookup selectedCity:", selectedCity);
+
+    setFormData(prev => ({
       ...prev,
-      province: value, // mã
-      provinceName: tinh_tp[value]?.name || "", // tên tỉnh
+      city: selectedCityId,
+      cityName: selectedCity ? selectedCity.name : "",
       district: "",
       districtName: "",
       ward: "",
-      wardName: "",
+      wardName: ""
     }));
-    // Cập nhật danh sách quận/huyện
-    const filteredDistricts = Object.values(quan_huyen).filter(
-      (district) => district.parent_code === value
-    );
-    setDistricts(
-      filteredDistricts.map((district) => ({
-        value: district.code,
-        label: district.name,
-      }))
-    );
-    setWards([]);
+
+    try {
+      const response = await getDistrictsByCity(selectedCityId);
+      setDistricts(response.data || []);
+      setWards([]);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách quận/huyện:", error);
+    }
   };
-  
-  
-  const handleDistrictChange = (value) => {
-    // Tìm option đã chọn dựa trên mã
-    const selectedDistrict = districts.find((option) => option.value === value);
-    setFormData((prev) => ({
+
+  // Khi chọn quận/huyện
+  const handleDistrictChange = async (selectedDistrictId) => {
+    const selectedDistrict = districts.find(
+      d => String(d.id) === String(selectedDistrictId)
+    );
+    setFormData(prev => ({
       ...prev,
-      // Lưu mã vào field dùng cho dropdown
-      district: value,
-      // Lưu tên được lấy từ option để sử dụng cho API payload
-      districtName: selectedDistrict ? selectedDistrict.label : "",
-      // Reset xã/phường:
+      district: selectedDistrictId,
+      districtName: selectedDistrict ? selectedDistrict.name : "",
       ward: "",
-      wardName: "",
+      wardName: ""
     }));
-    const filteredWards = Object.values(xa_phuong).filter(
-      (ward) => ward.parent_code === value
-    );
-    setWards(
-      filteredWards.map((ward) => ({
-        value: ward.code,
-        label: ward.name,
-      }))
-    );
+
+    try {
+      const response = await getWardsByDistrict(selectedDistrictId);
+      setWards(response.data || []);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách phường/xã:", error);
+    }
   };
-  
-  const handleWardChange = (value) => {
-    const selectedWard = wards.find((option) => option.value === value);
-    setFormData((prev) => ({
+
+  const handleWardChange = (selectedWardId) => {
+    const selectedWard = wards.find(
+      w => String(w.id) === String(selectedWardId)
+    );
+    setFormData(prev => ({
       ...prev,
-      ward: value,                    // Lưu mã cho dropdown
-      wardName: selectedWard ? selectedWard.label : "",  // Lưu tên để gửi payload
+      ward: selectedWardId,
+      wardName: selectedWard ? selectedWard.name : "",
     }));
   };
-  
+
+  // Hàm xử lý input thay đổi thông thường
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -89,6 +108,7 @@ const CreateAddress = ({ onSubmit, userId, onClose }) => {
     }));
   };
 
+  // Hàm submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
@@ -96,15 +116,19 @@ const CreateAddress = ({ onSubmit, userId, onClose }) => {
       name: formData.name,
       phone: formData.phone,
       address_line: formData.address_line,
-      province: formData.provinceName,     // Lưu tên của tỉnh/thành phố
-      city: formData.provinceName,           // Nếu bạn dùng tên tỉnh làm city
-      district: formData.districtName,       // Lưu tên của quận/huyện
-      ward: formData.wardName,               // Lưu tên của xã/phường
+      province: formData.cityName, // Sử dụng tên thành phố cho payload
+      city: formData.cityName,
+      district: formData.districtName,
+      ward: formData.wardName,
       default: formData.default,
+      extraCodes: {
+        provinceCode: formData.city,      // Mã thành phố
+        districtCode: formData.district,    // Mã quận/huyện
+        wardCode: formData.ward,            // Mã phường/xã
+      },
     };
-  
+
     console.log("Payload:", payload);
-  
     try {
       const res = await createAddress(payload);
       if (onSubmit) {
@@ -116,31 +140,34 @@ const CreateAddress = ({ onSubmit, userId, onClose }) => {
       console.error("Lỗi tạo địa chỉ:", error);
       alert("Có lỗi xảy ra khi tạo địa chỉ!");
     }
-  };  
-  
+  };
+
   return (
     <div className="create-address">
       <h2>Thêm địa chỉ mới</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-row">
-          {/* Chọn Tỉnh/Thành */}
+          {/* Dropdown chọn thành phố */}
           <div className="form-group">
             <CustomSelect
               label="Tỉnh/Thành phố"
-              options={Object.entries(tinh_tp).map(([code, province]) => ({
-                value: code,
-                label: province.name,
+              options={cities.map(city => ({
+                value: String(city.id),  // ép về string
+                label: city.name,
               }))}
-              value={formData.province}
-              onChange={(val) => handleProvinceChange(val)}
+              value={formData.city}
+              onChange={val => handleCityChange(val)}
               placeholder="Chọn Tỉnh/Thành phố"
             />
           </div>
-          {/* Chọn Quận/Huyện */}
+          {/* Dropdown chọn quận/huyện */}
           <div className="form-group">
             <CustomSelect
               label="Quận/Huyện"
-              options={districts}
+              options={districts.map((district) => ({
+                value: district.id,
+                label: district.name,
+              }))}
               value={formData.district}
               onChange={(val) => handleDistrictChange(val)}
               placeholder="Chọn Quận/Huyện"
@@ -148,18 +175,20 @@ const CreateAddress = ({ onSubmit, userId, onClose }) => {
           </div>
         </div>
         <div className="form-row">
-
-          {/* Chọn Xã/Phường */}
+          {/* Dropdown chọn phường/xã */}
           <div className="form-group">
             <CustomSelect
               label="Xã/Phường"
-              options={wards}
+              options={wards.map((ward) => ({
+                value: ward.id,
+                label: ward.name,
+              }))}
               value={formData.ward}
               onChange={(val) => handleWardChange(val)}
               placeholder="Chọn Xã/Phường"
             />
           </div>
-          {/* Địa chỉ cụ thể */}
+          {/* Ô nhập địa chỉ cụ thể */}
           <div className="form-group">
             <label htmlFor="address_line">Địa chỉ cụ thể:</label>
             <input
@@ -174,9 +203,8 @@ const CreateAddress = ({ onSubmit, userId, onClose }) => {
             />
           </div>
         </div>
-
         <div className="form-row">
-          {/* Số điện thoại */}
+          {/* Input số điện thoại */}
           <div className="form-group">
             <label htmlFor="phone">Số điện thoại:</label>
             <input
@@ -190,13 +218,13 @@ const CreateAddress = ({ onSubmit, userId, onClose }) => {
               required
             />
           </div>
-          {/* Tên người nhận */}
+          {/* Input tên người nhận */}
           <div className="form-group">
             <label htmlFor="name">Họ và tên người nhận:</label>
             <input
               type="text"
               id="name"
-              placeholder="nhập họ và tên"
+              placeholder="Nhập họ và tên"
               name="name"
               value={formData.name}
               onChange={handleChange}
@@ -205,8 +233,6 @@ const CreateAddress = ({ onSubmit, userId, onClose }) => {
             />
           </div>
         </div>
-
-        {/* Checkbox địa chỉ mặc định */}
         <div className="form-group">
           <label>
             <input
@@ -218,7 +244,6 @@ const CreateAddress = ({ onSubmit, userId, onClose }) => {
             Đặt làm địa chỉ mặc định
           </label>
         </div>
-        {/* Nút submit */}
         <button type="submit" className="btn btn-primary">
           Lưu địa chỉ
         </button>

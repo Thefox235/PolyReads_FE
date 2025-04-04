@@ -18,6 +18,8 @@ import {
   getFavorite,
   getUserOrder,
   getOrderDetail,
+  getAllAddresses,
+  calculateShippingRates
 
 } from "../api/server";
 import { Link } from "react-router-dom";
@@ -27,6 +29,8 @@ import Modal from "./model";
 import { useForm } from "react-hook-form";
 import { convertTime } from "../utils/Converter";
 import StarRating from "../utils/StarRating";
+import AddressSelectionModal from "./addressSelector";
+import CreateAddress from "../components/admin/createAddress";
 
 const Detail = () => {
   const { id } = useParams();
@@ -53,7 +57,72 @@ const Detail = () => {
   const [selectedStar, setSelectedStar] = useState();
   const [isFavorite, setIsFavorite] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState(null);
-  
+  const [address, setAddress] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const userAddresses = address.filter(addr => addr && addr.userId === checkuser?._id);
+  const [shippingInfo, setShippingInfo] = useState(null);
+  // Bên trên component Detail
+  const [showCreateAddressModal, setShowCreateAddressModal] = useState(false);
+
+  const handleAddAddress = () => {
+    setShowCreateAddressModal(true);
+  };
+
+  // Hàm callback khi tạo địa chỉ thành công
+  const handleCreateAddressSuccess = (newAddress) => {
+    // Cập nhật danh sách địa chỉ với địa chỉ mới được tạo
+    setAddress((prev) => [...prev, newAddress]);
+    // Nếu muốn tự động chọn địa chỉ mới tạo
+    setSelectedAddress(newAddress);
+    // Đóng modal tạo địa chỉ
+    setShowCreateAddressModal(false);
+  };
+
+  function parseSize(sizeStr) {
+    if (typeof sizeStr !== "string" || sizeStr.trim() === "") {
+      return { width: 0, height: 0, length: 1 };
+    }
+    const parts = sizeStr.split("x").map(part => part.trim());
+    const width = parts[0] ? parseFloat(parts[0]) : 0;
+    const height = parts[1] ? parseFloat(parts[1]) : 0;
+    const length = parts.length >= 3 ? (parts[2] ? parseFloat(parts[2]) : 1) : 1;
+    return { width, height, length };
+  }
+  const { w, h, l } = parseSize(product.size);
+  useEffect(() => {
+    // Chỉ gọi API nếu đã có địa chỉ được chọn
+    if (selectedAddress) {
+      const calculateShipping = async () => {
+        // Cấu trúc payload: thay đổi các thông tin dựa vào dữ liệu của selectedAddress
+        const shipmentPayload = {
+          shipment: {
+            address_from: { city: "700000", district: "701200" },
+            address_to: {
+              city: selectedAddress.extraCodes.provinceCode || selectedAddress.province, // tùy trường của bạn
+              district: selectedAddress.extraCodes.districtCode,
+            },
+            parcel: { cod: product.price, weight: product.weight, width: w, height: h, length: l },
+          },
+        };
+
+        try {
+          console.log(shipmentPayload);
+          const rates = await calculateShippingRates(shipmentPayload);
+          // Giả sử API trả về dạng { code: 200, status: "success", data: [ {...}, {...} ] }
+          if (rates && rates.status === "success" && Array.isArray(rates.data) && rates.data.length > 0) {
+            // Chọn phần tử đầu tiên (hoặc có thể chọn theo logic nào đó của bạn)
+            setShippingInfo(rates.data[0]);
+          }
+        } catch (error) {
+          console.error("Error calculating shipping rates:", error);
+        }
+      };
+      calculateShipping();
+    }
+  }, [selectedAddress]);
+  console.log(shippingInfo);
+
   const filtersao = comments.filter((item) => item?.productId?._id === id);
   const totalRating =
     filtersao.length > 0
@@ -90,6 +159,15 @@ const Detail = () => {
   };
 
   const openUpdateCreateModal = () => setshowUpdateModal(true);
+
+  useEffect(() => {
+    // Chỉ set selectedAddress nếu chưa có (hoặc đang là null)
+    if (!selectedAddress && userAddresses.length > 0) {
+      const defaultAddress = userAddresses.find(addr => addr.default);
+      setSelectedAddress(defaultAddress || userAddresses[0]);
+    }
+  }, [address, checkuser]); // Các dependency này vẫn cần để cập nhật lần đầu khi load dữ liệu
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -152,6 +230,17 @@ const Detail = () => {
       }
     };
     fetchData();
+
+    const fetchAddress = async () => {
+      try {
+        const data = await getAllAddresses();
+        setAddress(data);
+      } catch (error) {
+        console.error("Có lỗi xảy ra khi lấy địa chỉ:", error);
+      }
+    };
+    fetchAddress();
+
   }, []);
 
   // Lọc ra các hình ảnh phù hợp với sản phẩm hiện tại dựa trên product._id
@@ -424,16 +513,16 @@ const Detail = () => {
     try {
       const data = await getUserOrder(userId);
       const orders = Array.isArray(data.orders) ? data.orders : [];
-      
+
       // Lọc các đơn hàng có trạng thái "hoàn thành" (status === "2")
       const completedOrders = orders.filter(order => String(order.status) === "2");
       if (completedOrders.length === 0) return null;
-      
+
       // Gọi API getOrderDetail cho từng đơn hàng hoàn thành
       const ordersDetailsArray = await Promise.all(
         completedOrders.map(order => getOrderDetail(order._id))
       );
-      
+
       // Mỗi kết quả trả về có dạng { orderDetails: [...] } – ghép luôn với đơn hàng tương ứng
       const ordersWithDetails = completedOrders.map((order, index) => ({
         order,
@@ -441,7 +530,7 @@ const Detail = () => {
           ? ordersDetailsArray[index].orderDetails
           : []
       }));
-      
+
       // Duyệt qua từng đơn hàng để tìm xem có đơn nào có order detail chứa sản phẩm cần đánh giá không
       for (const item of ordersWithDetails) {
         const purchasedInThisOrder = item.orderDetails.some(detail => {
@@ -482,7 +571,8 @@ const Detail = () => {
     setShowCreateModal(true);
   };
 
-  
+
+
   return (
     <>
       <main>
@@ -548,32 +638,68 @@ const Detail = () => {
             </div>
             <div className="content-2">
               <h5 className="fw-bold">Thông tin vận chuyển</h5>
+
               <p>
-                Giao hàng đến
-                <span className="fw-bold fs-6">
-                  14 Hà Thị Khiêm, Quận 12, Hồ Chí Minh
+                Giao hàng đến{" "}
+                <span style={{ paddingLeft: "5px" }} className="fw-bold fs-6">
+                  {selectedAddress
+                    ? `${selectedAddress.address_line}, ${selectedAddress.district}, ${selectedAddress.province}`
+                    : "Chưa chọn địa chỉ"}
+                </span>{" "}
+                <span
+                  className="text-primary"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setShowAddressModal(true)}
+                >
+                  Thay đổi
                 </span>
-                <span className="text-primary"> Thay đổi</span>
               </p>
+              {showAddressModal && (
+                <Modal onClose={() => setShowAddressModal(false)}>
+                  <AddressSelectionModal
+                    addresses={address.filter((addr) => addr.userId === checkuser._id)}
+                    defaultAddressId={selectedAddress ? selectedAddress._id : ""}
+                    onSelect={(addr) => setSelectedAddress(addr)}
+                    onClose={() => setShowAddressModal(false)}
+                    handleAddAddress={handleAddAddress}
+                    checkuser={checkuser}
+                  />
+                </Modal>
+              )}
+              {/* Modal cho CreateAddress */}
+              {showCreateAddressModal && (
+                <Modal onClose={() => setShowCreateAddressModal(false)}>
+                  <CreateAddress
+                    userId={checkuser._id}
+                    onSubmit={handleCreateAddressSuccess}
+                    onClose={() => setShowCreateAddressModal(false)}
+                  />
+                </Modal>
+              )}
+
               <div>
+
                 <div className="delivery-info d-flex gap-3 align-items-center">
                   <div className="delivery-icon">
-                    <img
-                      src="https://s3-alpha-sig.figma.com/img/7dca/d58a/4be22ce06d0af64c09778b15866e3adc?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=Sb3nkQeCbEwIOauHfexg5U6UPUCQF-3TQiJ3mG9ld3DrgLhqiE3COrrfhMYwd96lTgz0GOnjO1EE90k7guMMeeU3oETmy8rC~ZoDwwUuveYhrqv6LGYO6lQMyrxLm--xZ9T3sN6v-Kpqkws2QMtBWEHCbDJYjRyk46cGIcvbts8kiTbElyE7L4iXlMWs5VufejxDqLFBpoJrjZsqT381V5WugFQJ2giPlWG9JjMEnq5A4GawgqbwoDhMNMe1iM2QRa4ePHWc7F5D0~mzr45kVq7IB7ccfqhUOtlMNUaSc6oPpM62WnsIW5sisjdXyTtUDX4qjgtdpkvjEyP7srzebg__"
-                      width={30}
-                      className="img-fluid"
-                    />
+                    <i
+                      style={{ fontSize: "30px", color: "#1caf79" }}
+                      class="bi bi-truck"></i>
                   </div>
                   <div className="delivery-details">
                     <div className="delivery-title fw-bold">
                       Giao hàng tiêu chuẩn
                     </div>
+
                     <div className="delivery-date">
                       Dự kiến giao hàng{" "}
-                      <span className="fw-bolder">Thứ 2 - 06/01</span>
+                      <span className="fw-bolder">
+                        {shippingInfo ? shippingInfo.expected : "Chưa xác định"}
+                      </span>
                     </div>
+
                   </div>
                 </div>
+
                 <div className="fw-bold">
                   Ưu đãi liên quan
                   <span className="fw-normal text-primary"> Xem thêm&gt;</span>

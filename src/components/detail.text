@@ -18,6 +18,8 @@ import {
   getFavorite,
   getUserOrder,
   getOrderDetail,
+  getAllAddresses,
+  getAddressById
 
 } from "../api/server";
 import { Link } from "react-router-dom";
@@ -27,6 +29,8 @@ import Modal from "./model";
 import { useForm } from "react-hook-form";
 import { convertTime } from "../utils/Converter";
 import StarRating from "../utils/StarRating";
+import AddressSelectionModal from "./addressSelector";
+import CreateAddress from "../components/admin/createAddress";
 
 const Detail = () => {
   const { id } = useParams();
@@ -52,6 +56,28 @@ const Detail = () => {
   const [commentUpdateStar, setCommentUpdateStar] = useState("");
   const [selectedStar, setSelectedStar] = useState();
   const [isFavorite, setIsFavorite] = useState(false);
+  const [currentOrderId, setCurrentOrderId] = useState(null);
+  const [address, setAddress] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const userAddresses = address.filter(addr => addr && addr.userId === checkuser?._id);
+  // Bên trên component Detail
+  const [showCreateAddressModal, setShowCreateAddressModal] = useState(false);
+
+  const handleAddAddress = () => {
+    setShowCreateAddressModal(true);
+  };
+
+  // Hàm callback khi tạo địa chỉ thành công
+  const handleCreateAddressSuccess = (newAddress) => {
+    // Cập nhật danh sách địa chỉ với địa chỉ mới được tạo
+    setAddress((prev) => [...prev, newAddress]);
+    // Nếu muốn tự động chọn địa chỉ mới tạo
+    setSelectedAddress(newAddress);
+    // Đóng modal tạo địa chỉ
+    setShowCreateAddressModal(false);
+  };
+
 
   const filtersao = comments.filter((item) => item?.productId?._id === id);
   const totalRating =
@@ -89,6 +115,14 @@ const Detail = () => {
   };
 
   const openUpdateCreateModal = () => setshowUpdateModal(true);
+
+  useEffect(() => {
+    if (userAddresses.length > 0) {
+      const defaultAddress = userAddresses.find(addr => addr.default);
+      setSelectedAddress(defaultAddress || userAddresses[0]);
+    }
+  }, [address, checkuser]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -151,6 +185,17 @@ const Detail = () => {
       }
     };
     fetchData();
+
+    const fetchAddress = async () => {
+      try {
+        const data = await getAllAddresses();
+        setAddress(data);
+      } catch (error) {
+        console.error("Có lỗi xảy ra khi lấy địa chỉ:", error);
+      }
+    };
+    fetchAddress();
+
   }, []);
 
   // Lọc ra các hình ảnh phù hợp với sản phẩm hiện tại dựa trên product._id
@@ -423,16 +468,16 @@ const Detail = () => {
     try {
       const data = await getUserOrder(userId);
       const orders = Array.isArray(data.orders) ? data.orders : [];
-      
+
       // Lọc các đơn hàng có trạng thái "hoàn thành" (status === "2")
       const completedOrders = orders.filter(order => String(order.status) === "2");
       if (completedOrders.length === 0) return null;
-      
+
       // Gọi API getOrderDetail cho từng đơn hàng hoàn thành
       const ordersDetailsArray = await Promise.all(
         completedOrders.map(order => getOrderDetail(order._id))
       );
-      
+
       // Mỗi kết quả trả về có dạng { orderDetails: [...] } – ghép luôn với đơn hàng tương ứng
       const ordersWithDetails = completedOrders.map((order, index) => ({
         order,
@@ -440,7 +485,7 @@ const Detail = () => {
           ? ordersDetailsArray[index].orderDetails
           : []
       }));
-      
+
       // Duyệt qua từng đơn hàng để tìm xem có đơn nào có order detail chứa sản phẩm cần đánh giá không
       for (const item of ordersWithDetails) {
         const purchasedInThisOrder = item.orderDetails.some(detail => {
@@ -481,7 +526,8 @@ const Detail = () => {
     setShowCreateModal(true);
   };
 
-  
+
+
   return (
     <>
       <main>
@@ -547,13 +593,45 @@ const Detail = () => {
             </div>
             <div className="content-2">
               <h5 className="fw-bold">Thông tin vận chuyển</h5>
+
               <p>
-                Giao hàng đến
-                <span className="fw-bold fs-6">
-                  14 Hà Thị Khiêm, Quận 12, Hồ Chí Minh
+                Giao hàng đến{" "}
+                <span style={{ paddingLeft: "5px" }} className="fw-bold fs-6">
+                  {selectedAddress
+                    ? `${selectedAddress.address_line}, ${selectedAddress.district}, ${selectedAddress.province}`
+                    : "Chưa chọn địa chỉ"}
+                </span>{" "}
+                <span
+                  className="text-primary"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setShowAddressModal(true)}
+                >
+                  Thay đổi
                 </span>
-                <span className="text-primary"> Thay đổi</span>
               </p>
+              {showAddressModal && (
+                <Modal onClose={() => setShowAddressModal(false)}>
+                  <AddressSelectionModal
+                    addresses={address.filter((addr) => addr.userId === checkuser._id)}
+                    defaultAddressId={selectedAddress ? selectedAddress._id : ""}
+                    onSelect={(addr) => setSelectedAddress(addr)}
+                    onClose={() => setShowAddressModal(false)}
+                    handleAddAddress={handleAddAddress}
+                    checkuser={checkuser}
+                  />
+                </Modal>
+              )}
+              {/* Modal cho CreateAddress */}
+              {showCreateAddressModal && (
+                <Modal onClose={() => setShowCreateAddressModal(false)}>
+                  <CreateAddress
+                    userId={checkuser._id}
+                    onSubmit={handleCreateAddressSuccess}
+                    onClose={() => setShowCreateAddressModal(false)}
+                  />
+                </Modal>
+              )}
+
               <div>
                 <div className="delivery-info d-flex gap-3 align-items-center">
                   <div className="delivery-icon">

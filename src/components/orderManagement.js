@@ -25,6 +25,14 @@ const OrderManagement = ({ userId }) => {
     returns: 3,
   };
 
+  const statusOptions = [
+    { value: 0, label: "Đang xử lý" },
+    { value: 1, label: "Đang giao" },
+    { value: 2, label: "Hoàn tất" },
+    { value: -1, label: "Bị hủy" },
+    { value: 3, label: "Đổi trả" },
+  ];
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -44,9 +52,9 @@ const OrderManagement = ({ userId }) => {
     activeTab === "all"
       ? orders
       : orders.filter(
-          (order) =>
-            String(order.status) === String(statusMapping[activeTab])
-        );
+        (order) =>
+          String(order.status) === String(statusMapping[activeTab])
+      );
 
   // Mở modal chi tiết đơn hàng
   const handleViewOrderDetail = (order) => {
@@ -179,6 +187,12 @@ const OrderManagement = ({ userId }) => {
                       style: "currency",
                       currency: "VND",
                     })}
+                </strong>
+              </p>
+              <p className="order-status">
+                Tình trạng:{" "}
+                <strong>
+                  {statusOptions.find(option => option.value === order.status)?.label || order.status}
                 </strong>
               </p>
               <div className="order-actions">

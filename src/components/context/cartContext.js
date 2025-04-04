@@ -12,7 +12,7 @@ export const CartProvider = ({ children }) => {
     const savedCart = localStorage.getItem("cart");
     return savedCart ? JSON.parse(savedCart) : [];
   });
-  
+
   // Dữ liệu dùng cho trang giỏ hàng (chọn sản phẩm, v.v)
   const [selectedItems, setSelectedItems] = useState({});
 
@@ -85,7 +85,7 @@ export const CartProvider = ({ children }) => {
 
   // Hàm checkout: tạo Order và Order Detail với toàn bộ sản phẩm trong giỏ hàng, 
   // áp dụng discount bằng cách gọi getDiscounts từ server và so sánh với iD discount của product.
-  const checkout = async (userId, addressId, checkedItems, paymentMethod = "vnpay") => {
+  const checkout = async (userId, addressId, checkedItems, shippingFee = 0, paymentMethod = "vnpay") => {
     try {
       if (!userId || userId.trim() === "") {
         alert("Bạn chưa đăng nhập hoặc userId không hợp lệ!");
@@ -95,10 +95,10 @@ export const CartProvider = ({ children }) => {
         alert("Bạn chưa chọn địa chỉ giao hàng!");
         return;
       }
-  
+
       // Lấy danh sách discount từ server (giả sử getDiscounts đã có)
       const discountList = await getDiscounts();
-  
+
       // Xây dựng danh sách order items, áp dụng giảm giá nếu có
       const orderItems = checkedItems.map((item) => {
         const prod = item.product;
@@ -114,11 +114,13 @@ export const CartProvider = ({ children }) => {
           total: currentPrice * (item.cartQuantity || 1),
         };
       });
-  
+
       // Tính tổng số lượng và tổng tiền
       const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantily, 0);
       const totalPrice = orderItems.reduce((sum, item) => sum + item.total, 0);
-  
+      // Tính finalTotal là tổng tiền sản phẩm cộng tiền ship
+      const finalTotal = totalPrice + Number(shippingFee);
+
       // Payload cho Order chính (với trạng thái pending, payment_status pending)
       const orderPayload = {
         userId: userId,
@@ -126,23 +128,23 @@ export const CartProvider = ({ children }) => {
         name: "Đơn hàng của khách hàng",
         quantity: totalQuantity,
         img: checkedItems[0]?.img || "",
-        price: totalPrice,
-        total: totalPrice,
+        price: finalTotal,
+        total: finalTotal,
         status: 0,            // 0 = pending
         payment_status: 0,    // Đang chờ thanh toán
       };
-  
+
       // Gọi API tạo Order và lấy orderId
       const orderRes = await createOrder(orderPayload);
       const orderId = orderRes.order._id;
-  
+
       // Tạo payload cho Order Detail và gọi API tạo Order Detail
       const orderDetailPayload = {
         orderId,
         items: orderItems.map((item) => ({ ...item, orderId })),
       };
       await createOrderDetail(orderDetailPayload);
-  
+
       // Xử lý phần Payment dựa theo phương thức thanh toán
       if (paymentMethod === "vnpay") {
         const paymentPayload = {
@@ -171,7 +173,7 @@ export const CartProvider = ({ children }) => {
       }
       // Lưu orderId vào sessionStorage cho các bước thanh toán online sau nếu cần
       sessionStorage.setItem("orderId", orderId);
-  
+
       // Cập nhật lại giỏ hàng: loại bỏ những mặt hàng đã được thanh toán
       setCart((prevCart) =>
         prevCart.filter(
@@ -181,7 +183,7 @@ export const CartProvider = ({ children }) => {
             )
         )
       );
-  
+
       // Trả về orderId
       return orderId;
     } catch (error) {

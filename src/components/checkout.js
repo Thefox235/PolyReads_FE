@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getAllAddresses, createVNPAYPaymentIntent, deleteAddress } from "../api/server";
+import { getAllAddresses, createVNPAYPaymentIntent, deleteAddress, calculateShippingRates, getProductById } from "../api/server";
 import { useCart } from "../components/context/cartContext"; // Điều chỉnh đường dẫn theo project của bạn
 import CreateAddress from "./admin/createAddress"; // Component tạo địa chỉ
 import EditAddress from "./admin/editAddress";     // Component chỉnh sửa địa chỉ
@@ -8,6 +8,7 @@ import Modal from "./model"; // Component Modal
 import "../asset/css/checkout.css";
 
 const Checkout = () => {
+
   const navigate = useNavigate();
   const location = useLocation();
   // Lấy userId từ sessionStorage
@@ -20,6 +21,7 @@ const Checkout = () => {
     orderData && orderData.orderItems && orderData.orderItems.length > 0;
   // Nếu có dữ liệu đơn hàng thì lấy danh sách sản phẩm và tổng tiền
   const orderItems = hasOrderData ? orderData.orderItems : [];
+  const [products, setProducts] = useState([]);
   const totalPrice = hasOrderData ? Math.round(orderData.totalPrice) : 0;
 
   // Lấy hàm checkout từ Cart Context (xử lý tạo đơn hàng, payment, cập nhật giỏ hàng, …)
@@ -33,7 +35,99 @@ const Checkout = () => {
   const [showCreateAddressModal, setShowCreateAddressModal] = useState(false);
   const [showEditAddressModal, setShowEditAddressModal] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
+  // Thêm state để lưu thông tin cước vận chuyển
+  const [shippingInfo, setShippingInfo] = useState(null);
+  // Nếu shippingInfo chưa có (null) thì shippingFee sẽ là 0.
+  const shippingFee = shippingInfo ? shippingInfo.total_fee : 0;
 
+  // Sau đó bạn có thể sử dụng biến này để tính tổng đơn hàng, ví dụ:
+  const finalTotal = totalPrice + shippingFee;
+  // Giả sử bạn đã import tính shipping API, ví dụ:
+  // import { calculateShippingRates } from "../api/server";
+  function parseSize(sizeStr) {
+    if (typeof sizeStr !== "string" || sizeStr.trim() === "") {
+      return { width: 0, height: 0, length: 1 };
+    }
+    const parts = sizeStr.split("x").map(part => part.trim());
+    const width = parts[0] ? parseFloat(parts[0]) : 0;
+    const height = parts[1] ? parseFloat(parts[1]) : 0;
+    // Nếu không có phần chiều dài, mặc định là 1
+    const length = parts.length >= 3 ? (parts[2] ? parseFloat(parts[2]) : 1) : 1;
+    return { width, height, length };
+  }
+
+  // Ví dụ: tính tổng trọng lượng của cả đơn hàng
+  let totalWeight = 0;
+let totalWidth = 0;
+let totalHeight = 0;
+let totalLength = 0;
+
+if (products && products.length > 0) {
+  // Giả sử mỗi product trong mảng `products` ứng với một orderItem
+  products.forEach((prod) => {
+    // Tìm order item tương ứng qua productId
+    const orderItem = orderItems.find(item => item.productId === prod._id);
+    if (orderItem) {
+      // Nhân trọng lượng với số lượng
+      totalWeight += Number(prod.weight || 0) * orderItem.quantily;
+      
+      // Tách kích thước của sản phẩm
+      const { width, height, length } = parseSize(prod.size);
+      // Nhân kích thước với số lượng (giả sử đóng gói theo hàng)
+      totalWidth += width * orderItem.quantily;
+      totalHeight += height * orderItem.quantily;
+      totalLength += length * orderItem.quantily;
+    }
+  });
+}
+
+  useEffect(() => {
+    // Chỉ gọi API nếu người dùng đã chọn địa chỉ
+    if (!selectedAddressId) return;
+
+    // Tìm địa chỉ được chọn trong mảng addresses
+    const selectedAddress = addresses.find(addr => addr._id === selectedAddressId);
+    if (!selectedAddress) return;
+
+    console.log(orderItems);
+
+    const calculateShipping = async () => {
+      const shipmentPayload = {
+        shipment: {
+          address_from: { city: "700000", district: "701200" },
+          address_to: {
+            city: selectedAddress.extraCodes.provinceCode || selectedAddress.province, // tùy trường của bạn
+            district: selectedAddress.extraCodes.districtCode,
+          },
+          parcel: {
+            cod: finalTotal,
+            weight: totalWeight, // Ví dụ: tổng trọng lượng của đơn hàng
+            width: totalWidth,   // Bạn có thể cần quy đổi hoặc tính toán lại theo cách đóng kiện của đơn hàng
+            height: totalHeight,
+            length: totalLength,
+          },
+
+        },
+      };
+
+      try {
+        console.log(shipmentPayload);
+        const rates = await calculateShippingRates(shipmentPayload);
+        // Giả sử API trả về dạng: { code:200, status:"success", data: [ {expected: "Dự kiến giao 2 ngày", ...}, ... ] }
+        if (rates && rates.status === "success" && Array.isArray(rates.data) && rates.data.length > 0) {
+          // Chọn phần tử đầu tiên (hoặc tùy theo logic của bạn)
+          setShippingInfo(rates.data[0]);
+        } else {
+          setShippingInfo(null);
+        }
+      } catch (error) {
+        console.error("Error calculating shipping rates:", error);
+        setShippingInfo(null);
+      }
+    };
+
+    calculateShipping();
+  }, [selectedAddressId, addresses]);
   // Lấy danh sách địa chỉ từ API và tự động chọn địa chỉ mặc định (nếu có) hoặc chọn địa chỉ đầu tiên
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -59,6 +153,26 @@ const Checkout = () => {
     };
     fetchAddresses();
   }, [userId]);
+
+  useEffect(() => {
+    // Hàm fetch các thông tin sản phẩm từ orderItems
+    const fetchProductsData = async () => {
+      try {
+        // Sử dụng Promise.all để lấy danh sách các sản phẩm
+        const productsData = await Promise.all(
+          orderItems.map((item) => getProductById(item.productId))
+        );
+        // Giả sử hàm getProductById trả về đối tượng product
+        setProducts(productsData);
+      } catch (error) {
+        console.error("Có lỗi xảy ra khi lấy dữ liệu sản phẩm:", error);
+      }
+    };
+
+    if (orderItems.length > 0) {
+      fetchProductsData();
+    }
+  }, [orderItems]);
 
   // --- Các hàm xử lý modal CRUD địa chỉ ---
   const handleAddAddress = () => {
@@ -149,6 +263,7 @@ const Checkout = () => {
         user._id,
         selectedAddressId,
         orderData.checkedItems,
+        shippingFee,
         "vnpay"  // hoặc selectedPaymentMethod nếu nó có giá trị "vnpay"
       );
       if (!orderId) {
@@ -159,7 +274,7 @@ const Checkout = () => {
       // Tạo payload để gửi lên backend cho thanh toán VNPay
       const payload = {
         orderId,
-        amount: totalPrice,
+        amount: finalTotal,
         language: "vn",
         orderInfo: "Thanh toán đơn hàng tại Shop",
         bankCode: ""
@@ -203,6 +318,7 @@ const Checkout = () => {
         user._id,
         selectedAddressId,
         orderData.checkedItems,
+        shippingFee,
         "cash"  // hoặc selectedPaymentMethod nếu nó có giá trị "cash"
       );
 
@@ -372,14 +488,26 @@ const Checkout = () => {
                             <i class="bi bi-trash"></i>
                           </button>
                         </div>
+
                       ))
                     ) : (
                       <div style={{ marginLeft: "15px" }}>Không có địa chỉ</div>
                     )}
                   </div>
+                  <div className="delivery-date" style={{ marginTop: "10px" }}>
+                    Dự kiến giao hàng:{" "}
+                    <span
+                      style={{ color: "#1b9afc", fontWeight: "bold" }}
+                      className="fw">
+                      {shippingInfo ? shippingInfo.expected : "Chưa xác định"}
+                    </span>
+                  </div>
+
                 </div>
+
                 <br />
                 <div className="container-box">
+
                   <div className="d-flex justify-content-between align-items-center">
                     <span>Tạm tính</span>
                     <span>
@@ -389,13 +517,26 @@ const Checkout = () => {
                       })}
                     </span>
                   </div>
+
+                  <div className="d-flex justify-content-between align-items-center">
+                    <span>Phí vận chuyển</span>
+                    <span>
+                      {shippingInfo
+                        ? shippingInfo.total_fee.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND"
+                        })
+                        : "Chưa xác định"}
+                    </span>
+                  </div>
+
                   <div className="line-total" />
                   <div className="d-flex justify-content-between align-items-center total-footer">
                     <p>
                       <strong>Tổng Số Tiền (gồm VAT)</strong>
                     </p>
                     <span className="text-danger">
-                      {totalPrice.toLocaleString("vi-VN", {
+                      {finalTotal.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })}

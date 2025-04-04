@@ -30,6 +30,7 @@ import EditOrder from './components/admin/editOrder';
 import Favorite from './components/favorite';
 import Product from './components/product';
 import Dashboard from './components/admin/dashboard';
+import ShippingCalculator from './components/shippingCaculator';
 // import ViewOrder from './components/admin/viewOrder';
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
           </Route>
           <Route path="/paymentResult" element={<PaymentResult />} />
           <Route path="/editOrder" element={<EditOrder />} />
+          <Route path="/ShippingCalculator" element={<ShippingCalculator />} />
           {/* Các route không cần header (hoặc có layout khác) */}
           <Route element={<MainLayout />}>
             <Route path="/checkout" element={<Checkout />} />

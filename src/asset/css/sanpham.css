@@ -220,6 +220,10 @@
 {
   width: 208.5px;
 }
+.NewProducts .list-product .mobile-product:hover
+{
+  border: 1px solid #a3a3a3;
+}
 .mobile-product {
   width: 220.5px;
   /* border: 1px solid #ccc; */
@@ -235,9 +239,9 @@
   color: red;
 }
 
-.mobile-product:hover .product-price {
+/* .mobile-product:hover .product-price {
   color: yellow;
-}
+} */
 
 .product-image {
   position: relative;

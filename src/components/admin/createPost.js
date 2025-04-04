@@ -94,15 +94,15 @@ const CreatePost = ({ onClose, onCreateSuccess }) => {
       setError('Vui lòng chọn danh mục (tag)');
       return;
     }
-    
+
     try {
       // Tạo object postData, mapping form.category thành tag
-      const postData = { 
+      const postData = {
         title: form.title,
         coverImage: form.coverImage,
         tag: form.category,  // Đảm bảo trường "tag" có giá trị
         content,
-        images 
+        images
       };
 
       const newPost = await createPost(postData);
@@ -118,6 +118,22 @@ const CreatePost = ({ onClose, onCreateSuccess }) => {
     }
   };
 
+  const handleCoverImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      // Gọi hàm uploadImageToCloudinary để upload file và nhận URL
+      const uploadedUrl = await uploadImageToCloudinary(file);
+      // Cập nhật form.coverImage với URL trả về
+      setForm((prev) => ({
+        ...prev,
+        coverImage: uploadedUrl,
+      }));
+    } catch (error) {
+      console.error("Lỗi upload cover image:", error);
+      setError("Lỗi upload cover image");
+    }
+  };
   return (
     <div className="addPro-container">
       <h1>Tạo bài viết mới</h1>
@@ -139,16 +155,23 @@ const CreatePost = ({ onClose, onCreateSuccess }) => {
 
         {/* Input hình ảnh bìa (nếu cần) */}
         <div className="form-group">
-          <label htmlFor="coverImage">Hình ảnh bìa (URL):</label>
+          <label htmlFor="coverImage">Hình ảnh bìa:</label>
           <input
-            type="text"
+            type="file"
             id="coverImage"
             name="coverImage"
-            placeholder="https://example.com/image.jpg"
-            value={form.coverImage}
-            onChange={handleChange}
+            onChange={handleCoverImageUpload}
             className="form-control"
           />
+          {form.coverImage && (
+            <div style={{ marginTop: '10px' }}>
+              <img
+                src={form.coverImage}
+                alt="Cover Preview"
+                style={{ width: '200px', border: '1px solid #ddd', padding: '5px' }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Phần chọn danh mục */}
@@ -173,7 +196,7 @@ const CreatePost = ({ onClose, onCreateSuccess }) => {
         </div>
 
         {/* Phần upload & preview hình ảnh (nếu cần gallery) */}
-        <div className="form-row">
+        {/* <div className="form-row">
           <div className="form-group">
             <label htmlFor="imageFile">Chọn ảnh bài viết:</label>
             <input
@@ -220,7 +243,7 @@ const CreatePost = ({ onClose, onCreateSuccess }) => {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* Toast UI Editor cho nội dung bài viết */}
         <div className="form-group">
@@ -232,6 +255,18 @@ const CreatePost = ({ onClose, onCreateSuccess }) => {
             initialEditType="markdown"
             useCommandShortcut={true}
             ref={editorRef}
+            hooks={{
+              addImageBlobHook: async (blob, callback) => {
+                try {
+                  // Gọi hàm của bạn để upload ảnh, blob ở đây là Blob/File
+                  const url = await uploadImageToCloudinary(blob);
+                  // Sau khi upload thành công, callback URL vào editor để chèn ảnh
+                  callback(url, 'Uploaded image'); // dòng thứ hai là alt text (bạn có thể để trống nếu muốn)
+                } catch (error) {
+                  console.error("Lỗi upload ảnh từ Toast UI Editor:", error);
+                }
+              }
+            }}
           />
         </div>
 
