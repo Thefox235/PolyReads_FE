@@ -155,7 +155,7 @@ const ViewOrder = ({ userId }) => {
                   >
                     <i className="bi bi-pen"></i>
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => {
                       if (window.confirm("Bạn có chắc chắn muốn xóa đơn hàng này không?")) {
                         handleDelete(order._id);
@@ -164,7 +164,7 @@ const ViewOrder = ({ userId }) => {
                     className="trash"
                   >
                     <i className="bi bi-trash"></i>
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))

@@ -121,7 +121,7 @@ const Detail = () => {
       calculateShipping();
     }
   }, [selectedAddress]);
-  console.log(shippingInfo);
+  // console.log(shippingInfo);
 
   const filtersao = comments.filter((item) => item?.productId?._id === id);
   const totalRating =
