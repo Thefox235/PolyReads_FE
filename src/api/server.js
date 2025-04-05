@@ -1,7 +1,16 @@
 // api.js
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000';
-const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+// const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+//zalo pay
+export const createZALOPAYPaymentIntent = async (payload) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/payment/create-zalopay`, payload);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 //lấy thời gian + phí vận chuyển
 export const calculateShippingRates = async (shipmentPayload) => {
   try {
