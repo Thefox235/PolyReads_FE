@@ -294,7 +294,7 @@ const Checkout = () => {
       alert("Có lỗi xảy ra khi thanh toán online, vui lòng kiểm tra console!");
     }
   };
-  const redirectUrl = `${window.location.origin}/paymentResult?paymentMethod=${selectedPaymentMethod}`;
+  
   // Hàm xử lý thanh toán online với ZaloPay
   const handleZaloPayment = async () => {
     try {
@@ -305,20 +305,21 @@ const Checkout = () => {
         return;
       }
       const user = JSON.parse(storedUser);
-
+  
+      // Kiểm tra địa chỉ giao hàng
       if (!selectedAddressId.trim()) {
         alert("Vui lòng chọn địa chỉ giao hàng!");
         return;
       }
-
-      // Lấy thông tin đơn hàng từ location.state (đảm bảo bao gồm checkedItems)
+  
+      // Lấy thông tin đơn hàng từ location.state (phải chứa checkedItems)
       const orderData = location.state;
       if (!orderData || !orderData.checkedItems) {
         alert("Không có thông tin sản phẩm được chọn!");
         return;
       }
-
-      // Gọi hàm checkout để tạo đơn hàng, truyền thêm paymentMethod là "zalopay"
+  
+      // Gọi hàm checkout để tạo đơn hàng, với paymentMethod là "zalopay"
       const orderId = await checkout(
         user._id,
         selectedAddressId,
@@ -330,25 +331,32 @@ const Checkout = () => {
         alert("Đơn hàng không được tạo, vui lòng thử lại!");
         return;
       }
-
-      // Tạo payload để gửi lên backend cho thanh toán ZaloPay
+  
+      // Tạo payload cho thanh toán ZaloPay: chỉ cần gửi những thông số FE mong muốn
       const payload = {
+        // Optionally: orderId được lưu lại cho liên kết giữa đơn hàng và giao dịch của ZaloPay
         orderId,
-        amount: finalTotal, // Số tiền cần thanh toán (sản phẩm + ship)
+        // Sử dụng user._id làm appUser theo BE code (BE sẽ dùng trường này, nếu không gửi sẽ mặc định "user123")
+        appUser: user._id,
+        // Số tiền cần thanh toán (sản phẩm + phí ship)
+        amount: finalTotal,
+        // Mô tả đơn hàng (mà BE sẽ đưa vào description khi tạo đơn)
         orderInfo: "Thanh toán đơn hàng tại Shop qua ZaloPay",
-        redirectUrl: redirectUrl,  // URL chuyển hướng sau thanh toán
-        ipnUrl:'https://abc123.ngrok.io/api/payment/callback'    // URL callback để nhận thông báo từ ZaloPay
+        // Nếu cần pass thêm danh sách sản phẩm, bạn có thể chuyển:
+        items: orderData.checkedItems
       };
-
+  
       console.log("Payload gửi lên BE cho ZaloPay:", payload);
+  
+      // Hàm createZALOPAYPaymentIntent gọi API BE (đã định nghĩa sẵn) trả về dữ liệu JSON từ ZaloPay
       const data = await createZALOPAYPaymentIntent(payload);
       console.log("Dữ liệu trả về từ BE:", data);
-
-      if (data && data.paymentUrl) {
-        // Chuyển hướng người dùng đến trang thanh toán của ZaloPay
-        window.location.href = data.paymentUrl;
+  
+      // Nếu BE trả về order_url (hoặc cashier_order_url) thì FE sẽ chuyển hướng theo URL đó
+      if (data && data.order_url) {
+        window.location.href = data.order_url;
       } else {
-        alert("Không thể tạo giao dịch thanh toán Zalopay, vui lòng thử lại sau!");
+        alert("Không thể tạo giao dịch thanh toán ZaloPay, vui lòng thử lại sau!");
       }
     } catch (error) {
       console.error("Lỗi khi thanh toán online ZaloPay:", error);

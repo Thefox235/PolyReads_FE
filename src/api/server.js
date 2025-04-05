@@ -2,10 +2,26 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000';
 // const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+
+//gộp order
+// Hàm này sẽ gọi endpoint /orders/complete trên BE
+export const completeOrder = async (orderPayload) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/order/complete`, orderPayload, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    console.log("Order completed:", response.data);
+    return response.data; // response.data có thể chứa order, message, v.v...
+  } catch (error) {
+    console.error("Error completing order:", error);
+    throw error;
+  }
+};
+
 //zalo pay
 export const createZALOPAYPaymentIntent = async (payload) => {
   try {
-    const response = await axios.post(`${BASE_URL}/payment/create-zalopay`, payload);
+    const response = await axios.post(`${BASE_URL}/payment/zalopay/payment`, payload);
     return response.data;
   } catch (error) {
     throw error;
