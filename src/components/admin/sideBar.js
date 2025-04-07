@@ -97,7 +97,7 @@ const SideBar = () => {
                         </Link>
                         <Link to={'/viewPublisher'} className="div-9">
                             <div className="text-wrapper-70">
-                                <a style={{ color: "white" }} href="" /> Nhà xuất bảng
+                                <a style={{ color: "white" }} href="" /> Nhà xuất bản
                             </div>
                             <img className="img-3" src="https://media-hosting.imagekit.io//234d454134ff4465/publishing.png?Expires=1836360148&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=DhNFOSs6vsEYxtlfEuxrEbx4vPimzYINWJ-AetBG0FezX-7u-UDGmR94n5cPV8f79nhAtdKrE0yLCd8uYRuWvvuuWWiYUCY10cdZq3iIh1FUNjvGYAKrea55l~MQ2ODWplxlI4~r~T1NBE23DrSZXsFEELjwMSVjpKFdd1ZZQP1~jf1OzrSgmLpQKRTrs36kd8GfCHEmYaTfe0-mxYdKjN38eDGeiqYASpqtxKmQiwzYz7I-1YxhYzzqMSegAUWG7JSMYaHTW~ca0jZ1gci0o4O6uWwu2oVT7jvkxzaIGTgd2WzU74Hb8OInrMcHnWp17IWkIVxHgW4XMomA68xt7g__" />
                         </Link>

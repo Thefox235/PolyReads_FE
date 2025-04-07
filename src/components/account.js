@@ -29,25 +29,41 @@ const Account = () => {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
+    const [passwordError, setPasswordError] = useState(""); // state lưu lỗi đổi m
 
     // Ví dụ trong handlePasswordSubmit
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
+        setPasswordError(""); // Reset lỗi trước khi xử lý
+
+        // Kiểm tra mật khẩu mới không được trùng với mật khẩu hiện tại
+        if (currentPassword === newPassword) {
+            setPasswordError("Mật khẩu mới phải khác mật khẩu hiện tại!");
+            return;
+        }
+
+        // Kiểm tra xem mật khẩu mới có khớp với xác nhận mật khẩu mới không
         if (newPassword !== confirmNewPassword) {
             alert("Mật khẩu mới không khớp, vui lòng kiểm tra lại!");
             return;
         }
+
         try {
+            // Gọi API đổi mật khẩu
             const data = await updatePassword(currentPassword, newPassword);
             alert(data.message || "Đổi mật khẩu thành công!");
-            // Reset các state liên quan đến password
+            // Reset các state liên quan đến mật khẩu
             setCurrentPassword("");
             setNewPassword("");
             setConfirmNewPassword("");
         } catch (error) {
-
             console.error("Lỗi khi đổi mật khẩu:", error);
-            alert("Có lỗi xảy ra khi đổi mật khẩu!");
+            // Nếu có lỗi từ API, hiển thị thông báo lỗi
+            const errorMessage =
+                error.response && error.response.data && error.response.data.message
+                    ? error.response.data.message
+                    : "Có lỗi xảy ra khi đổi mật khẩu!";
+            setPasswordError(errorMessage);
         }
     };
 
@@ -241,6 +257,11 @@ const Account = () => {
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         disabled={!isEditing}
+                                        required
+                                        onInvalid={(e) =>
+                                            e.target.setCustomValidity("Vui lòng nhập Họ và tên!")
+                                        }
+                                        onInput={(e) => e.target.setCustomValidity("")}
                                     />
                                     {!isEditing && (
                                         <a href="#" onClick={handleEditClick}>
@@ -248,6 +269,7 @@ const Account = () => {
                                         </a>
                                     )}
                                 </div>
+
                                 <label className="account-label">Email</label>
                                 <div className="account-input">
                                     <input
@@ -256,6 +278,11 @@ const Account = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         disabled={!isEditing}
+                                        required
+                                        onInvalid={(e) =>
+                                            e.target.setCustomValidity("Vui lòng nhập Email hợp lệ!")
+                                        }
+                                        onInput={(e) => e.target.setCustomValidity("")}
                                     />
                                     {!isEditing && (
                                         <a href="#" onClick={handleEditClick}>
@@ -263,6 +290,7 @@ const Account = () => {
                                         </a>
                                     )}
                                 </div>
+
                                 <label className="account-label">Số điện thoại</label>
                                 <div className="account-input">
                                     <input
@@ -271,6 +299,14 @@ const Account = () => {
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
                                         disabled={!isEditing}
+                                        required
+                                        pattern="^[0-9]{10,11}$"
+                                        onInvalid={(e) =>
+                                            e.target.setCustomValidity(
+                                                "Vui lòng nhập số điện thoại hợp lệ (10-11 số)!"
+                                            )
+                                        }
+                                        onInput={(e) => e.target.setCustomValidity("")}
                                     />
                                     {!isEditing && (
                                         <a href="#" onClick={handleEditClick}>
@@ -278,6 +314,7 @@ const Account = () => {
                                         </a>
                                     )}
                                 </div>
+
                                 {isEditing && (
                                     <>
                                         <br />
@@ -348,6 +385,12 @@ const Account = () => {
                                     onChange={(e) => setCurrentPassword(e.target.value)}
                                     required
                                 />
+                                {/* Hiển thị lỗi nếu mật khẩu hiện tại không đúng hoặc không hợp lệ */}
+                                {passwordError && (
+                                    <div className="alert alert-danger" style={{ marginTop: "5px" }}>
+                                        {passwordError}
+                                    </div>
+                                )}
 
                                 <label className="account-label">Mật khẩu mới</label>
                                 <input
@@ -357,6 +400,11 @@ const Account = () => {
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
                                     required
+                                    minLength={7}
+                                    onInvalid={(e) =>
+                                        e.target.setCustomValidity("Mật khẩu phải có ít nhất 7 ký tự!")
+                                    }
+                                    onInput={(e) => e.target.setCustomValidity("")}
                                 />
 
                                 <label className="account-label">Nhập lại mật khẩu mới</label>

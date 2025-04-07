@@ -31,6 +31,12 @@ const AuthForm = () => {
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
 
+    // Kiểm tra độ dài mật khẩu (cần > 6 ký tự, tức tối thiểu 7 ký tự)
+    if (registerData.pass.length <= 6) {
+      alert('Mật khẩu phải dài hơn 6 ký tự!');
+      return;
+    }
+
     // Kiểm tra confirm password
     if (registerData.pass !== cpassword) {
       alert('Mật khẩu không khớp!');
@@ -85,7 +91,6 @@ const AuthForm = () => {
       alert('Đăng ký bằng Google không thành công');
     },
   });
-  
 
   return (
     <>
@@ -108,9 +113,9 @@ const AuthForm = () => {
               <i className="bi bi-google" /> Google
             </button>
             {/* Nếu bạn có hàm đăng ký Facebook riêng, thay vì sử dụng cùng googleRegister */}
-            <button className="facebook-btn" onClick={() => {/* Thêm hàm facebookRegister() */}}>
+            {/* <button className="facebook-btn" onClick={() => { }}>
               <i className="bi bi-facebook" /> Facebook
-            </button>
+            </button> */}
           </div>
 
           {/* Form đăng ký thông thường */}
@@ -150,6 +155,11 @@ const AuthForm = () => {
               value={registerData.pass}
               onChange={handleRegisterChange}
               required
+              minLength={7}
+              onInvalid={(e) =>
+                e.target.setCustomValidity('Mật khẩu phải có ít nhất 7 ký tự!')
+              }
+              onInput={(e) => e.target.setCustomValidity('')}
             />
             <input
               type="password"

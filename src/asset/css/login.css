@@ -134,6 +134,7 @@
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-right: 10px;
 }
 
 .otp-modal-content button:hover {

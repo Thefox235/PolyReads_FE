@@ -31,6 +31,7 @@ import Favorite from './components/favorite';
 import Product from './components/product';
 import Dashboard from './components/admin/dashboard';
 import ShippingCalculator from './components/shippingCaculator';
+import ViewUser from './components/admin/viewUser';
 // import ViewOrder from './components/admin/viewOrder';
 
 function App() {
@@ -81,6 +82,7 @@ function App() {
             <Route path="/viewDiscount" element={<PrivateRoute element={ViewDiscount} roles={['1']} />} />
             <Route path="/viewOrder" element={<PrivateRoute element={ViewOrder} roles={['1']} />} />
             <Route path="/viewPost" element={<PrivateRoute element={ViewPost} roles={['1']} />} />
+            <Route path="/viewUser" element={<PrivateRoute element={ViewUser} roles={['1']} />} />
 
           </Route>
           <Route path="/sideBar" element={<SideBar />} />
