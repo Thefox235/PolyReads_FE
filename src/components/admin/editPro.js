@@ -57,7 +57,6 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
         category: initialData.category || '',
         author: initialData.author || '',
         discount: initialData.discount || ''
-
       });
       // Nếu sản phẩm đã có hình ảnh, load chúng
       if (initialData.images) {
@@ -66,7 +65,7 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
     }
   }, [initialData]);
 
-  // Fetch danh mục, tác giả, NXB và ảnh từ API
+  // Fetch danh mục, tác giả, NXB và discount từ API (và hình ảnh nếu có)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -128,14 +127,43 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
+  // Hàm kiểm tra giá trị bắt buộc đối với các trường quan trọng
+  const validateForm = () => {
+    // Kiểm tra input text (nếu cần thiết, có thể bổ sung kiểm tra trim())
+    if (!form.name.trim()) return "Tên sản phẩm không được để trống!";
+    if (!form.title.trim()) return "Title không được để trống!";
+    if (!form.price) return "Giá sản phẩm không được để trống!";
+    if (!form.stock) return "Số lượng không được để trống!";
+    if (!form.weight.trim()) return "Trọng lượng không được để trống!";
+    if (!form.size.trim()) return "Kích thước không được để trống!";
+    if (!form.pages.trim()) return "Số trang không được để trống!";
+    if (!form.language.trim()) return "Ngôn ngữ không được để trống!";
+    if (!form.format.trim()) return "Hình thức không được để trống!";
+    if (!form.published_date) return "Ngày phát hành không được để trống!";
+    if (!form.publisher) return "Vui lòng chọn Nhà xuất bản!";
+    if (!form.category) return "Vui lòng chọn Danh mục!";
+    if (!form.author) return "Vui lòng chọn Tác giả!";
+    // Nếu có các kiểm tra bổ sung cho discount, description,... thì thêm vào đây
+    return null;
+  };
+
   // Submit form cập nhật sản phẩm
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Kiểm tra các trường bắt buộc không được null hoặc rỗng
+    const validationError = validateForm();
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
     try {
       const updatedProduct = await updateProduct(initialData._id, form, images);
       // Re-fetch hình ảnh từ API để lấy dữ liệu mới nhất
       const freshImages = await getImagesByProductId(initialData._id);
-      const completeProduct = { ...updatedProduct, images: (freshImages && freshImages.length > 0) ? freshImages : images };
+      const completeProduct = { 
+        ...updatedProduct, 
+        images: (freshImages && freshImages.length > 0) ? freshImages : images 
+      };
       alert('Sản phẩm đã được cập nhật thành công!');
       if (onEditSuccess) onEditSuccess(completeProduct);
       if (onClose) onClose();
@@ -145,7 +173,6 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
       alert('Có lỗi xảy ra khi cập nhật sản phẩm');
     }
   };
-
 
   return (
     <div className="editPro-container">
@@ -163,6 +190,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
               value={form.name}
               onChange={handleChange}
               className="form-control"
+              required
+              onInvalid={(e) => e.target.setCustomValidity("Vui lòng nhập tên sản phẩm")}
+              onInput={(e) => e.target.setCustomValidity("")}
             />
           </div>
           <div className="form-group">
@@ -174,6 +204,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
               value={form.title}
               onChange={handleChange}
               className="form-control"
+              required
+              onInvalid={(e) => e.target.setCustomValidity("Vui lòng nhập title cho sản phẩm")}
+              onInput={(e) => e.target.setCustomValidity("")}
             />
           </div>
         </div>
@@ -189,6 +222,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
               value={form.stock}
               onChange={handleChange}
               className="form-control"
+              required
+              onInvalid={(e) => e.target.setCustomValidity("Vui lòng nhập số lượng")}
+              onInput={(e) => e.target.setCustomValidity("")}
             />
           </div>
           <div className="form-group">
@@ -200,6 +236,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
               value={form.price}
               onChange={handleChange}
               className="form-control"
+              required
+              onInvalid={(e) => e.target.setCustomValidity("Vui lòng nhập giá sản phẩm")}
+              onInput={(e) => e.target.setCustomValidity("")}
             />
           </div>
         </div>
@@ -215,6 +254,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
               value={form.weight}
               onChange={handleChange}
               className="form-control"
+              required
+              onInvalid={(e) => e.target.setCustomValidity("Vui lòng nhập trọng lượng")}
+              onInput={(e) => e.target.setCustomValidity("")}
             />
           </div>
           <div className="form-group">
@@ -226,6 +268,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
               value={form.size}
               onChange={handleChange}
               className="form-control"
+              required
+              onInvalid={(e) => e.target.setCustomValidity("Vui lòng nhập kích thước")}
+              onInput={(e) => e.target.setCustomValidity("")}
             />
           </div>
         </div>
@@ -241,6 +286,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
               value={form.pages}
               onChange={handleChange}
               className="form-control"
+              required
+              onInvalid={(e) => e.target.setCustomValidity("Vui lòng nhập số trang")}
+              onInput={(e) => e.target.setCustomValidity("")}
             />
           </div>
           <div className="form-group">
@@ -252,6 +300,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
               value={form.language}
               onChange={handleChange}
               className="form-control"
+              required
+              onInvalid={(e) => e.target.setCustomValidity("Vui lòng nhập ngôn ngữ")}
+              onInput={(e) => e.target.setCustomValidity("")}
             />
           </div>
         </div>
@@ -267,6 +318,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
               value={form.format}
               onChange={handleChange}
               className="form-control"
+              required
+              onInvalid={(e) => e.target.setCustomValidity("Vui lòng nhập hình thức sản phẩm")}
+              onInput={(e) => e.target.setCustomValidity("")}
             />
           </div>
           <div className="form-group">
@@ -278,11 +332,14 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
               value={form.published_date}
               onChange={handleChange}
               className="form-control"
+              required
+              onInvalid={(e) => e.target.setCustomValidity("Vui lòng chọn ngày phát hành")}
+              onInput={(e) => e.target.setCustomValidity("")}
             />
           </div>
         </div>
 
-        {/* Row 6: Nhà xuất bản */}
+        {/* Row 6: Nhà xuất bản và Mô tả */}
         <div className="form-row">
           <CustomSelect
             label="Nhà xuất bản"
@@ -302,6 +359,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
               onChange={handleChange}
               placeholder="Nhập mô tả"
               className="form-control"
+              required
+              onInvalid={(e) => e.target.setCustomValidity("Vui lòng nhập mô tả sản phẩm")}
+              onInput={(e) => e.target.setCustomValidity("")}
             ></textarea>
           </div>
         </div>
@@ -328,8 +388,7 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
           />
         </div>
 
-
-        {/* Row 9: Hình ảnh sản phẩm (full-width) */}
+        {/* Row 9: Hình ảnh sản phẩm (full-width) và Giảm giá */}
         <div className="form-row full-width">
           <div className='form-group'>
             <label htmlFor="imageFile">Chọn ảnh mới (có thể chọn nhiều):</label>
@@ -383,7 +442,6 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
                   value: dis._id,
                   label: `${dis.code} - ${dis.value}%`
                 }))}
-
                 value={form.discount}
                 onChange={(selectedValue) =>
                   setForm(prev => ({ ...prev, discount: selectedValue }))
