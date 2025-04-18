@@ -1,6 +1,6 @@
 // api.js
 import axios from 'axios';
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://polyread-be.netlify.app';
 // const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
 
 //gộp order

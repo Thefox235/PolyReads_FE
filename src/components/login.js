@@ -111,9 +111,9 @@ const AuthForm = () => {
         <div className="login-box">
           <h2>Đăng nhập</h2>
           <div className="social-login">
-            <button className="facebook-btn">
+            {/* <button className="facebook-btn">
               <i className="bi bi-facebook" /> Facebook
-            </button>
+            </button> */}
 
             {/* Nút đăng nhập Google với giao diện custom */}
             <button className="google-btn" onClick={() => googleLogin()}>

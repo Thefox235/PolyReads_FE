@@ -299,26 +299,26 @@ const handleCheckout = () => {
               <div className="progress-container">
                 <div className="row align-items-center">
                   <div className="col-9">
-                    <div className="progress">
+                    {/* <div className="progress">
                       <div className="progress-bar" style={{ width: "80%" }} />
-                    </div>
-                    <div className="progress-info d-flex justify-content-between mt-2">
+                    </div> */}
+                    {/* <div className="progress-info d-flex justify-content-between mt-2">
                       <span>Mua thêm 115,000đ để nhận mã </span>
                       <span>550,000đ</span>
-                    </div>
+                    </div> */}
                   </div>
-                  <div className="col-3 text-end">
+                  {/* <div className="col-3 text-end">
                     <button className="btn btn-primary btn-sm w-100">
                       Mua Thêm
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="line" />
-              <div className="title-discount discount">
+              {/* <div className="title-discount discount">
                 <p>6 khuyến mãi đủ điều kiện</p>
                 <FontAwesomeIcon icon={faChevronRight} />
-              </div>
+              </div> */}
               <p className="mt-1">Có thể áp dụng đồng thời nhiều khuyến mãi</p>
             </div>
             <div className="total-section mt-2">
