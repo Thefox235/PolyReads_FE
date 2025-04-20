@@ -133,8 +133,8 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
     if (!form.title.trim()) return "Title không được để trống!";
     if (!form.price) return "Giá sản phẩm không được để trống!";
     if (!form.stock) return "Số lượng không được để trống!";
-    if (!form.weight.trim()) return "Trọng lượng không được để trống!";
-    if (!form.size.trim()) return "Kích thước không được để trống!";
+    if (!String(form.weight).trim()) return "Trọng lượng không được để trống!";
+    if (!String(form.size).trim()) return "Kích thước không được để trống!";
     
     // Ép form.pages thành chuỗi
     if (!String(form.pages).trim()) return "Số trang không được để trống!";
