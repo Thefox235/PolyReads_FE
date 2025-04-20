@@ -129,21 +129,23 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
 
   // Hàm kiểm tra giá trị bắt buộc đối với các trường quan trọng
   const validateForm = () => {
-    // Kiểm tra input text (nếu cần thiết, có thể bổ sung kiểm tra trim())
     if (!form.name.trim()) return "Tên sản phẩm không được để trống!";
     if (!form.title.trim()) return "Title không được để trống!";
     if (!form.price) return "Giá sản phẩm không được để trống!";
     if (!form.stock) return "Số lượng không được để trống!";
-    if (!form.weight.trim()) return "Trọng lượng không được để trống!";
-    if (!form.size.trim()) return "Kích thước không được để trống!";
-    if (!form.pages.trim()) return "Số trang không được để trống!";
+    if (!String(form.weight).trim()) return "Trọng lượng không được để trống!";
+    if (!String(form.size).trim()) return "Kích thước không được để trống!";
+    
+    // Ép form.pages thành chuỗi
+    if (!String(form.pages).trim()) return "Số trang không được để trống!";
+    
     if (!form.language.trim()) return "Ngôn ngữ không được để trống!";
     if (!form.format.trim()) return "Hình thức không được để trống!";
     if (!form.published_date) return "Ngày phát hành không được để trống!";
     if (!form.publisher) return "Vui lòng chọn Nhà xuất bản!";
     if (!form.category) return "Vui lòng chọn Danh mục!";
     if (!form.author) return "Vui lòng chọn Tác giả!";
-    // Nếu có các kiểm tra bổ sung cho discount, description,... thì thêm vào đây
+    
     return null;
   };
 
