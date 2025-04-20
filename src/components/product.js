@@ -536,10 +536,7 @@ const Product = () => {
             </p>
           </div>
           <div className="intro-item">
-            <img
-              src="https://media-hosting.imagekit.io//eddb2ce4d6a74b79/Last%2024%20Hours.png?Expires=1835360299&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=KlbhxUiQ5M2DKrj10oGxPShxmrHnmnwAYJXWu~ErW8XBqGhVkLqJxdL9y6LEX6mq6HU3fpUWnqEZ36XHkZrg1OD0Idmy76PcRrJIiJPoW0~4V2Bp1apPhLJZg4J2DQwi6lqsfgBKL7C47Hzjn8XMyv8Y~Q7IxQiPcUa8kTkUyqggKKzsQot8C95pH38B3MmkEBGfg6Ppnc2zLS4YWkegmKMitd7hroNslOYzse9KZNkkf77kiefirpeVEzRzg1OD0Idmy76PcRrJIiJPoW0~4V2Bp1apPhLJZg4J2DQwi6lqsfgBKL7C47Hzjn8XMyv8Y~Q7IxQiPcUa8kTkUyqggKKzsQot8C95pH38B3MmkEBGfg6Ppnc2zLS4YWkegmKMitd7hroNslOYzse9KZNkkf77kiefirpeVEzRzg1OD0Idmy76PcRrJIiJPoW0~4V2Bp1apPhLJZg4J2DQwi6lqsfgBKL7C47Hzjn8XMyv8Y"
-              alt="Convenience"
-            />
+          <i style={{ fontSize: '55px' }} class="bi bi-emoji-smile-fill"></i>
             <p>
               <strong>DỄ DÀNG TIỆN LỢI</strong>
               <br />

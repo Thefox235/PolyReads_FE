@@ -32,6 +32,7 @@ import Product from './components/product';
 import Dashboard from './components/admin/dashboard';
 import ShippingCalculator from './components/shippingCaculator';
 import ViewUser from './components/admin/viewUser';
+import ScrollToTop from './components/scroll_top';
 // import ViewOrder from './components/admin/viewOrder';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
   return (
     <div className="App">
       <Router>
+        <ScrollToTop/>
         <Routes>
           {/* Các route sử dụng indexLayout có header & footer */}
           <Route element={<IndexLayout />}>
