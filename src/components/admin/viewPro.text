@@ -206,15 +206,15 @@ const ViewPro = () => {
                       <img src={productImage ? productImage.url : ''} alt={product.name} />
                     </td>
                     <td className="book-name">{product.name}</td>
-                    <td>{product.publisher ? product.publisher.name : ''}</td>
+                    <td>{productPublisher ? productPublisher.name : ''}</td>
                     <td>
                       {Number(product.price).toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND"
                       })}
                     </td>
-                    <td>{product.category ? product.category.name : ''}</td>
-                    <td>{product.author ? product.author.name : ''}</td>
+                    <td>{productCate ? productCate.name : ''}</td>
+                    <td>{productAuthor ? productAuthor.name : ''}</td>
                     <td className="action-button">
                       <button
                         onClick={() => {

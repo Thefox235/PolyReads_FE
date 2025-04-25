@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createCategory } from '../../api/server';
 
 const CreateCate = ({ onClose, onCreateSuccess }) => {
-  const [form, setForm] = useState({ name: '', type: 'line-banner', is_active: true });
+  const [form, setForm] = useState({ name: '', type: 'Product', is_active: true });
   const [error, setError] = useState('');
 
   const handleChange = (e) => {

@@ -180,3 +180,12 @@
 .admin-product__pagination-btn--active {
   background-color: #ff5f5f;
 }
+
+.clearfix_viewPro
+{
+  max-width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin: auto;
+  padding: 20px 20px;
+}

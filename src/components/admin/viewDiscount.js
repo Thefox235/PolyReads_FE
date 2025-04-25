@@ -86,7 +86,7 @@ const ViewDiscount = () => {
         <thead>
           <tr>
             <th>STT</th>
-            <th>Code</th>
+            {/* <th>Code</th> */}
             <th>Value (%)</th>
             <th>Start Date</th>
             <th>End Date</th>
@@ -99,7 +99,7 @@ const ViewDiscount = () => {
             discounts.map((discount, index) => (
               <tr key={discount._id || index}>
                 <td>{index + 1}</td>
-                <td>{discount.code}</td>
+                {/* <td>{discount.code}</td> */}
                 <td>{discount.value}%</td>
                 <td>{new Date(discount.start_date).toLocaleDateString()}</td>
                 <td>{new Date(discount.end_date).toLocaleDateString()}</td>
@@ -123,7 +123,7 @@ const ViewDiscount = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="7">Đang tải discount...</td>
+              <td colSpan="6">Đang tải discount...</td>
             </tr>
           )}
         </tbody>

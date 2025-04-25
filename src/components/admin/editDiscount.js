@@ -5,7 +5,6 @@ import { updateDiscount } from '../../api/server';
 const EditDiscount = ({ initialData, onClose, onEditSuccess }) => {
   const [form, setForm] = useState({
     value: "",
-    code: "",
     start_date: "",
     end_date: "",
     is_active: true,
@@ -16,7 +15,6 @@ const EditDiscount = ({ initialData, onClose, onEditSuccess }) => {
     if (initialData) {
       setForm({
         value: initialData.value || "",
-        code: initialData.code || "",
         start_date: initialData.start_date ? new Date(initialData.start_date).toISOString().substr(0, 10) : "",
         end_date: initialData.end_date ? new Date(initialData.end_date).toISOString().substr(0, 10) : "",
         is_active: initialData.is_active,
@@ -50,17 +48,7 @@ const EditDiscount = ({ initialData, onClose, onEditSuccess }) => {
       <h1>Chỉnh sửa Discount</h1>
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="code">Mã Discount:</label>
-          <input
-            type="text"
-            id="code"
-            name="code"
-            value={form.code}
-            onChange={handleChange}
-            className="form-control"
-          />
-        </div>
+        
         <div className="form-group">
           <label htmlFor="value">Giá trị (Phần trăm giảm):</label>
           <input
