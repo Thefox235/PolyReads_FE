@@ -1,0 +1,80 @@
+/* CustomDropdown CSS (From Uiverse.io by 3bdel3ziz-T, đã được đổi tên class) */
+
+.adminSelect {
+    width: fit-content;
+    cursor: pointer;
+    position: relative;
+    transition: 300ms;
+    color: #333;
+    min-width: 200px; 
+    /* border: 1px solid #676565; */
+    /* box-shadow: #333 2px 2px 5px; */
+    /* Bạn có thể tạm xóa overflow nếu cần hiện dropdown bên ngoài */
+    /* overflow: hidden; */
+  }
+  
+  .adminSelected {
+    background-color: #ffffff;
+    padding: 5px;
+    margin-bottom: 3px;
+    border-radius: 5px;
+    position: relative;
+    /* z-index: 100000; */
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.075);
+  }
+  
+  .adminArrow {
+    position: relative;
+    right: 0;
+    height: 10px;
+    transform: rotate(-90deg);
+    width: 25px;
+    /* fill: white; */
+    z-index: 100000;
+    transition: 300ms;
+  }
+  
+  .adminSelect:hover > .adminSelected .adminArrow {
+    transform: rotate(0deg);
+  }
+  
+  .adminOptions {
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #ffffff;
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    opacity: 1;
+    transition: 300ms;
+    /* z-index: 999; */
+    max-height: 450px;      /* Giới hạn chiều cao */
+    overflow-y: auto;       /* Chỉ cuộn theo trục y */
+    overflow-x: hidden;     /* Ẩn cuộn theo trục x */
+    scrollbar-width: none;  /* Firefox: ẩn thanh cuộn */
+  }
+  
+  /* Với Chrome, Edge, Safari */
+  .adminOptions::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .adminOption {
+    border-radius: 5px;
+    padding: 5px;
+    transition: 300ms;
+    background-color: #ffffff;
+    width: 150px;
+    font-size: 15px;
+  }
+  
+  .adminOption:hover {
+    background-color: #bcb8b8;
+  }

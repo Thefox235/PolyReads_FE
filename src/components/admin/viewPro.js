@@ -1,17 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { getAllProduct, deleteProduct, getImages, getCategory, getAuthor, getPublishers, getDiscounts, getProductFilter } from '../../api/server';
-import '../../asset/css/adminPro.css';
-import CreatePro from './createPro';
-import EditPro from './editPro';
-import Modal from '../model';
-import { useNavigate } from 'react-router-dom';
+// ViewPro.jsx
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  getAllProduct,
+  deleteProduct,
+  getImages,
+  getCategory,
+  getAuthor,
+  getPublishers,
+  getDiscounts,
+  getFilteredAuthors,
+  getProductFilter,
+  getProductSearch
+} from "../../api/server";
+import "../../asset/css/adminPro.css";
+import CreatePro from "./createPro";
+import EditPro from "./editPro";
+import Modal from "../model";
+import AdminSearchForm from './AdminSearchForm';
+import CustomDropdown from "./CustomDropdown";
 
 const ViewPro = () => {
+  // Lấy thông tin từ location và navigate
+  const location = useLocation();
+  const navigate = useNavigate();
+
   // State cho modal Thêm/Sửa sản phẩm
   const [showCreateModal, setShowCreateModal] = useState(false);
   const openCreateModal = () => setShowCreateModal(true);
   const closeCreateModal = () => setShowCreateModal(false);
-  const navigate = useNavigate();
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -24,77 +41,118 @@ const ViewPro = () => {
     setSelectedProduct(null);
   };
 
-  // Các state dữ liệu
+  // Data states
   const [products, setProducts] = useState([]);
   const [images, setImages] = useState([]);
-  const [categoryName, setCategoryName] = useState([]);
-  const [authorName, setAuthorName] = useState([]);
-  const [publisherName, setPublisherName] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
+  const [authorList, setAuthorList] = useState([]);
+  const [publisherList, setPublisherList] = useState([]);
   const [discountValue, setDiscountValue] = useState([]);
 
-  // State phân trang và filter
+  // States cho tìm kiếm & phân trang & dropdown filter
+  const [isSearch, setIsSearch] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 20;
-  const [selectedCategory, setSelectedCategory] = useState(""); // Lọc theo danh mục
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedAuthor, setSelectedAuthor] = useState("");
 
-  // Load sản phẩm: nếu có lọc thì gọi getProductFilter, không thì nhận toàn bộ sản phẩm
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        if (selectedCategory) {
-          const params = { page: currentPage, limit, category: selectedCategory };
-          const productsData = await getProductFilter(params);
-          setProducts(productsData);
-        } else {
-          // Dùng luôn getProductFilter với filter rỗng
-          const params = { page: currentPage, limit };
-          const productsData = await getProductFilter(params);
-          setProducts(productsData);
-        }
-      } catch (error) {
-        console.error('Có lỗi xảy ra khi lấy sản phẩm:', error);
-      }
-    };
-    fetchProducts();
-  }, [currentPage, selectedCategory]);
-
-  // Load hình ảnh sản phẩm
-  useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const imagesData = await getImages();
-        setImages(imagesData);
-      } catch (error) {
-        console.error('Có lỗi xảy ra khi lấy hình ảnh:', error);
-      }
-    };
-    fetchImages();
-  }, []);
-
-  // Load dữ liệu cố định: danh mục, tác giả, NXB và discount
+  // Load dữ liệu cố định: danh mục, hình ảnh, discount, publisher (chỉ chạy một lần khi mount)
   useEffect(() => {
     const fetchStaticData = async () => {
       try {
-        const [catData, discData, authData, pubData] = await Promise.all([
+        const [catData, discData, imgData, pubData] = await Promise.all([
           getCategory(),
           getDiscounts(),
-          getAuthor(),
+          getImages(),
           getPublishers(),
         ]);
-        // Chỉ lấy danh mục có type "Product"
-        const productCategories = catData.filter(cat => cat.type === 'Product');
-        setCategoryName(productCategories);
+        // Lọc ra các danh mục có type "Product"
+        const productCategories = catData.filter((cat) => cat.type === "Product");
+        setCategoryList(productCategories);
         setDiscountValue(discData);
-        setAuthorName(authData);
-        setPublisherName(pubData);
+        setImages(imgData);
+        setPublisherList(pubData);
       } catch (error) {
-        console.error('Có lỗi khi load dữ liệu cố định:', error);
+        console.error("Lỗi khi load dữ liệu cố định:", error);
       }
     };
     fetchStaticData();
   }, []);
 
-  // Hàm xử lý thêm sản phẩm
+  // Load danh sách tác giả: nếu có chọn danh mục -> lấy tác giả theo danh mục đó, ngược lại tải tất cả
+  useEffect(() => {
+    const fetchAuthors = async () => {
+      try {
+        if (selectedCategory) {
+          const filteredAuthors = await getFilteredAuthors({ category: selectedCategory });
+          setAuthorList(filteredAuthors);
+        } else {
+          const allAuthors = await getAuthor();
+          setAuthorList(allAuthors);
+        }
+      } catch (error) {
+        console.error("Lỗi khi load tác giả:", error);
+      }
+    };
+    fetchAuthors();
+  }, [selectedCategory]);
+
+  const [totalProducts, setTotalProducts] = useState(0);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        if (isSearch && searchTerm.trim() !== "") {
+          const params = { field: "name", keyword: searchTerm, page: currentPage, limit };
+          const productsData = await getProductSearch(params);
+          // Giả sử API tìm kiếm cũng trả về { total, products }
+          console.log(productsData);
+          setProducts(productsData);
+
+          setTotalProducts(productsData.total);
+        } else {
+          const params = { page: currentPage, limit };
+          if (selectedCategory) params.category = selectedCategory;
+          if (selectedAuthor) params.author = selectedAuthor;
+          const productsData = await getProductFilter(params);
+          console.log(getProductFilter(params));
+          setProducts(productsData.products);
+          setTotalProducts(productsData.total);
+        }
+      } catch (error) {
+        console.error("Lỗi khi load sản phẩm:", error);
+      }
+    };
+    fetchProducts();
+  }, [isSearch, searchTerm, currentPage, selectedCategory, selectedAuthor]);
+
+  // Đồng bộ hóa state từ URL (query parameters)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchFlag = params.get("search");
+    const keyword = params.get("keyword") || "";
+    const page = params.get("page");
+    const category = params.get("category") || "";
+
+    if (searchFlag === "true" && keyword.trim() !== "") {
+      setIsSearch(true);
+      setSearchTerm(keyword);
+    } else {
+      setIsSearch(false);
+      setSearchTerm("");
+    }
+
+    if (page) {
+      setCurrentPage(Number(page));
+    } else {
+      setCurrentPage(1);
+    }
+
+    setSelectedCategory(category);
+  }, [location.search]);
+
+  // Các hàm xử lý thêm, sửa, xóa sản phẩm
   const handleCreateSuccess = async (newProduct) => {
     setProducts(prev => [...prev, newProduct]);
     const freshProducts = await getAllProduct();
@@ -102,16 +160,15 @@ const ViewPro = () => {
     const freshImages = await getImages();
     setImages(freshImages);
     const freshCategories = await getCategory();
-    setCategoryName(freshCategories);
+    setCategoryList(freshCategories);
     const freshAuthors = await getAuthor();
-    setAuthorName(freshAuthors);
+    setAuthorList(freshAuthors);
     const freshPublishers = await getPublishers();
-    setPublisherName(freshPublishers);
+    setPublisherList(freshPublishers);
     const freshDiscount = await getDiscounts();
     setDiscountValue(freshDiscount);
   };
 
-  // Hàm xử lý sửa sản phẩm thành công
   const handleEditSuccess = (updatedProduct) => {
     setProducts(prev =>
       prev.map(product =>
@@ -120,20 +177,26 @@ const ViewPro = () => {
     );
   };
 
-  // Hàm xóa sản phẩm
   const handleDelete = async (id) => {
     try {
       await deleteProduct(id);
-      alert('Sản phẩm đã được xóa');
-      setProducts(prev => prev.filter(sp => sp._id !== id));
+      alert("Sản phẩm đã được xóa");
+      setProducts(prev => prev.filter(prod => prod._id !== id));
     } catch (error) {
-      console.error('Có lỗi xảy ra khi xóa sản phẩm:', error);
+      console.error("Lỗi khi xóa sản phẩm:", error);
     }
   };
 
-  // Quản lý việc thay đổi dropdown filter
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
+  // Handlers cho dropdown
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+    setCurrentPage(1);
+    // Khi chọn danh mục thì có thể reset giá trị tác giả
+    setSelectedAuthor("");
+  };
+
+  const handleAuthorChange = (value) => {
+    setSelectedAuthor(value);
     setCurrentPage(1);
   };
 
@@ -141,51 +204,54 @@ const ViewPro = () => {
   const doSearch = (page) => {
     if (page !== currentPage) {
       setCurrentPage(page);
+      const params = new URLSearchParams();
+      if (selectedCategory) params.set("category", selectedCategory);
+      if (selectedAuthor) params.set("author", selectedAuthor);
+      params.set("page", page);
+      params.set("limit", limit);
+      navigate(`/viewPro?${params.toString()}`);
     }
   };
 
   return (
     <div>
       <div className="admin-product">
-        {/* Phần thanh thao tác: Tiêu đề, form tìm kiếm và dropdown lọc */}
-        <div className="admin-product__action" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {/* Thanh thao tác */}
+        <div className="admin-product__action" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span className="admin-product__category-title">
-            Sách: {products.length} Quyển Hiện Có
+            Sản phẩm: {totalProducts} quyển hiện có
           </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* Form tìm kiếm (nếu có) */}
-            <form className="search-form">
-              <input
-                type="text"
-                placeholder="Tìm kiếm sản phẩm..."
-                className="searchyt mb-2"
-              // Bạn có thể tích hợp thêm chức năng tìm kiếm nếu cần
-              />
-            </form>
-            {/* Dropdown lọc theo danh mục */}
-            <select onChange={handleCategoryChange} value={selectedCategory}>
-              <option value="">Tất cả danh mục</option>
-              {categoryName.map((cat) => (
-                <option key={cat._id} value={cat._id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            {/* Thanh tìm kiếm với AdminSearchForm */}
+            <AdminSearchForm />
+            {/* Dropdown lọc danh mục */}
+            <CustomDropdown
+              options={categoryList}
+              selected={selectedCategory}
+              onChange={handleCategoryChange}
+              defaultLabel="Tất cả danh mục"
+            />
+            {/* Dropdown lọc tác giả */}
+            <CustomDropdown
+              options={authorList}
+              selected={selectedAuthor}
+              onChange={handleAuthorChange}
+              defaultLabel="Tất cả tác giả"
+            />
           </div>
-          {/* Nút mở modal Thêm Sản Phẩm */}
           <button className="admin-product__btn-add-category" onClick={openCreateModal}>
             Thêm Sản Phẩm
           </button>
         </div>
 
-        {/* Bảng sản phẩm */}
+        {/* Bảng hiển thị sản phẩm */}
         <table className="admin-product__table">
           <thead>
             <tr>
               <th>STT</th>
               <th>Hình Ảnh</th>
               <th>Tên Sách</th>
-              <th>Nhà NXB</th>
+              <th>Nhà Xuất Bản</th>
               <th>Giá</th>
               <th>Danh Mục</th>
               <th>Tác Giả</th>
@@ -193,40 +259,40 @@ const ViewPro = () => {
             </tr>
           </thead>
           <tbody>
-            {products && products.length > 0 && images && images.length > 0 ? (
-              products.map((product, index) => {
-                const productCate = categoryName.find(cate => cate._id === product.category);
-                const productAuthor = authorName.find(auth => auth._id === product.author);
-                const productPublisher = publisherName.find(pub => pub._id === product.publisher);
-                const productImage = images.find(img => img.productId === product._id);
+            {products && products.length > 0 ? (
+              products.map((prod, index) => {
+                const prodCategory = prod.category ? prod.category.name : "";
+                const prodAuthor = prod.author ? prod.author.name : "";
+                const prodPublisher = prod.publisher ? prod.publisher.name : "";
+                const prodImage = images.find((img) => img.productId === prod._id);
                 return (
-                  <tr key={product._id || index}>
+                  <tr key={prod._id || index}>
                     <td>{index + 1}</td>
                     <td>
-                      <img src={productImage ? productImage.url : ''} alt={product.name} />
+                      <img src={prodImage ? prodImage.url : ""} alt={prod.name} width="60" />
                     </td>
-                    <td className="book-name">{product.name}</td>
-                    <td>{product.publisher ? product.publisher.name : ''}</td>
+                    <td>{prod.name}</td>
+                    <td>{prodPublisher}</td>
                     <td>
-                      {Number(product.price).toLocaleString("vi-VN", {
+                      {Number(prod.price).toLocaleString("vi-VN", {
                         style: "currency",
-                        currency: "VND"
+                        currency: "VND",
                       })}
                     </td>
-                    <td>{product.category ? product.category.name : ''}</td>
-                    <td>{product.author ? product.author.name : ''}</td>
+                    <td>{prodCategory}</td>
+                    <td>{prodAuthor}</td>
                     <td className="action-button">
                       <button
                         onClick={() => {
-                          if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
-                            handleDelete(product._id);
+                          if (window.confirm("Bạn có chắc muốn xóa sản phẩm này không?")) {
+                            handleDelete(prod._id);
                           }
                         }}
                         className="trash"
                       >
                         <i className="bi bi-trash"></i>
                       </button>
-                      <button onClick={() => openEditModal(product)} className="fix">
+                      <button onClick={() => openEditModal(prod)} className="fix">
                         <i className="bi bi-pen"></i>
                       </button>
                     </td>
@@ -240,31 +306,29 @@ const ViewPro = () => {
             )}
           </tbody>
         </table>
-
-        {/* Phân trang đơn giản */}
-        <div className="clearfix_viewPro nav_pagi f-left w_100" style={{ margin: '20px 0' }}>
+        {/* Phân trang */}
+        <div className="clearfix_viewPro nav_pagi f-left w_100" style={{ margin: "20px 0" }}>
           <ul className="pagination clearfix">
-            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-              <a className="page-link" href="#!" onClick={() => currentPage > 1 && doSearch(currentPage - 1)}>
+            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+              <a
+                className="page-link"
+                href="#!"
+                onClick={() => currentPage > 1 && doSearch(currentPage - 1)}
+              >
                 <i className="fas fa-caret-left"></i>
               </a>
             </li>
-            {[currentPage - 1, currentPage, currentPage + 1].map((page, index) => {
+            {[currentPage - 1, currentPage, currentPage + 1].map((page, idx) => {
               if (page < 1) return null;
               return (
-                <li key={index} className={`page-item ${page === currentPage ? 'active disabled' : ''}`}>
+                <li key={idx} className={`page-item ${page === currentPage ? "active disabled" : ""}`}>
                   <a
-                    className='page-link'
+                    className="page-link"
                     href="#!"
-                    onClick={(e) => {
-                      e.preventDefault(); // Ngăn thay đổi hash
-                      doSearch(page);       // Cập nhật state
-                      navigate(`/viewPro?page=${page}${selectedCategory ? `&category=${selectedCategory}` : ""}`);
-                    }}
+                    onClick={(e) => { e.preventDefault(); doSearch(page); }}
                   >
                     {page}
                   </a>
-
                 </li>
               );
             })}
@@ -275,7 +339,6 @@ const ViewPro = () => {
             </li>
           </ul>
         </div>
-
       </div>
 
 

@@ -117,6 +117,7 @@ const Product = () => {
           if (selectedAuthors.length > 0) params.author = selectedAuthors.join(",");
           if (selectedPublishers.length > 0) params.publisher = selectedPublishers.join(",");
           const productData = await getProductFilter(params);
+          console.log(productData);
           setProducts(productData);
         }
       } catch (error) {
@@ -417,7 +418,7 @@ const Product = () => {
                       const productDiscount = discounts.find(dis => dis && dis._id === product.discount);
                       const discountPercent = productDiscount ? Number(productDiscount.value) : 0;
                       const currentPrice = Number(product.price) * ((100 - discountPercent) / 100);
-                      const productAuthor = authorList.find(author => author._id === product.author);
+                      const productAuthor = product.author ? product.author.name : "";
                       return (
                         <div className="san-pham-item-page" key={product._id}>
                           <img src={productImage?.url || ""} alt={product.name} />
@@ -438,7 +439,7 @@ const Product = () => {
                               })}
                             </div>
                             <div className="shop-name">
-                              {productAuthor ? productAuthor.name : ''}
+                              {productAuthor ? product.author.name  : ''}
                             </div>
                           </div>
                           <div className="add-to-cart" onClick={() => addCart(product, productImage)} style={{ cursor: 'pointer' }}>
@@ -458,7 +459,7 @@ const Product = () => {
                       const productDiscount = discounts.find(dis => dis && dis._id === product.discount);
                       const discountPercent = productDiscount ? Number(productDiscount.value) : 0;
                       const currentPrice = Number(product.price) * ((100 - discountPercent) / 100);
-                      const productAuthor = authorList.find(author => author._id === product.author);
+                      const productAuthor = product.author ? product.author.name : "";
                       return (
                         <div className="san-pham-item-page" key={product._id}>
                           <img src={productImage?.url || ""} alt={product.name} />
@@ -479,7 +480,7 @@ const Product = () => {
                               })}
                             </div>
                             <div className="shop-name">
-                              {productAuthor ? productAuthor.name : ''}
+                              {productAuthor ? product.author.name : ''}
                             </div>
                           </div>
                           <div className="add-to-cart" onClick={() => addCart(product, productImage)} style={{ cursor: 'pointer' }}>

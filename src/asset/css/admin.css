@@ -507,3 +507,69 @@
   top: 625px;
   left: 25px;
 }
+
+/* From Uiverse.io by Shaidend - Updated for AdminSearchForm (unique class names) */
+
+.adminSearchContainer {
+  /* Container cố định có vị trí relative để chứa icon đặt tuyệt đối */
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+  width: 300px;
+  /* overflow: hidden; */
+  cursor: pointer;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.075);
+}
+
+.adminSearchForm {
+  width: 100%;
+  position: relative;
+}
+
+.adminSearchInput {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: 0.9em;
+  caret-color: rgb(255, 81, 0);
+  /* Thêm padding-left đủ để không bị che bởi icon */
+  padding-left: 40px;
+}
+
+/* Icon được đặt tuyệt đối trong form */
+.adminSearchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 13px;
+  pointer-events: none; /* Để các sự kiện chuột đi qua input */
+}
+
+.adminSearchIcon path {
+  fill: rgb(114, 114, 114);
+}
+
+/* Dropdown gợi ý */
+.adminSuggestionsDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.adminSuggestionsDropdown li {
+  padding: 8px 12px;
+  cursor: pointer;
+}

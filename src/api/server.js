@@ -156,7 +156,7 @@ export const getProductFilter = async (params) => {
     // params là một object chứa các tham số lọc, ví dụ: {category, author, publisher, page, limit}
     const response = await axios.get(`${BASE_URL}/product/filter`, { params });
     // Axios tự phân tích JSON, trả về dữ liệu ở response.data
-    return response.data.products;
+    return response.data;
   } catch (error) {
     console.error("Lỗi khi lọc sản phẩm:", error);
     throw error;
