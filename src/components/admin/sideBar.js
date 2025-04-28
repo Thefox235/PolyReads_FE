@@ -17,7 +17,7 @@ const SideBar = () => {
                             <img class="avt" src="https://media-hosting.imagekit.io//55d60f98dbfb4747/avt1.png?Expires=1835257364&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=BGXDi67WtbrUu6MMFpHtgEuuUlB2TUqDdN6ThcWyCgUV-4sH6LgyuD2EZaBuz3nCDzHNSmfHkWwVCDPXI0f~-gLtFRvzq3V9U~iRcYMZV4YSe-yIM-fyTdUwvFkdlYpK2AlFVsMi-mcmTXQI3itXLpic6jw8rwaKWW4KnvScQxq6d9PS1pUWWrgM9FfRlQUXUdaJ~Lnz7oaP7izU6gttdM9tPnzKbY0UfPFy4UB-3I~0uLC9KPlGzqBLzFkwSl0TfZGlxVJWZf8rswqM3mbaeCI0THv8ANBXfdW~WtU69ppXsR3JPebaLJbIxMv0tCzgrnvJAkrfleDkjwK-RvxHvQ__" />
                             <img class="expand-arrow" src="https://media-hosting.imagekit.io//6d6cf6a50d13489d/expand-arrow0.png?Expires=1835266301&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=fVwJKRlCKJOxPqtyhbIydlwbDbuJJNeE77Avre~1stvdRP901gA0-rNNb6bQTOiaRdd-xgSwOZgvEmTht5OdCB12oVUy56plV68b4V-sGhK-HBCVv4LN9Gb4Q8VIbBW2QiTg7mVY7UvAmc1U2djwJzaEYrTVPP4QIfEBS2NNHtjP3swXSUDhsUFlfO7mUjn5AgAXWLFJY4cmqP0bzsSNn8kkl4TFlwbVmPz3mdnUFlN3p9P21O7kiB6kOgEwDvTeQGpBqAPWjuGA-L2APSwKT2kp~I~xfaKP6HwYvB7JUVKTMPSxSCPmemwl8VeB2viJtULIjJ4yXW6qevePMPBRgA__" />
                         </div>
-                        <div class="group">
+                        {/* <div class="group">
                             <div class="overlap-3">
                                 <img class="img" src="https://media-hosting.imagekit.io//45c3de0286cc41c2/doorbell0.png?Expires=1835266392&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=rNYzHEhvoSOC7jmcpysveFcRpcOz8Tm21siP-01fWl~bhTQF0PSLSJNdjFrTuSHWCzgJX3CnS3hhOslyOak~ecD9dPabDiSDtiFyWF5uZzkb7Acht~8kpt18fjkjDa-2pzQOxBJmt9n~Bd8QLSoleHTKyKPrw~-~Afo4-srQyzL~SMeSM3EyOozZ9HiZkX1jTcItNyDqsTmTolyk49zYbxZOew6jgdWwuzoNeu3y6nTGNLnFl8i-yTBYbAymcPbFwU8s7GC1CLfXsZUeQx7g-HulirSrYS6SvqjGQ6Zw5fH5-ACjEj50KK4X4XOZVzZl7izjUxt6FP~FSw4UV3mX~g__" />
                                 <div class="overlap-group-wrapper">
@@ -30,7 +30,7 @@ const SideBar = () => {
                                     <div class="div-wrapper"><div class="text-wrapper-3">1</div></div>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
                 </header>

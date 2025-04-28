@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAuthors, deleteAuthor } from '../../api/server';
+import { getAuthors, deleteAuthor, getAllProduct } from '../../api/server';
 import '../../asset/css/adminPro.css';
 import CreateAuthor from './createAuthor';
 import EditAuthor from './editAuthor';
@@ -7,6 +7,7 @@ import Modal from '../model';
 
 const ViewAuthor = () => {
   const [authors, setAuthors] = useState([]);
+  const [products, setProducts] = useState([]); // Danh sách sản phẩm để đếm tác phẩm của tác giả
 
   // State quản lý modal tạo và sửa tác giả
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -24,6 +25,19 @@ const ViewAuthor = () => {
       }
     };
     fetchAuthors();
+  }, []);
+
+  // Fetch danh sách sản phẩm để tính số tác phẩm của tác giả
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await getAllProduct();
+        setProducts(response);
+      } catch (error) {
+        console.error('Có lỗi xảy ra khi lấy sản phẩm:', error);
+      }
+    };
+    fetchProducts();
   }, []);
 
   // Hàm xóa tác giả
@@ -79,45 +93,61 @@ const ViewAuthor = () => {
         </button>
       </div>
 
-      {/* Bang danh sách tác giả */}
+      {/* Bảng danh sách tác giả */}
       <table className="admin-product__table">
         <thead>
           <tr>
             <th>Tên tác giả</th>
-            <th>Bio</th>
+            <th>Số tác phẩm</th>
+            <th>Trạng thái</th>
             <th>Thao tác</th>
           </tr>
         </thead>
         <tbody>
           {authors && authors.length > 0 ? (
-            authors.map((author, index) => (
-              <tr key={author._id || index}>
-                <td>{author.name}</td>
-                <td className="book-description">{author.bio}</td>
-                <td>
-                  <button
-                    onClick={() => {
-                      if (window.confirm('Bạn có chắc chắn muốn xóa tác giả này không?')) {
-                        handleDelete(author._id);
-                      }
-                    }}
-                    className="trash"
-                  >
-                    <i className="bi bi-trash"></i>
-                  </button>
-                  <button
-                    onClick={() => openEditModal(author)}
-                    className="fix"
-                    style={{ marginLeft: '5px' }}
-                  >
-                    <i className="bi bi-pen"></i>
-                  </button>
-                </td>
-              </tr>
-            ))
+            authors.map((author, index) => {
+              // Tính số lượng tác phẩm của tác giả dựa vào danh sách sản phẩm
+              const worksCount = products.filter(
+                (product) =>
+                  product.author &&
+                  // Nếu product.author là một đối tượng được populate
+                  (product.author._id === author._id ||
+                   product.author === author._id)
+              ).length;
+              return (
+                <tr key={author._id || index}>
+                  <td>{author.name}</td>
+                  <td>{worksCount}</td>
+                  <td>{author.is_active ? 'Active' : 'Inactive'}</td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            'Bạn có chắc chắn muốn xóa tác giả này không?'
+                          )
+                        ) {
+                          handleDelete(author._id);
+                        }
+                      }}
+                      className="trash"
+                    >
+                      <i className="bi bi-trash"></i>
+                    </button>
+                    <button
+                      onClick={() => openEditModal(author)}
+                      className="fix"
+                      style={{ marginLeft: '5px' }}
+                    >
+                      <i className="bi bi-pen"></i>
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
-              <td colSpan="3">Đang tải tác giả...</td>
+              <td colSpan="4">Đang tải tác giả...</td>
             </tr>
           )}
         </tbody>

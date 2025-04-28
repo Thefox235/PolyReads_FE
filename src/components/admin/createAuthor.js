@@ -2,19 +2,25 @@ import React, { useState } from 'react';
 import { createAuthor } from '../../api/server';
 
 const CreateAuthor = ({ onClose, onCreateSuccess }) => {
-  const [form, setForm] = useState({ name: '', bio: '' });
+  // Khởi tạo is_active dưới dạng boolean
+  const [form, setForm] = useState({ name: '', is_active: false });
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const { name, type, value, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+    // Reset lỗi khi có thay đổi input
     setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.bio.trim()) {
-      setError('Vui lòng nhập đầy đủ Tên Tác Giả và Bio.');
+    // Chỉ validate trường name, vì is_active hiện là boolean
+    if (!form.name.trim()) {
+      setError('Vui lòng nhập tên Tác Giả.');
       return;
     }
     try {
@@ -25,7 +31,8 @@ const CreateAuthor = ({ onClose, onCreateSuccess }) => {
       if (onCreateSuccess) onCreateSuccess(newAuthor);
       // Đóng modal sau khi tạo thành công
       if (onClose) onClose();
-      setForm({ name: '', bio: '' });
+      // Reset lại form
+      setForm({ name: '', is_active: false });
       setError('');
     } catch (error) {
       setError('Có lỗi xảy ra khi thêm tác giả');
@@ -49,15 +56,16 @@ const CreateAuthor = ({ onClose, onCreateSuccess }) => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="bio">Bio:</label>
-          <textarea
-            id="bio"
-            name="bio"
-            value={form.bio}
-            onChange={handleChange}
-            placeholder="Nhập Bio"
-            className="form-control"
-          ></textarea>
+          <label htmlFor="is_active">
+            <input
+              type="checkbox"
+              id="is_active"
+              name="is_active"
+              checked={form.is_active}
+              onChange={handleChange}
+            />{' '}
+            Active
+          </label>
         </div>
         <button type="submit" className="btn btn-primary">
           Thêm Tác Giả

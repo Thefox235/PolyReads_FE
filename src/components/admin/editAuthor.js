@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { updateAuthor } from '../../api/server';
 
 const EditAuthor = ({ initialData, onClose, onEditSuccess }) => {
-  const [form, setForm] = useState({ name: '', bio: '' });
+  const [form, setForm] = useState({ name: '', is_active: false });
   const [error, setError] = useState('');
 
   // Prefill form dựa trên dữ liệu từ initialData khi modal mở
@@ -10,14 +10,17 @@ const EditAuthor = ({ initialData, onClose, onEditSuccess }) => {
     if (initialData) {
       setForm({
         name: initialData.name || '',
-        bio: initialData.bio || '',
+        is_active: initialData.is_active
       });
     }
   }, [initialData]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const { name, type, value, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -52,14 +55,16 @@ const EditAuthor = ({ initialData, onClose, onEditSuccess }) => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="bio">Mô tả tác giả:</label>
-          <textarea
-            id="bio"
-            name="bio"
-            value={form.bio}
-            onChange={handleChange}
-            className="form-control"
-          ></textarea>
+          <label htmlFor="is_active">
+            <input
+              type="checkbox"
+              id="is_active"
+              name="is_active"
+              checked={form.is_active}
+              onChange={handleChange}
+            />{' '}
+            Active
+          </label>
         </div>
         <button type="submit" className="btn btn-primary">
           Sửa Tác Giả
