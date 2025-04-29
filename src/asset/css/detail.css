@@ -3,28 +3,8 @@
     padding: 0;
     box-sizing: border-box;
 }
-.rating
-{
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
-}
-.rating input:checked~label, .rating label:hover, .rating label:hover~label {
-    color: yellow;
-    transition: color 0.3s;
-}
-.rating label {
-    cursor: pointer;
-    color: #ccc;
-    transition: color 0.3s;
-}
-.rating label:before {
-    content: '\2605';
-    font-size: 30px;
-  }
-  .rating input {
-    display: none;
-}
+
+
 
 .nav {
     max-width: 1200px;
@@ -527,4 +507,46 @@ main {
     font-size: 1.2rem;
     width: 100%;
 }
+.comment-modal
+{
+    /* width: 800px;
+    height: 840px; */
+}
+.comment-modal h2
+{
+ text-align: center;
+ font-size: 16px;
+ font-weight: 600;
+ text-transform: uppercase;
+}
+.comment-modal .rating
+{
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
 
+.comment-modal .rating input:checked~label, .rating label:hover, .rating label:hover~label {
+    color: yellow;
+    transition: color 0.3s;
+}
+.comment-modal .rating label {
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.3s;
+}
+.comment-modal .rating label:before {
+    content: '\2606';
+    font-size: 40px;
+  }
+  .comment-modal .rating input {
+    display: none;
+}
+.comment-modal form button
+{
+    display: flex;
+    float: right;
+    padding: 10px 50px 10px 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createBanner } from '../../api/server';
+import { createBanner, uploadImageToCloudinary } from '../../api/server';
 
 const CreateBanner = ({ onClose, onCreateSuccess }) => {
   // Sử dụng các trường theo schema: image_url, title, position, is_active
@@ -10,6 +10,20 @@ const CreateBanner = ({ onClose, onCreateSuccess }) => {
     is_active: true  // mặc định active
   });
   const [error, setError] = useState('');
+
+  // Xử lý khi input file thay đổi
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const url = await uploadImageToCloudinary(file);
+        setForm((prev) => ({ ...prev, image_url: url }));
+      } catch (err) {
+        console.error('Lỗi upload ảnh:', err);
+        setError('Lỗi upload ảnh lên Cloudinary');
+      }
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -26,7 +40,7 @@ const CreateBanner = ({ onClose, onCreateSuccess }) => {
       return false;
     }
     if (!form.image_url.trim()) {
-      setError("Vui lòng nhập URL của hình ảnh");
+      setError("Vui lòng upload hình ảnh");
       return false;
     }
     // Nếu cần validate thêm các trường khác, bạn có thể thêm điều kiện ở đây.
@@ -44,9 +58,8 @@ const CreateBanner = ({ onClose, onCreateSuccess }) => {
     try {
       const newBanner = await createBanner(form);
       alert('Banner đã được tạo thành công!');
-      window.location.reload(); // Reload lại trang sau khi thêm danh mục thành công
+      window.location.reload(); // Reload lại trang sau khi thêm banner thành công
       if (onCreateSuccess) onCreateSuccess(newBanner);
-      // window.location.reload(); // Nếu muốn reload trang; bạn có thể xử lý khác chẳng hạn đóng modal.
     } catch (err) {
       console.error('Lỗi khi tạo banner:', err);
       setError('Có lỗi xảy ra khi tạo banner');
@@ -71,17 +84,31 @@ const CreateBanner = ({ onClose, onCreateSuccess }) => {
             className="form-control"
           />
         </div>
-        {/* Image URL */}
+        {/* Upload Image */}
         <div className="form-group">
-          <label htmlFor="image_url">Image URL:</label>
+          <label htmlFor="fileInput">Chọn hình ảnh:</label>
           <input
-            type="text"
-            id="image_url"
-            name="image_url"
-            value={form.image_url}
-            onChange={handleChange}
+            type="file"
+            id="fileInput"
+            onChange={handleFileChange}
             className="form-control"
+            accept="image/*"
           />
+          {form.image_url && (
+            <div style={{ marginTop: '10px' }}>
+              <p>
+                Ảnh đã được upload:{" "}
+                <a href={form.image_url} target="_blank" rel="noopener noreferrer">
+                  {form.image_url}
+                </a>
+              </p>
+              <img
+                src={form.image_url}
+                alt="Banner Preview"
+                style={{ maxWidth: '200px' }}
+              />
+            </div>
+          )}
         </div>
         {/* Position với dropdown */}
         <div className="form-group">

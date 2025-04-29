@@ -1,10 +1,7 @@
 // src/components/posts/EditPost.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Editor } from '@toast-ui/react-editor';
-// Nhớ import CSS của Toast UI Editor nếu chưa có
-// import 'tui-editor/dist/tui-editor.css';
-// import 'tui-editor/dist/tui-editor-contents.css';
-import { updatePost } from '../../api/server';
+import { updatePost, uploadImageToCloudinary } from '../../api/server';
 
 const EditPost = ({ initialData, onClose, onEditSuccess }) => {
   const [form, setForm] = useState({
@@ -15,7 +12,7 @@ const EditPost = ({ initialData, onClose, onEditSuccess }) => {
   const [error, setError] = useState('');
   const editorRef = useRef();
 
-  // Khi initialData thay đổi (ví dụ: khi mở modal sửa bài viết), prefill form & nội dung editor
+  // Prefill dữ liệu khi nhận initialData
   useEffect(() => {
     if (initialData) {
       setForm({
@@ -23,28 +20,39 @@ const EditPost = ({ initialData, onClose, onEditSuccess }) => {
         tag: initialData.tag || '',
         coverImage: initialData.coverImage || '',
       });
-
-      // Đợi editor render xong thì set nội dung
+      // Đợi editor được mount rồi set Markdown
       if (editorRef.current) {
         editorRef.current.getInstance().setMarkdown(initialData.content || '');
       }
     }
   }, [initialData]);
 
-  // Hàm xử lý thay đổi input
+  // Xử lý thay đổi cho input text
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
       [name]: value,
     }));
+    setError('');
+  };
+
+  // Xử lý upload file cho ảnh bìa
+  const handleCoverImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const uploadedUrl = await uploadImageToCloudinary(file);
+      setForm((prev) => ({ ...prev, coverImage: uploadedUrl }));
+    } catch (err) {
+      console.error('Lỗi upload cover image:', err);
+      setError('Lỗi upload cover image');
+    }
   };
 
   // Submit cập nhật bài viết
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate các trường bắt buộc
     if (!form.title.trim()) {
       setError('Tiêu đề bài viết không được để trống.');
       return;
@@ -54,17 +62,15 @@ const EditPost = ({ initialData, onClose, onEditSuccess }) => {
       setError('Nội dung bài viết không được để trống.');
       return;
     }
-
     try {
       const updatedPostData = {
         ...form,
-        content, // Nội dung mới từ editor
+        content, // Nội dung lấy từ editor
       };
-
-      // Gọi API updatePost với id của bài viết cần chỉnh sửa
       const updatedPost = await updatePost(initialData._id, updatedPostData);
       alert('Bài viết đã được cập nhật thành công!');
       if (onEditSuccess) onEditSuccess(updatedPost);
+      if (onClose) onClose();
     } catch (err) {
       console.error('Lỗi khi cập nhật bài viết:', err);
       setError('Có lỗi xảy ra khi cập nhật bài viết.');
@@ -90,7 +96,7 @@ const EditPost = ({ initialData, onClose, onEditSuccess }) => {
         </div>
         {/* Input danh mục (tag) */}
         <div className="form-group">
-          <label htmlFor="tag">Danh mục (ID hoặc tên):</label>
+          <label htmlFor="tag">Danh mục (Tag):</label>
           <input
             type="text"
             id="tag"
@@ -101,18 +107,29 @@ const EditPost = ({ initialData, onClose, onEditSuccess }) => {
             placeholder="Nhập danh mục..."
           />
         </div>
-        {/* Input hình ảnh bìa */}
+        {/* Upload ảnh bìa */}
         <div className="form-group">
-          <label htmlFor="coverImage">Hình ảnh bìa (URL):</label>
+          <label htmlFor="coverImage">Hình ảnh bìa:</label>
           <input
-            type="text"
+            type="file"
             id="coverImage"
             name="coverImage"
-            value={form.coverImage}
-            onChange={handleChange}
+            onChange={handleCoverImageUpload}
             className="form-control"
-            placeholder="https://example.com/image.jpg"
           />
+          {form.coverImage && (
+            <div style={{ marginTop: '10px' }}>
+              <img
+                src={form.coverImage}
+                alt="Cover Preview"
+                style={{
+                  width: '200px',
+                  border: '1px solid #ddd',
+                  padding: '5px',
+                }}
+              />
+            </div>
+          )}
         </div>
         {/* Toast UI Editor cho nội dung bài viết */}
         <div className="form-group">
@@ -124,6 +141,16 @@ const EditPost = ({ initialData, onClose, onEditSuccess }) => {
             initialEditType="markdown"
             useCommandShortcut={true}
             ref={editorRef}
+            hooks={{
+              addImageBlobHook: async (blob, callback) => {
+                try {
+                  const url = await uploadImageToCloudinary(blob);
+                  callback(url, 'Uploaded image');
+                } catch (err) {
+                  console.error('Lỗi upload ảnh từ Editor:', err);
+                }
+              },
+            }}
           />
         </div>
         <button type="submit" className="btn btn-primary">

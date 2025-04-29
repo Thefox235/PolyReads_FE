@@ -7,6 +7,7 @@ const StarRating = ({ rating, maxStars = 5 }) => {
           key={index}
           className={index < rating ? "bi bi-star-fill" : "far fa-star text-gray-400"}
         ></i>
+
       ))}
     </div>
   );

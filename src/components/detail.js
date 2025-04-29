@@ -31,6 +31,7 @@ import { convertTime } from "../utils/Converter";
 import StarRating from "../utils/StarRating";
 import AddressSelectionModal from "./addressSelector";
 import CreateAddress from "../components/admin/createAddress";
+import { Colors } from "chart.js";
 
 const Detail = () => {
   const { id } = useParams();
@@ -50,11 +51,11 @@ const Detail = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showUpdateModal, setshowUpdateModal] = useState(false);
-  const [commentId, setCommentId] = useState();
+  const [commentId, setCommentId] = useState(null);
   const [commentsRating, setCommentsRating] = useState([]);
   const [commentUpdateCurent, setCommentUpdateCurrent] = useState("");
   const [commentUpdateStar, setCommentUpdateStar] = useState("");
-  const [selectedStar, setSelectedStar] = useState();
+  const [selectedStar, setSelectedStar] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState(null);
   const [address, setAddress] = useState([]);
@@ -78,6 +79,7 @@ const Detail = () => {
     // Đóng modal tạo địa chỉ
     setShowCreateAddressModal(false);
   };
+
 
   function parseSize(sizeStr) {
     if (typeof sizeStr !== "string" || sizeStr.trim() === "") {
@@ -144,12 +146,14 @@ const Detail = () => {
     reset,
     formState: { errors },
   } = useForm({});
+
   const closeCreateModal = () => {
     setCommentId("");
     setCommentUpdateCurrent("");
     reset();
     setShowCreateModal(false);
   };
+
   const openCreateModal = () => setShowCreateModal(true);
   const closeUpdateCreateModal = () => {
     setshowUpdateModal(false);
@@ -260,7 +264,24 @@ const Detail = () => {
   const idAuthor = product.ahutor ? product.author : "N/A";
   const idDiscount = product.discount ? product.discount : "N/A";
   const idPublisher = product.publisher ? product.publisher : "N/A";
+
+  // Hàm fetchComments để lấy danh sách bình luận mới nhất
+  const fetchComments = async () => {
+    try {
+      const data = await getComment();
+      setComments(data.comments);
+      setCommentsRating(data.comments);
+    } catch (error) {
+      console.error("Có lỗi xảy ra khi lấy bình luận:", error);
+    }
+  };
+
   useEffect(() => {
+    fetchComments();
+  }, [id]);
+
+  useEffect(() => {
+
     const fetchProductCate = async () => {
       try {
         const data = await getProductByCate(idCate);
@@ -275,25 +296,24 @@ const Detail = () => {
     }
   }, [idCate]);
 
-  const removeComment = async (id) => {
-    if (!id) {
+  const removeComment = async (commentId) => {
+    if (!commentId) {
       console.warn("ID không hợp lệ!");
       return;
     }
-
     try {
-      const result = await deleteComment(id);
+      const result = await deleteComment(commentId);
       if (result) {
-        console.log(`Xóa comment ${id} thành công!`);
-        setComments(comments.filter((item) => item._id !== id));
-        // Cập nhật danh sách comments nếu cần
+        console.log(`Xóa comment ${commentId} thành công!`);
+        fetchComments();
       } else {
-        console.error(`Xóa comment ${id} thất bại!`);
+        console.error(`Xóa comment ${commentId} thất bại!`);
       }
     } catch (error) {
       console.error("Lỗi khi xóa comment:", error);
     }
   };
+  // Hàm sửa comment
   const updateComments = async (value) => {
     try {
       const data = {
@@ -302,39 +322,30 @@ const Detail = () => {
         content: value.content,
         rating: Number(selectedStar),
       };
-
-      const result = await updateComment(commentId, data);
-      console.log(selectedStar);
-      alert("Thành công");
+      const updatedComment = await updateComment(commentId, data);
+      alert("Cập nhật comment thành công!");
+      fetchComments();
     } catch (error) {
       console.error("Lỗi khi cập nhật comment:", error);
     } finally {
       closeUpdateCreateModal();
     }
   };
+
   const togglelike = async (id) => {
     if (checkuser) {
       try {
-        const data = {
-          userId: checkuser._id,
-        };
-
-        // Tìm comment theo id
+        const data = { userId: checkuser._id };
         const comment = comments.find((item) => item._id === id);
         if (!comment) {
           alert("Không tìm thấy bình luận");
           return;
         }
-
-        // Kiểm tra user đã like chưa
         const hasLiked = comment.likedBy.includes(checkuser._id);
-
-        // Gửi request để like hoặc dislike
         const res = await toggleLikeComment(id, data);
-
         if (res) {
-          // Thông báo dựa vào trạng thái like/dislike
           alert(hasLiked ? "Bỏ yêu thích thành công" : "Yêu thích thành công");
+          fetchComments();
         }
       } catch (error) {
         console.log("Lỗi", error);
@@ -409,24 +420,23 @@ const Detail = () => {
   };
 
   const onSubmitComent = async (value) => {
-    // Giả sử currentOrderId lưu trữ id của đơn hàng được lấy từ handleCommentClick
     const data = {
       userId: checkuser._id,
-      orderId: currentOrderId,           // Thêm trường orderId vào payload
+      orderId: currentOrderId, // đảm bảo currentOrderId được set
       productId: id,
       content: value.content,
       rating: Number(value.rating)
     };
     console.log("Payload gửi lên:", data);
     try {
-      const res = await createComment(data);
+      const newComment = await createComment(data);
       alert("Tạo comment thành công!");
       reset();
     } catch (err) {
       console.error("Backend error:", err.response?.data);
-      // setError("Có lỗi xảy ra khi tạo comment.");
     } finally {
       closeCreateModal();
+      fetchComments();
     }
   };
 
@@ -472,12 +482,11 @@ const Detail = () => {
       : "N/A";
   // console.log(discountValue);
   const filterRating = (value) => {
-    // console.log(value);
     if (value === 0) {
       setCommentsRating(comments);
     } else {
-      const filter = comments.filter((item) => item.rating === value);
-      setCommentsRating(filter);
+      const filtered = comments.filter((item) => item.rating === value);
+      setCommentsRating(filtered);
     }
   };
 
@@ -859,18 +868,16 @@ const Detail = () => {
                     <div className="star-rating">
                       <StarRating rating={result} />
                     </div>
-                    <span
-                      className="rating-count"
-                      style={{ color: "#00000099", fontSize: 14 }}
-                    >
-                      (
-                      {
-                        commentsRating.filter(
-                          (item) => item?.productId?._id === id
-                        ).length
-                      }
-                      đánh giá)
-                    </span>
+                    <p>
+                      ({commentsRating.filter((item) => item?.productId?._id === id).length}
+                      <span
+                        className="rating-count"
+                        style={{ color: "#00000099", fontSize: 14, paddingLeft: 5 }}
+                      >
+                        đánh giá
+                      </span>)
+                    </p>
+
                   </div>
                   <div className="rating-filters dg">
                     <button onClick={() => filterRating(0)}>Tất cả</button>
@@ -902,73 +909,37 @@ const Detail = () => {
                       </div>
                       <div className="review-body">
                         <div className="review-stars">
-                          <StarRating
-                            rating={item.rating === NaN ? 0 : item.rating}
-                          />
+                          <StarRating rating={isNaN(item.rating) ? 0 : item.rating} />
                         </div>
                         <p className="review-text">{item.content}</p>
                         <span className="review-more">Xem thêm</span>
                         <div className="review-footer d-flex align-items-center gap-4">
                           <div
-                            className="review-helpful d-flex align-items-center gap-2 "
+                            className="review-helpful d-flex align-items-center gap-2"
                             style={{ cursor: "pointer" }}
                             onClick={() => togglelike(item._id)}
                           >
-                            <img
-                              src="https://media-hosting.imagekit.io//da4de5807dfd47de/Facebook%20Like.png?Expires=1835791963&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=t7-46AdUsTOXIE0Cg7IiRQoWmEZY-~zS4UTkftE6X49wXu5dnBuHE4bBLHAJ7QneCpXBoznqrUvYVxXRNpUMOkF9McmwRXL3WzFqJgSdZ9uMlC2rlQMLqcSQNtE3c9gp49w8SFi1On4Or6ogcl4Ez52NblC-ZOnprHCIH3JudlH3WxmEFichJcfvH4WbzJRDQr6vl4ExjRYzGPtE1q8nt8coo8VDgcC4Tb0eXvhhJUJAwnH2Wdv074SyIJlVUKVdj1PeltUgclKm6cpKzvgnI5Lu~lw4LrNpqHcUjeqS5pPADVAjQ39AZCNwU4MiGuVitbVd8RNWVDeECLTA2UAeMg__"
-                              width={18}
-                              alt="Hữu ích"
-                            />
-                            <div className="review-helpful-text">
-                              Hữu ích ({item.likes})
+                            <i style={{color: '#888888'}} class="bi bi-hand-thumbs-up-fill"></i>
+                            <div className="review-helpful-text">Hữu ích ({item.likes})</div>
+                          </div>
+                          {item?.userId?._id === checkuser?._id && (
+                            <div className="d-flex align-items-center gap-3">
+                              <button onClick={() => removeComment(item._id)} style={{ border: 0, color: "red", background: "white" }}>
+                                Xóa
+                              </button>
+                              <button
+                                onClick={() => {
+                                  open(item._id);
+                                  setCommentUpdateCurrent(item.content);
+                                  setCommentId(item._id);
+                                  setSelectedStar(item.rating);
+                                }}
+                                style={{ border: 0, background: "white" }}
+                              >
+                                Cập nhật
+                              </button>
                             </div>
-                          </div>
-                          <div className="review-report">(!) Báo cáo</div>
-                          <div className="d-flex align-items-center gap-1">
-                            {item?.userId?._id === checkuser?._id ? (
-                              <div className="d-flex align-items-center gap-1">
-                                <div
-                                  className="d-flex align-items-center gap-1"
-                                  onClick={() => removeComment(item._id)}
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    fill="currentColor"
-                                    class="bi bi-x-lg"
-                                    viewBox="0 0 16 16"
-                                  >
-                                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                                  </svg>
-                                  <button
-                                    style={{
-                                      border: "0",
-                                      color: "red",
-                                      background: "white",
-                                    }}
-                                  >
-                                    Xóa
-                                  </button>
-                                </div>
-                                <button
-                                  style={{
-                                    border: "0",
-
-                                    background: "white",
-                                  }}
-                                  onClick={() => {
-                                    open(item._id);
-                                    setCommentUpdateCurrent(item.content);
-                                    setCommentId(item._id);
-                                    setSelectedStar(item.rating);
-                                  }}
-                                >
-                                  Cập nhật
-                                </button>
-                              </div>
-                            ) : null}
-                          </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1077,179 +1048,148 @@ const Detail = () => {
           </div>
         </div>
         {showCreateModal && (
-          <Modal onClose={closeCreateModal}>
-            <h2>Viết bình luận</h2>
-            <form
-              action=""
-              className="center"
-              onSubmit={handleSubmit(onSubmitComent)}
-            >
-              <input
-                type="text"
-                placeholder="Nhập bình luận"
-                className="w-100 mt-3 p-2"
-                {...register("content", {
-                  required: "Vui lòng nhập bình luận",
-                  minLength: {
-                    value: 5,
-                    message: "Bình luận phải có ít nhất 5 ký tự",
-                  },
-                  maxLength: {
-                    value: 500,
-                    message: "Bình luận không được vượt quá 500 ký tự",
-                  },
-                })}
-              />
-              {errors.content && (
-                <p className="text-red-500">{errors.content.message}</p>
-              )}
-
-              <div className="rating">
-                <input
-                  {...register("rating")}
-                  value="5"
-                  id="star5"
-                  type="radio"
+          <Modal onClose={() => setShowCreateModal(false)}>
+            <div className="comment-modal">
+              <h2>Viết đánh giá sản phẩm</h2>
+              <form className="center" onSubmit={handleSubmit(onSubmitComent)}>
+                <div className="rating">
+                  <input {...register("rating")} value="5" id="star5" type="radio" />
+                  <label htmlFor="star5"></label>
+                  <input {...register("rating")} value="4" id="star4" type="radio" />
+                  <label htmlFor="star4"></label>
+                  <input {...register("rating")} value="3" id="star3" type="radio" />
+                  <label htmlFor="star3"></label>
+                  <input {...register("rating")} value="2" id="star2" type="radio" />
+                  <label htmlFor="star2"></label>
+                  <input {...register("rating")} value="1" id="star1" type="radio" />
+                  <label htmlFor="star1"></label>
+                </div>
+                <textarea
+                  cols={5}
+                  rows={5}
+                  placeholder="Nhập đánh giá của bạn về sản phẩm"
+                  className="w-100 mt-3 p-2"
+                  {...register("content", {
+                    required: "Vui lòng nhập bình luận",
+                    minLength: {
+                      value: 5,
+                      message: "Bình luận phải có ít nhất 5 ký tự",
+                    },
+                    maxLength: {
+                      value: 500,
+                      message: "Bình luận không được vượt quá 500 ký tự",
+                    },
+                  })}
                 />
-                <label htmlFor="star5"></label>
-                <input
-                  {...register("rating")}
-                  value="4"
-                  id="star4"
-                  type="radio"
-                />
-                <label htmlFor="star4"></label>
-                <input
-                  {...register("rating")}
-                  value="3"
-                  id="star3"
-                  type="radio"
-                />
-                <label htmlFor="star3"></label>
-                <input
-                  {...register("rating")}
-                  value="2"
-                  id="star2"
-                  type="radio"
-                />
-                <label htmlFor="star2"></label>
-                <input
-                  {...register("rating")}
-                  value="1"
-                  id="star1"
-                  type="radio"
-                />
-                <label htmlFor="star1"></label>
-              </div>
-
-              <button
-                type="submit"
-                className="mt-3 "
-                style={{
-                  background: "#9b89c5",
-                  color: "white",
-                  border: "0",
-                  borderRadius: "5px",
-                  padding: "10px",
-                }}
-              // onClick={() => onsubmit()}
-              >
-                Gửi bình luận
-              </button>
-            </form>
+                {errors.content && (
+                  <p className="text-red-500">{errors.content.message}</p>
+                )}
+                <button
+                  type="submit"
+                  className="mt-3 "
+                  style={{
+                    background: "#9b89c5",
+                    color: "white",
+                    border: "0",
+                    borderRadius: "5px",
+                    padding: "10px",
+                  }}
+                >
+                  Gửi nhận xét
+                </button>
+              </form>
+            </div>
           </Modal>
         )}
-        {showUpdateModal && (
+       {showUpdateModal && (
           <Modal onClose={closeUpdateCreateModal}>
-            <h2>Viết bình luận</h2>
-            <form
-              action=""
-              className="center"
-              onSubmit={handleSubmit(updateComments)}
-            >
-              <input
-                type="text"
-                placeholder="Nhập bình luận"
-                className="w-100 mt-3 p-2"
-                defaultValue={commentUpdateCurent}
-                {...register("content", {
-                  required: "Vui lòng nhập bình luận",
-                  minLength: {
-                    value: 5,
-                    message: "Bình luận phải có ít nhất 5 ký tự",
-                  },
-                  maxLength: {
-                    value: 500,
-                    message: "Bình luận không được vượt quá 500 ký tự",
-                  },
-                })}
-              />
-              {errors.content && (
-                <p className="text-red-500">{errors.content.message}</p>
-              )}
-              <div className="rating">
-                <input
-                  {...register("rating")}
-                  value="5"
-                  id="star5"
-                  type="radio"
-                  checked={selectedStar === 5}
-                  onChange={() => handleStarChange(5)}
+            <div className="comment-modal">
+              <h2>Viết đánh giá sản phẩm</h2>
+              <form className="center" onSubmit={handleSubmit(updateComments)}>
+                <div className="rating">
+                  <input
+                    {...register("rating")}
+                    value="5"
+                    id="star5"
+                    type="radio"
+                    checked={selectedStar === 5}
+                    onChange={() => handleStarChange(5)}
+                  />
+                  <label htmlFor="star5"></label>
+                  <input
+                    {...register("rating")}
+                    value="4"
+                    id="star4"
+                    type="radio"
+                    checked={selectedStar === 4}
+                    onChange={() => handleStarChange(4)}
+                  />
+                  <label htmlFor="star4"></label>
+                  <input
+                    {...register("rating")}
+                    value="3"
+                    id="star3"
+                    type="radio"
+                    checked={selectedStar === 3}
+                    onChange={() => handleStarChange(3)}
+                  />
+                  <label htmlFor="star3"></label>
+                  <input
+                    {...register("rating")}
+                    value="2"
+                    id="star2"
+                    type="radio"
+                    checked={selectedStar === 2}
+                    onChange={() => handleStarChange(2)}
+                  />
+                  <label htmlFor="star2"></label>
+                  <input
+                    {...register("rating")}
+                    value="1"
+                    id="star1"
+                    type="radio"
+                    checked={selectedStar === 1}
+                    onChange={() => handleStarChange(1)}
+                  />
+                  <label htmlFor="star1"></label>
+                </div>
+                <textarea
+                  cols={5}
+                  rows={5}
+                  placeholder="Nhập bình luận"
+                  className="w-100 mt-3 p-2"
+                  defaultValue={commentUpdateCurent}
+                  {...register("content", {
+                    required: "Vui lòng nhập bình luận",
+                    minLength: {
+                      value: 5,
+                      message: "Bình luận phải có ít nhất 5 ký tự",
+                    },
+                    maxLength: {
+                      value: 500,
+                      message: "Bình luận không được vượt quá 500 ký tự",
+                    },
+                  })}
                 />
-                <label htmlFor="star5"></label>
-                <input
-                  {...register("rating")}
-                  value="4"
-                  id="star4"
-                  type="radio"
-                  checked={selectedStar === 4}
-                  onChange={() => handleStarChange(4)}
-                />
-                <label htmlFor="star4"></label>
-                <input
-                  {...register("rating")}
-                  value="3"
-                  id="star3"
-                  type="radio"
-                  checked={selectedStar === 3}
-                  onChange={() => handleStarChange(3)}
-                />
-                <label htmlFor="star3"></label>
-                <input
-                  {...register("rating")}
-                  value="2"
-                  id="star2"
-                  type="radio"
-                  checked={selectedStar === 2}
-                  onChange={() => handleStarChange(2)}
-                />
-                <label htmlFor="star2"></label>
-                <input
-                  {...register("rating")}
-                  value="1"
-                  id="star1"
-                  type="radio"
-                  checked={selectedStar === 1}
-                  onChange={() => handleStarChange(1)}
-                />
-                <label htmlFor="star1"></label>
-              </div>
-              <br />
-              <button
-                type="submit"
-                className="mt-3 "
-                style={{
-                  background: "#9b89c5",
-                  color: "white",
-                  border: "0",
-                  borderRadius: "5px",
-                  padding: "10px",
-                }}
-              // onClick={() => onsubmit()}
-              >
-                Gửi bình luận
-              </button>
-            </form>
+                {errors.content && (
+                  <p className="text-red-500">{errors.content.message}</p>
+                )}
+                <br />
+                <button
+                  type="submit"
+                  className="mt-3 "
+                  style={{
+                    background: "#9b89c5",
+                    color: "white",
+                    border: "0",
+                    borderRadius: "5px",
+                    padding: "10px",
+                  }}
+                >
+                  Gửi nhận xét
+                </button>
+              </form>
+            </div>
           </Modal>
         )}
       </main>
