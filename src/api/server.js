@@ -247,10 +247,13 @@ export const updatePassword = async (oldPassword, newPassword) => {
 };
 
 //comment
-export const getComment = async () => {
-  const response = await axios.get(`${BASE_URL}/comment`);
+export const getComment = async (params = {}) => {
+  const response = await axios.get(`${BASE_URL}/comment`, { params });
+
+  console.log(`${BASE_URL}/comment`,{params});
   return response.data;
 };
+
 export const toggleLikeComment = async (id, data) => {
   const response = await axios.put(`${BASE_URL}/comment/${id}/toggle-like`, data);
   return response.data;
