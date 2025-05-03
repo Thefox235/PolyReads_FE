@@ -52,7 +52,8 @@ const Detail = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showUpdateModal, setshowUpdateModal] = useState(false);
   const [commentId, setCommentId] = useState(null);
-  const [commentsRating, setCommentsRating] = useState([]);
+  const [activeFilter, setActiveFilter] = useState(0);
+
   const [commentUpdateCurent, setCommentUpdateCurrent] = useState("");
   const [commentUpdateStar, setCommentUpdateStar] = useState("");
   const [totalComments, setTotalComments] = useState(0);
@@ -260,23 +261,6 @@ const Detail = () => {
 
   // Hàm fetchComments để lấy danh sách bình luận mới nhất
   // Ví dụ: gọi API để lấy bình luận cho sản phẩm với paging
-  const fetchComments = async (page = 1, limit = 10) => {
-    try {
-      const data = await getComment({ productId: id, page, limit });
-      // data có thể chứa { comments, total, page, limit }
-      setComments(data.comments);
-      setTotalComments(data.total);
-      setCurrentPage(data.page);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (id) {  // đảm bảo id có giá trị
-      fetchComments();  // fetchComments truyền productId, page, limit
-    }
-  }, [id]);
 
   useEffect(() => {
 
@@ -392,7 +376,27 @@ const Detail = () => {
     }
   }, [idCate]);
 
+  const fetchComments = async (page = 1, limit = 10) => {
+    try {
+      const data = await getComment({ productId: id, page, limit });
+      // data có thể chứa { comments, total, page, limit }
+      // console.log(data);
+      setComments(data.comments);
+      setTotalComments(data.total);
+      setCurrentPage(data.page);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+  console.log(comments);
+  useEffect(() => {
+    if (id) {  // chỉ gọi khi id có giá trị
+      // console.log("Fetching comments with productId:", id);
+      fetchComments();  // fetchComments truyền productId, page, limit
+    }
+  }, [id]);
   //chuyển tab
+
   const [activeTab, setActiveTab] = useState("motasp");
 
   const handleTabClick = (target) => {
@@ -480,13 +484,12 @@ const Detail = () => {
       : "N/A";
   // console.log(discountValue);
   const filterRating = (value) => {
-    if (value === 0) {
-      setCommentsRating(comments);
-    } else {
-      const filtered = comments.filter((item) => item.rating === value);
-      setCommentsRating(filtered);
-    }
+    setActiveFilter(Number(value));
   };
+  const displayedComments = activeFilter === 0
+    ? comments
+    : comments.filter((item) => Number(item.rating) === activeFilter);
+  // console.log(commentsRating);
 
   const favorite = async () => {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -612,8 +615,7 @@ const Detail = () => {
                 <p style={{ margin: 0 }}>
                   (
                   {
-                    commentsRating.filter((item) => item?.productId?._id === id)
-                      .length
+                    totalComments
                   }
                   đánh giá)
                 </p>
@@ -622,9 +624,7 @@ const Detail = () => {
                   <span>
                     {" "}
                     {
-                      commentsRating.filter(
-                        (item) => item?.productId?._id === id
-                      ).length
+                      totalComments
                     }
                   </span>
                 </div>
@@ -867,7 +867,7 @@ const Detail = () => {
                       <StarRating rating={result} />
                     </div>
                     <p>
-                      ({commentsRating.filter((item) => item?.productId?._id === id).length}
+                      ({totalComments}
                       <span
                         className="rating-count"
                         style={{ color: "#00000099", fontSize: 14, paddingLeft: 5 }}
@@ -897,56 +897,53 @@ const Detail = () => {
                 <div className="text-danger">Mới nhất</div>
                 {/* <div>Bình luận hữu ích nhất</div> */}
               </div>
-              {commentsRating.map((item) => {
-                if (item.productId._id === id) {
-                  return (
-                    <div className="review" key={item._id}>
-                      <div className="review-header">
-                        <p className="review-author">{item.userId.name}</p>
-                        <p className="review-date">{convertTime(item.date)}</p>
-                        <img src={item.userId.url_image} alt="avatar" className="review-avatar" />
-                      </div>
-                      <div className="review-body">
-                        <div className="review-stars">
-                          <StarRating rating={isNaN(item.rating) ? 0 : item.rating} />
-                        </div>
-                        <p className="review-text">{item.content}</p>
-                        <span className="review-more">Xem thêm</span>
-                        <div className="review-footer d-flex align-items-center gap-4">
-                          <div
-                            className="review-helpful d-flex align-items-center gap-2"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => togglelike(item._id)}
-                          >
-                            <i style={{ color: '#888888' }} class="bi bi-hand-thumbs-up-fill"></i>
-                            <div className="review-helpful-text">Hữu ích ({item.likes})</div>
-                          </div>
-                          {item?.userId?._id === checkuser?._id && (
-                            <div className="d-flex align-items-center gap-3">
-                              <button onClick={() => removeComment(item._id)} style={{ border: 0, color: "red", background: "white" }}>
-                                Xóa
-                              </button>
-                              <button
-                                onClick={() => {
-                                  open(item._id);
-                                  setCommentUpdateCurrent(item.content);
-                                  setCommentId(item._id);
-                                  setSelectedStar(item.rating);
-                                }}
-                                style={{ border: 0, background: "white" }}
-                              >
-                                Cập nhật
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
+              {displayedComments.map((item) => (
+                <div className="review" key={item._id}>
+                  <div className="review-header">
+                    <p className="review-author">{item.userId.name}</p>
+                    <p className="review-date">{convertTime(item.date)}</p>
+                    <img src={item.userId.url_image} alt="avatar" className="review-avatar" />
+                  </div>
+                  <div className="review-body">
+                    <div className="review-stars">
+                      <StarRating rating={isNaN(item.rating) ? 0 : item.rating} />
                     </div>
-                  );
-                } else {
-                  return null;
-                }
-              })}
+                    <p className="review-text">{item.content}</p>
+                    <span className="review-more">Xem thêm</span>
+                    <div className="review-footer d-flex align-items-center gap-4">
+                      <div
+                        className="review-helpful d-flex align-items-center gap-2"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => togglelike(item._id)}
+                      >
+                        <i
+                          style={{ color: item.likedBy.includes(checkuser._id) ? "#9b7cc4" : "#c4c1c1" }}
+                          className="bi bi-hand-thumbs-up-fill"
+                        ></i>
+                        <div className="review-helpful-text">Hữu ích ({item.likes})</div>
+                      </div>
+                      {item?.userId?._id === checkuser?._id && (
+                        <div className="d-flex align-items-center gap-3">
+                          <button onClick={() => removeComment(item._id)} style={{ border: 0, color: "red", background: "white" }}>
+                            Xóa
+                          </button>
+                          <button
+                            onClick={() => {
+                              open(item._id);
+                              setCommentUpdateCurrent(item.content);
+                              setCommentId(item._id);
+                              setSelectedStar(item.rating);
+                            }}
+                            style={{ border: 0, background: "white" }}
+                          >
+                            Cập nhật
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
 
               <div className="m-auto w-100">
                 <div className="paginations">

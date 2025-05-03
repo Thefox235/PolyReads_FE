@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getUserOrder, deleteOrder, updateOrder, createComment } from "../api/server";
+import { getUserOrder, deleteOrder, updateOrder, continuePaymentAPI } from "../api/server";
 import ViewOrderDetail from "./admin/viewOrder-detail"; // Modal hiển thị chi tiết đơn hàng (đã có)
 import OrderReviewModal from "./OrderReviewModal"; // Modal hiển thị chi tiết đơn hàng (đã có)
 // Component mới: OrderReviewModal (sẽ được định nghĩa dưới đây)
@@ -32,6 +32,12 @@ const OrderManagement = ({ userId }) => {
     { value: -1, label: "Bị hủy" },
     { value: 3, label: "Đổi trả" },
   ];
+
+  const paymentStatusMapping = {
+    pending: "Chờ thanh toán",
+    success: "Thanh toán thành công",
+    failed: "Thanh toán thất bại"
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -78,6 +84,19 @@ const OrderManagement = ({ userId }) => {
     setSelectedOrderForReview(null);
   };
 
+  // Bên trong component OrderManagement, thêm hàm handleContinuePayment:
+  const handleContinuePayment = async (order) => {
+    try {
+      const payload = { orderId: order._id, paymentMethod: order.paymentId.method };
+      console.log("Payload gửi lên:", payload);
+      const res = await continuePaymentAPI(payload);
+      const redirectUrl = res.data.redirectUrl;
+      window.location.href = redirectUrl;
+    } catch (error) {
+      console.error("Lỗi khi tiếp tục thanh toán:", error);
+      alert("Có lỗi xảy ra khi tiếp tục thanh toán.");
+    }
+  };
   // Các hàm xử lý sửa, xóa đơn hàng (nếu cần)
   const handleDelete = async (orderId) => {
     try {
@@ -195,8 +214,13 @@ const OrderManagement = ({ userId }) => {
                   {statusOptions.find(option => option.value === order.status)?.label || order.status}
                 </strong>
               </p>
+              <p className="order-payment-status">
+                Trạng thái thanh toán:{" "}
+                <strong>
+                  {paymentStatusMapping[order.payment_status] || order.payment_status}
+                </strong>
+              </p>
               <div className="order-actions">
-                {/* Hiển thị nút “Đánh giá” chỉ khi đơn hàng đã hoàn tất (status === 2) */}
                 {String(order.status) === String(statusMapping.completed) && (
                   <a
                     href="#"
@@ -208,6 +232,12 @@ const OrderManagement = ({ userId }) => {
                   >
                     Đánh giá đơn hàng
                   </a>
+                )}
+                {/* Nếu order vẫn đang chờ thanh toán (pending) và chưa hoàn tất */}
+                {(order.status === 0 && order.payment_status !== "success") && (
+                  <button className="btn continue-payment" onClick={() => handleContinuePayment(order)}>
+                    Tiếp tục thanh toán
+                  </button>
                 )}
                 <button className="btn buy-again">Mua lại</button>
               </div>

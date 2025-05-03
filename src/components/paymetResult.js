@@ -42,16 +42,15 @@ const PaymentResult = () => {
       pmcid = params.get('pmcid');
     }
 
-    // Nếu VNPay thông thường lượng số tiền trả về đã được nhân, bạn có thể xử lý lại ở đây;
-    // với Zalopay theo mẫu trên thì amount được trả về dạng chuẩn đơn vị VND.
-    const formattedAmount = amountParam ? Number(amountParam) : null;
+    // Nếu VNPay thì amountParam cần chia cho 100, còn nếu Zalopay thì dùng trực tiếp.
+    const formattedAmount = amountParam
+      ? (paymentMethod === 'vnpay' ? Number(amountParam) / 100 : Number(amountParam))
+      : null;
 
-    // Xác định thông điệp hiển thị:
-    // Với VNPay: nếu responseCode === "00" thì thành công;
-    // Với Zalopay: nếu responseCode === "1" thì thành công.
+    // Xác định thông điệp hiển thị
     const message =
       (paymentMethod === 'vnpay' && responseCode === '00') ||
-      (paymentMethod === 'zalopay' && responseCode === '1')
+        (paymentMethod === 'zalopay' && responseCode === '1')
         ? 'Thanh toán thành công'
         : 'Thanh toán không thành công';
 
@@ -77,6 +76,7 @@ const PaymentResult = () => {
     const paymentId = sessionStorage.getItem('paymentId');
 
     axios
+      // .post('https://polyread-be.netlify.app/payment/confirm', {
       .post('http://localhost:3000/payment/confirm', {
         orderId,
         paymentId,
@@ -106,14 +106,12 @@ const PaymentResult = () => {
         <div className="col-md-8 col-lg-6">
           <div className="card shadow-sm">
             <div
-              className={`card-header text-center ${
-                // Nếu VNPay: thành công khi code === "00", nếu Zalopay: thành công khi code === "1"
-                (result.paymentMethod === 'vnpay'
+              className={`card-header text-center ${(result.paymentMethod === 'vnpay'
                   ? result.code === '00'
                   : result.code === '1')
                   ? 'bg-success text-white'
                   : 'bg-danger text-white'
-              }`}
+                }`}
             >
               <h4 className="mb-0">{result.message}</h4>
             </div>
@@ -130,9 +128,9 @@ const PaymentResult = () => {
                   <strong>Số tiền:</strong>{' '}
                   {result.amount
                     ? new Intl.NumberFormat('vi-VN', {
-                        style: 'currency',
-                        currency: 'VND',
-                      }).format(result.amount)
+                      style: 'currency',
+                      currency: 'VND',
+                    }).format(result.amount)
                     : 'N/A'}
                 </li>
                 <li className="list-group-item">

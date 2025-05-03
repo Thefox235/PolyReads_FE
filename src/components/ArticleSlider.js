@@ -1,12 +1,43 @@
 import React, { useState, useEffect } from "react";
-import { getPosts } from "../api/server"; // Đường dẫn này có thể cần điều chỉnh tùy theo cấu trúc dự án
+import { getPosts, getCategory } from "../api/server"; // Đường dẫn này có thể cần điều chỉnh tùy theo cấu trúc dự án
 import '../asset/css/ArticleSlider.css'
-
 // Component hiển thị banner cho một post
 const PostBanner = ({ post }) => {
+  const fetchCategory = async () => {
+    try {
+      const categoryData = await getCategory();
+      setCategoryName(categoryData);
+    } catch (error) {
+      console.error('Có lỗi xảy ra khi lấy danh mục:', error);
+    }
+  };
+  fetchCategory();
+
+  const [categoryName, setCategoryName] = useState([]);
+  const postCate = categoryName.filter(cate => cate).find(cate => cate._id === post.tag);
+
+
   return (
     <div className="article_banner" style={{ display: "flex", padding: "20px" }}>
       <div className="article_banner_left" style={{ flex: 1, paddingRight: "20px" }}>
+        <div className="blog-detail-article_2_title_background">
+          <span className="title_manga">
+            <svg
+              width={17}
+              height={17}
+              viewBox="0 0 15 17"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5ZM1.96953 7.5C1.96953 10.5544 4.44561 13.0305 7.5 13.0305C10.5544 13.0305 13.0305 10.5544 13.0305 7.5C13.0305 4.44561 10.5544 1.96953 7.5 1.96953C4.44561 1.96953 1.96953 4.44561 1.96953 7.5Z"
+                fill="white"
+              />
+              <circle cx="7.5" cy="7.5" r="3.5" fill="white" />
+            </svg>
+            <span>{postCate && postCate.name}</span>
+          </span>
+        </div>
         <h2>{post.title}</h2>
         <div className="article_banner_meta" style={{ margin: "10px 0", color: "#666" }}>
           <span>{new Date(post.createdAt).toLocaleDateString()}</span>

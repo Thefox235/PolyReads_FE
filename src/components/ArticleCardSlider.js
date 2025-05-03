@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getPosts } from "../api/server"; // Điều chỉnh đường dẫn theo dự án của bạn
 import { Link } from "react-router-dom";
-
+import { Viewer } from '@toast-ui/react-editor'; 
 // Component riêng cho từng card dựa trên cấu trúc HTML bạn gửi
 const ArticleCard = ({ post }) => {
     // Rút gọn tiêu đề nếu quá dài (có thể điều chỉnh độ dài theo mong muốn)
@@ -12,6 +12,7 @@ const ArticleCard = ({ post }) => {
 
     return (
         <div className="article_3_card_silde">
+            
             <div className="article_3_right_text_1">
                 <Link to={`/blog/${post._id}`} >
                 <span className="article_3_right_text_1a">{truncatedTitle}</span>

@@ -213,6 +213,7 @@ const ViewPro = () => {
     }
   };
 
+  console.log(products);
   return (
     <div>
       <div className="admin-product">

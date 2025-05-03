@@ -592,7 +592,9 @@ const Detail = () => {
         <div className="detail">
           {productImages.length > 0 ? (
             productImages.map((img) => (
-              <img key={img._id} src={img.url} alt={product.name} />
+              <div className="detail-images">
+                <img key={img._id} src={img.url} alt={product.name} />
+              </div>
             ))
           ) : (
             <p>Không có hình ảnh</p>
@@ -917,7 +919,7 @@ const Detail = () => {
                         onClick={() => togglelike(item._id)}
                       >
                         <i
-                          style={{ color: item.likedBy.includes(checkuser._id) ? "#9b7cc4" : "#c4c1c1" }}
+                          style={{ color: item.likedBy.includes(checkuser?._id) ? "#9b7cc4" : "#c4c1c1" }}
                           className="bi bi-hand-thumbs-up-fill"
                         ></i>
                         <div className="review-helpful-text">Hữu ích ({item.likes})</div>

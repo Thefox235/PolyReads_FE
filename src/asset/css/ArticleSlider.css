@@ -40,7 +40,13 @@
     flex-direction: column;
     justify-content: center; /* căn chỉnh dọc cho đẹp */
   }
-  
+  .article_banner_left h2
+  {
+    font-size: 32px;
+    font-weight: bold;
+    color: #152035;
+    padding-top: 30px;
+  }
   /* Đảm bảo hình ảnh bên phải chiếm trọn chiều cao */
   .article_banner_right img {
     width: 600px;

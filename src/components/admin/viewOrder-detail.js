@@ -87,6 +87,7 @@ const ViewOrderDetail = ({ orderId, orderTotal, onClose }) => {
     return acc + price * quantity;
   }, 0);
 
+
   return (
     <div className="modal show d-block" tabIndex="-1">
       <div className="modal-dialog modal-xl">

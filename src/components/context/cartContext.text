@@ -134,7 +134,7 @@ export const CartProvider = ({ children }) => {
         payment_status: "pending",      // sửa từ 0 thành "pending"
       };
 
-      console.log(orderPayload);
+      // console.log(orderPayload);
       
       // Tạo Order
       const orderRes = await createOrder(orderPayload);
@@ -156,16 +156,14 @@ export const CartProvider = ({ children }) => {
           method: paymentMethod,
         };
         const paymentRes = await createPayment(paymentPayload);
-        
         const paymentId = paymentRes.payment._id;
         // Update Order: thêm payment_status 'success' khi thanh toán thành công
         await updateOrder(orderId, {
           paymentId,
-          payment_method: paymentMethod
-          // payment_status: "success"
+          payment_method: paymentMethod,
+          payment_status: "success"
         });
         sessionStorage.setItem("paymentId", paymentId);
-
       } else if (paymentMethod === "cash") {
         const paymentPayload = {
           amount: finalTotal,

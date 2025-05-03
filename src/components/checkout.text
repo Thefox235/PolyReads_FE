@@ -281,11 +281,11 @@ const Checkout = () => {
       };
 
       console.log("Payload gửi lên BE:", payload);
-      const data = "await createVNPAYPaymentIntent(payload);"
+      const data = await createVNPAYPaymentIntent(payload);
       console.log("Dữ liệu trả về từ BE:", data);
 
       if (data && data.paymentUrl) {
-        // window.location.href = data.paymentUrl;
+        window.location.href = data.paymentUrl;
       } else {
         alert("Không thể tạo thanh toán online, vui lòng thử lại sau!");
       }

@@ -10,16 +10,7 @@ const statusOptions = [
   { value: -1, label: "Bị hủy" },
   { value: 3, label: "Đổi trả" },
 ];
-const paymentStatusMapping = {
-  pending: "Đang chờ thanh toán",
-  success: "Thành công",
-  failed: "Thất bại",
-};
-const paymentMethodMapping = {
-  vnpay: "VNPay",
-  zalopay: "ZaloPay",
-  cash: "Tiền mặt",
-};
+
 const EditOrder = ({ orderId, onClose, onUpdateSuccess }) => {
   // State cho thông tin tóm tắt đơn hàng (lấy từ getOrderById)
   const [orderInfo, setOrderInfo] = useState(null);
@@ -97,7 +88,7 @@ const EditOrder = ({ orderId, onClose, onUpdateSuccess }) => {
 
 
 
-  // Hàm cập nhật trạng thái đơn hàng
+// Hàm cập nhật trạng thái đơn hàng
   const handleStatusUpdate = async () => {
     if (!orderInfo) return;
     setUpdateLoading(true);
@@ -114,10 +105,8 @@ const EditOrder = ({ orderId, onClose, onUpdateSuccess }) => {
       setUpdateLoading(false);
     }
   };
-  console.log(orderDetails);
 
-  const shippingFee = orderInfo ? Number(orderInfo.total) - computedGrandTotal : 0;
-
+console.log(orderInfo);
   if (loading) {
     return (
       <div className="modal show d-block" tabIndex="-1">
@@ -229,7 +218,7 @@ const EditOrder = ({ orderId, onClose, onUpdateSuccess }) => {
                               )}
                             </td>
                             <td
-                              style={{ maxWidth: "330px" }}
+                              style={{ maxWidth: "340px" }}
                             >{productName}</td>
                             <td>x{quantity}</td>
                             <td>
@@ -269,14 +258,13 @@ const EditOrder = ({ orderId, onClose, onUpdateSuccess }) => {
                         <td
                           // style={{textAlign: "right"}}
                           colSpan="4" className="text-right">
-                          <p>Tiền Shiping:
-                          </p>
+                          <p>Tiền Shiping:</p>
                         </td>
                         <td>
-                          {shippingFee.toLocaleString("vi-VN", {
+                          {/* {computedGrandTotal.toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
-                          })}
+                          })} */}
                         </td>
                       </tr>
 
@@ -287,11 +275,10 @@ const EditOrder = ({ orderId, onClose, onUpdateSuccess }) => {
                           <strong>Thành tiền:</strong>
                         </td>
                         <td>
-                          {orderInfo ? Number(orderInfo.total).toLocaleString("vi-VN", {
+                          {computedGrandTotal.toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
-                          }) : "Chưa có dữ liệu"}
-
+                          })}
                         </td>
                       </tr>
                     </tfoot>
@@ -313,16 +300,10 @@ const EditOrder = ({ orderId, onClose, onUpdateSuccess }) => {
                         <strong>Số lượng:</strong> {orderInfo.quantity}
                       </p>
                       <p>
-                        <strong>Trạng thái thanh toán:</strong>{" "}
-                        {orderInfo.paymentId.status
-                          ? paymentStatusMapping[orderInfo.paymentId.status]
-                          : "Không xác định"}
+                        <strong>Trạng thái thanh toán:</strong> {orderInfo.paymentId.status}
                       </p>
                       <p>
-                        <strong>Phương thức thanh toán:</strong>{" "}
-                        {orderInfo.paymentId.method
-                          ? paymentMethodMapping[orderInfo.paymentId.method]
-                          : "Không xác định"}
+                        <strong>Phương thức thanh toán:</strong> {orderInfo.paymentId.method}
                       </p>
                       <p>
                         <strong>Tổng tiền:</strong>{" "}

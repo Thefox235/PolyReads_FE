@@ -1,9 +1,14 @@
 // api.js
 import axios from 'axios';
-const BASE_URL = 'https://polyread-be.netlify.app';
+// const BASE_URL = 'https://polyread-be.netlify.app';
+const BASE_URL = 'http://localhost:3000';
 // const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
 
 //gộp order
+export const continuePaymentAPI = (data) => {
+  return axios.post(`${BASE_URL}/order/continue-payment`, data);
+};
+
 // Hàm này sẽ gọi endpoint /orders/complete trên BE
 export const completeOrder = async (orderPayload) => {
   try {

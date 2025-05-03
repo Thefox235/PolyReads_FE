@@ -10,6 +10,7 @@ import {
 import { Link } from 'react-router-dom';
 import ArticleSlider from './ArticleSlider';
 import ArticleCard from './ArticleCardSlider';
+import { Viewer } from '@toast-ui/react-editor'; 
 const Blog = () => {
     //product
     const [discounts, setDiscounts] = useState([]);
@@ -251,7 +252,7 @@ const Blog = () => {
                                             </div>
 
                                             <div className="card_left_2_title_4">
-                                                <Link to={`/blog/${post._id}`} className="card_left_2_text_4">XEM THÊM-&gt;</Link>
+                                                <Link to={`/blog/${post._id}`} className="card_left_2_text_4">XEM THÊM -&gt;</Link>
                                             </div>
                                         </div>
                                     </div>

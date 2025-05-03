@@ -102,11 +102,14 @@ const Footer = () => {
                                                 {postCate && postCate.name}
                                             </p>
                                         </div>
-                                        <p style={{ fontWeight: "bold" }} className="text-start">
-                                            {post.title.length > 40
-                                                ? post.title.substring(0, 40) + "..."
-                                                : post.title}
-                                        </p>
+                                        <Link to={`/blog/${post._id}`}>
+                                            <p style={{ fontWeight: "bold", color: "white"}} className="text-start">
+                                                {post.title.length > 40
+                                                    ? post.title.substring(0, 40) + "..."
+                                                    : post.title}
+                                            </p>
+                                        </Link>
+
                                         <div className="d-flex justify-content-between">
                                             <span style={{ color: "#889097", textAlign: "left", fontSize: 13 }}>
                                                 {new Date(post.createdAt).toLocaleDateString()}

@@ -98,23 +98,27 @@ const ViewPro = () => {
     fetchAuthors();
   }, [selectedCategory]);
 
-  // Load sản phẩm dựa vào các filter được chọn và phân trang
+  const [totalProducts, setTotalProducts] = useState(0);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // Nếu đang trong chế độ tìm kiếm, sử dụng API getProductSearch
         if (isSearch && searchTerm.trim() !== "") {
           const params = { field: "name", keyword: searchTerm, page: currentPage, limit };
           const productsData = await getProductSearch(params);
+          // Giả sử API tìm kiếm cũng trả về { total, products }
           console.log(productsData);
           setProducts(productsData);
+
+          setTotalProducts(productsData.total);
         } else {
-          // Nếu không phải tìm kiếm, sử dụng filter theo danh mục và tác giả (nếu có)
           const params = { page: currentPage, limit };
           if (selectedCategory) params.category = selectedCategory;
           if (selectedAuthor) params.author = selectedAuthor;
           const productsData = await getProductFilter(params);
-          setProducts(productsData);
+          console.log(getProductFilter(params));
+          setProducts(productsData.products);
+          setTotalProducts(productsData.total);
         }
       } catch (error) {
         console.error("Lỗi khi load sản phẩm:", error);
@@ -215,7 +219,7 @@ const ViewPro = () => {
         {/* Thanh thao tác */}
         <div className="admin-product__action" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span className="admin-product__category-title">
-            Sản phẩm: {products.length} quyển hiện có
+            Sản phẩm: {totalProducts} quyển hiện có
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             {/* Thanh tìm kiếm với AdminSearchForm */}
