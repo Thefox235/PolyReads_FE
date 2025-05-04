@@ -19,6 +19,7 @@ import EditPro from "./editPro";
 import Modal from "../model";
 import AdminSearchForm from './AdminSearchForm';
 import CustomDropdown from "./CustomDropdown";
+import BulkUpdateDiscountModal from "./BulkUpdateDiscountModal";
 
 const ViewPro = () => {
   // Lấy thông tin từ location và navigate
@@ -29,9 +30,11 @@ const ViewPro = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const openCreateModal = () => setShowCreateModal(true);
   const closeCreateModal = () => setShowCreateModal(false);
+  const [showModal, setShowModal] = useState(false);
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
   const openEditModal = (product) => {
     setSelectedProduct(product);
     setShowEditModal(true);
@@ -80,6 +83,7 @@ const ViewPro = () => {
     fetchStaticData();
   }, []);
 
+  console.log(categoryList);
   // Load danh sách tác giả: nếu có chọn danh mục -> lấy tác giả theo danh mục đó, ngược lại tải tất cả
   useEffect(() => {
     const fetchAuthors = async () => {
@@ -239,7 +243,11 @@ const ViewPro = () => {
               onChange={handleAuthorChange}
               defaultLabel="Tất cả tác giả"
             />
+            <button onClick={() => setShowModal(true)} className="admin-product__btn-add-category">
+              Sale
+            </button>
           </div>
+
           <button className="admin-product__btn-add-category" onClick={openCreateModal}>
             Thêm Sản Phẩm
           </button>
@@ -341,6 +349,18 @@ const ViewPro = () => {
           </ul>
         </div>
       </div>
+
+      {showModal && (
+        <BulkUpdateDiscountModal
+          categories={categoryList}
+          discounts={discountValue}
+          onClose={() => setShowModal(false)}
+          onUpdateSuccess={() => {
+            // Có thể reload dữ liệu hoặc thông báo thành công
+            alert("Cập nhật discount thành công!");
+          }}
+        />
+      )}
 
 
 

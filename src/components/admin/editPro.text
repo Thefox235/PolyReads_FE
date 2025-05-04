@@ -9,6 +9,8 @@ import {
   uploadImageToCloudinary
 } from '../../api/server';
 import CustomSelect from './customSelect';
+import Modal from '../model';
+import CreateDiscount from './createDiscount';     // Nếu cần tạo tác giả inline
 
 const EditPro = ({ initialData, onClose, onEditSuccess }) => {
   // Khởi tạo form từ dữ liệu ban đầu (initialData)
@@ -33,7 +35,7 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
   const [authors, setAuthors] = useState([]);
   const [publishers, setPublishers] = useState([]);
   const [discounts, setDiscounts] = useState([]);
-
+  const [showCreateDiscountModal, setShowCreateDiscountModal] = useState(false);
   const [error, setError] = useState('');
   // State cho danh sách hình ảnh
   const [images, setImages] = useState([]);
@@ -54,9 +56,9 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
         format: initialData.format || '',
         published_date: initialData.published_date || '',
         // Lưu ID thay vì name để match với các option có value là ID
-        publisher: initialData.publisher? initialData.publisher._id : '',
-        category: initialData.category? initialData.category._id : '',
-        author: initialData.author? initialData.author._id : '',
+        publisher: initialData.publisher ? initialData.publisher._id : '',
+        category: initialData.category ? initialData.category._id : '',
+        author: initialData.author ? initialData.author._id : '',
         discount: initialData.discount || ''
       });
       if (initialData.images) {
@@ -137,20 +139,20 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
     if (!form.stock) return "Số lượng không được để trống!";
     if (!String(form.weight).trim()) return "Trọng lượng không được để trống!";
     if (!String(form.size).trim()) return "Kích thước không được để trống!";
-    
+
     // Ép form.pages thành chuỗi
     if (!String(form.pages).trim()) return "Số trang không được để trống!";
-    
+
     if (!form.language.trim()) return "Ngôn ngữ không được để trống!";
     if (!form.format.trim()) return "Hình thức không được để trống!";
     if (!form.published_date) return "Ngày phát hành không được để trống!";
     if (!form.publisher) return "Vui lòng chọn Nhà xuất bản!";
     if (!form.category) return "Vui lòng chọn Danh mục!";
     if (!form.author) return "Vui lòng chọn Tác giả!";
-    
+
     return null;
   };
-  
+
   const transformFormData = () => {
     return {
       ...form,
@@ -171,13 +173,13 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
     try {
       // Chuyển đổi form: từ id thành object đầy đủ
       const transformedForm = transformFormData();
-  
+
       const updatedProduct = await updateProduct(initialData._id, transformedForm, images);
       // Nếu cần, sau đó lấy hình ảnh mới nhất từ API, tương tự như cũ
       const freshImages = await getImagesByProductId(initialData._id);
-      const completeProduct = { 
-        ...updatedProduct, 
-        images: (freshImages && freshImages.length > 0) ? freshImages : images 
+      const completeProduct = {
+        ...updatedProduct,
+        images: (freshImages && freshImages.length > 0) ? freshImages : images
       };
       alert('Sản phẩm đã được cập nhật thành công!');
       if (onEditSuccess) onEditSuccess(completeProduct);
@@ -457,16 +459,35 @@ const EditPro = ({ initialData, onClose, onEditSuccess }) => {
                   value: dis._id,
                   label: `${dis.code} - ${dis.value}%`
                 }))}
+
                 value={form.discount}
                 onChange={(selectedValue) =>
                   setForm(prev => ({ ...prev, discount: selectedValue }))
                 }
                 placeholder="Chọn khuyến mãi"
               />
+              <button
+                type="button"
+                onClick={() => setShowCreateDiscountModal(true)}
+                className="btn btn-secondary"
+                style={{ marginLeft: '10px' }}
+              >
+                Tạo mới
+              </button>
             </div>
           </div>
         </div>
-
+        {showCreateDiscountModal && (
+          <Modal onClose={() => setShowCreateDiscountModal(false)}>
+            <CreateDiscount
+              onClose={() => setShowCreateDiscountModal(false)}
+              onCreateSuccess={(newDiscount) => {
+                setDiscounts(prev => [...prev, newDiscount]);
+                setForm(prev => ({ ...prev, discount: newDiscount._id }));
+              }}
+            />
+          </Modal>
+        )}
         {/* Nút Submit */}
         <button type="submit" className="btn btn-primary">Sửa sản phẩm</button>
       </form>

@@ -109,7 +109,7 @@ const Product = () => {
           // Nếu là tìm kiếm, gọi API tìm kiếm
           const productData = await getProductSearch({ field: searchField, keyword: searchKeyword, page: currentPage, limit });
           console.log(productData);
-          setProducts(productData);
+          setProducts(productData.products);
         } else {
           // Gọi API filter tổng hợp
           let params = { page: currentPage, limit };
@@ -117,8 +117,8 @@ const Product = () => {
           if (selectedAuthors.length > 0) params.author = selectedAuthors.join(",");
           if (selectedPublishers.length > 0) params.publisher = selectedPublishers.join(",");
           const productData = await getProductFilter(params);
-          console.log(productData);
-          setProducts(productData);
+          console.log(productData.products);
+          setProducts(productData.products);
         }
       } catch (error) {
         console.error("Lỗi khi load sản phẩm:", error);

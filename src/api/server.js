@@ -3,6 +3,27 @@ import axios from 'axios';
 // const BASE_URL = 'https://polyread-be.netlify.app';
 const BASE_URL = 'http://localhost:3000';
 // const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+
+export async function updateProductsDiscount(categoryId, discountId) {
+  try {
+    const payload = {
+      categoryId, 
+      discountId  // Nếu discountId là null hoặc undefined, backend sẽ xử lý thành xóa discount.
+    };
+
+    // Gọi API PUT tại endpoint đã định nghĩa, có thể điều chỉnh URL nếu cần (ví dụ: thêm baseURL vào axios nếu có)
+    const response = await axios.put(`${BASE_URL}/product/discount`, payload);
+
+    console.log('Cập nhật discount thành công:', response.data);
+    return response.data;
+  } catch (error) {
+    const errorMsg = error.response && error.response.data
+      ? error.response.data.message || error.response.data
+      : error.message;
+    console.error('Lỗi cập nhật discount:', errorMsg);
+    throw error;
+  }
+}
 export async function processPaymentSuccess(orderId, email, orderDetails) {
   try {
     // Giả sử API endpoint được định nghĩa là /api/order/:orderId/email
@@ -625,9 +646,12 @@ export const getDiscounts = async () => {
 // Tạo mới discount
 export const createDiscount = async (discountData) => {
   try {
+    const storedUser = sessionStorage.getItem("user");
+    const token = storedUser ? JSON.parse(storedUser).token : "";
     const response = await axios.post(`${BASE_URL}/discount`, discountData, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       }
     });
     // Giả sử API trả về: { discount: {...} }

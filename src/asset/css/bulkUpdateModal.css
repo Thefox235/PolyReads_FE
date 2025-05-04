@@ -1,0 +1,35 @@
+/* Modal overlay */
+  
+  /* Bảng */
+  .bulk-update-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .bulk-update-table th,
+  .bulk-update-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .bulk-update-table thead tr {
+    background-color: #f7f7f7;
+  }
+  
+  /* Container cuộn cho bảng */
+  .scroll-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
+  
+  /* Input tìm kiếm */
+  .search-input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
