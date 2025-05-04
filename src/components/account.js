@@ -16,6 +16,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import CreateAddress from "./admin/createAddress"; // Component tạo địa chỉ
 import EditAddress from "./admin/editAddress"; // Component chỉnh sửa địa chỉ (ví dụ như bạn đã tạo ở phần trước)
 import { deleteAddress } from "../api/server"; // Import hàm deleteAddress (giả sử tồn tại)
+import VoucherWallet from "./voucherWallet";
 
 const Account = () => {
     const storedUser = sessionStorage.getItem("user");
@@ -430,35 +431,7 @@ const Account = () => {
                     )}
 
                     {activeMenu === "voucher-wallet" && (
-                        <div id="voucher-wallet">
-                            <h2 className="voucher-title">Ví Voucher</h2>
-                            <div className="voucher-container">
-                                <div className="voucher-card">
-                                    <div className="voucher-icon">
-                                        <i className="fa-solid fa-percent" />
-                                    </div>
-                                    <div className="voucher-content">
-                                        <div className="voucher-details">
-                                            <h3>Mã Giảm Giá Phí Vận Chuyển 10k</h3>
-                                            <p>Áp dụng cho đơn hàng từ 200k khi mua Manga,Comic,Light Novel</p>
-                                            <span className="voucher-expiry">
-                                                HSD:<span className="date">28/02/2025</span>
-                                            </span>
-                                            <div className="voucher-code">
-                                                <i className="fa-solid fa-ticket" />
-                                                FSMGS10225
-                                            </div>
-                                        </div>
-                                        <div className="voucher-action">
-                                            <a href="#" className="voucher-link">
-                                                Chi tiết
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* ... Một vài voucher khác */}
-                            </div>
-                        </div>
+                        <VoucherWallet />
                     )}
                     {/* Modal cho CreateAddress */}
                     {showCreateAddressModal && (

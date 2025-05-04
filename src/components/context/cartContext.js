@@ -85,7 +85,14 @@ export const CartProvider = ({ children }) => {
 
   // Hàm checkout: tạo Order và Order Detail với toàn bộ sản phẩm trong giỏ hàng, 
   // áp dụng discount bằng cách gọi getDiscounts từ server và so sánh với iD discount của product.
-  const checkout = async (userId, addressId, checkedItems, shippingFee = 0, paymentMethod = "vnpay") => {
+  const checkout = async (
+    userId,
+    addressId,
+    checkedItems,
+    shippingFee = 0,
+    paymentMethod = "vnpay",
+    appliedCoupon = null // sử dụng appliedCoupon đã chọn
+  ) => {
     try {
       if (!userId || userId.trim() === "") {
         alert("Bạn chưa đăng nhập hoặc userId không hợp lệ!");
@@ -95,11 +102,11 @@ export const CartProvider = ({ children }) => {
         alert("Bạn chưa chọn địa chỉ giao hàng!");
         return;
       }
-
+  
       // Lấy danh sách discount từ server (giả sử hàm getDiscounts đã có)
       const discountList = await getDiscounts();
-
-      // Xây dựng danh sách order items, áp dụng discount nếu có (đổi 'quantily' => 'quantity')
+  
+      // Tạo danh sách order items dựa trên sản phẩm đã chọn
       const orderItems = checkedItems.map((item) => {
         const prod = item.product;
         const discountObj = prod.discount
@@ -109,19 +116,38 @@ export const CartProvider = ({ children }) => {
         const currentPrice = Number(prod.price) * ((100 - discountPercent) / 100);
         return {
           productId: prod._id,
-          quantity: item.cartQuantity || 1,  // đã sửa ở đây
+          quantity: item.cartQuantity || 1,
           price: currentPrice,
           total: currentPrice * (item.cartQuantity || 1),
         };
       });
-
-      // Tính tổng số lượng và tổng tiền
+  
       const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantity, 0);
       const totalPrice = orderItems.reduce((sum, item) => sum + item.total, 0);
-
-      const finalTotal = totalPrice + Number(shippingFee);
-
-      // Sửa payload Order: payment_status là string "pending"
+  
+      // Tính giảm giá riêng cho đơn hàng và phí vận chuyển dựa trên appliedCoupon
+      let orderDiscount = 0;
+      let shippingDiscount = 0;
+      if (appliedCoupon) {
+        if (appliedCoupon.couponType === "order") {
+          if (appliedCoupon.discountValue) {
+            orderDiscount = Number(appliedCoupon.discountValue);
+          } else if (appliedCoupon.discountPercentage) {
+            orderDiscount = totalPrice * (Number(appliedCoupon.discountPercentage) / 100);
+          }
+        } else if (appliedCoupon.couponType === "shipping") {
+          if (appliedCoupon.discountValue) {
+            shippingDiscount = Number(appliedCoupon.discountValue);
+          } else if (appliedCoupon.discountPercentage) {
+            shippingDiscount = shippingFee * (Number(appliedCoupon.discountPercentage) / 100);
+          }
+        }
+      }
+  
+      // Tính finalTotal = (tổng tiền sản phẩm sau giảm) + (phí vận chuyển sau giảm)
+      const finalTotal = (totalPrice - orderDiscount) + (shippingFee - shippingDiscount);
+  
+      // Xây dựng payload đơn hàng (bao gồm thông tin coupon nếu có)
       const orderPayload = {
         userId,
         addressId,
@@ -130,23 +156,32 @@ export const CartProvider = ({ children }) => {
         img: checkedItems[0]?.img || "",
         price: finalTotal,
         total: finalTotal,
-        status: 0,                      // bạn có thể để nguyên nếu status vẫn dùng số
-        payment_status: "pending",      // sửa từ 0 thành "pending"
+        status: 0,
+        payment_status: "pending",
+        coupon: appliedCoupon
+          ? {
+              couponId: appliedCoupon.couponId, // hoặc dùng _id tùy vào cấu trúc dữ liệu của bạn
+              code: appliedCoupon.code,
+              couponType: appliedCoupon.couponType,
+              discountPercentage: appliedCoupon.discountPercentage,
+              discountValue: appliedCoupon.discountValue,
+            }
+          : undefined,
       };
-
-      console.log(orderPayload);
-      
+  
+      console.log("Order payload:", orderPayload);
+  
       // Tạo Order
       const orderRes = await createOrder(orderPayload);
       const orderId = orderRes.order._id;
-
+  
       // Tạo Order Detail
       const orderDetailPayload = {
         orderId,
         items: orderItems.map((item) => ({ ...item, orderId })),
       };
       await createOrderDetail(orderDetailPayload);
-
+  
       // Xử lý thanh toán
       if (paymentMethod === "vnpay" || paymentMethod === "zalopay") {
         const paymentPayload = {
@@ -156,21 +191,18 @@ export const CartProvider = ({ children }) => {
           method: paymentMethod,
         };
         const paymentRes = await createPayment(paymentPayload);
-        
         const paymentId = paymentRes.payment._id;
-        // Update Order: thêm payment_status 'success' khi thanh toán thành công
+        // Update Order nếu cần
         await updateOrder(orderId, {
           paymentId,
-          payment_method: paymentMethod
-          // payment_status: "success"
+          payment_method: paymentMethod,
         });
         sessionStorage.setItem("paymentId", paymentId);
-
       } else if (paymentMethod === "cash") {
         const paymentPayload = {
           amount: finalTotal,
           currency: "vnd",
-          status: "pending",  // hoặc status tùy theo nghiệp vụ
+          status: "pending",
           method: "cash",
         };
         const paymentRes = await createPayment(paymentPayload);
@@ -178,20 +210,19 @@ export const CartProvider = ({ children }) => {
         await updateOrder(orderId, {
           paymentId,
           payment_method: "cash",
-          payment_status: "success"
+          payment_status: "success",
         });
       }
-
+  
       sessionStorage.setItem("orderId", orderId);
-
+  
       // Cập nhật giỏ hàng: loại bỏ các mặt hàng đã thanh toán
       setCart((prevCart) =>
         prevCart.filter(
-          (item) =>
-            !checkedItems.some((checkedItem) => checkedItem._id === item._id)
+          (item) => !checkedItems.some((checkedItem) => checkedItem._id === item._id)
         )
       );
-
+  
       return orderId;
     } catch (error) {
       console.error("Lỗi tạo đơn hàng:", error);

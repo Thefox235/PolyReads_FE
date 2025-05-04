@@ -642,6 +642,7 @@ const Detail = () => {
                   <li>Hình thức: {product.format}</li>
                   <li>Kích Thước Bao Bì: {product.size} cm</li>
                   <li>NXB: {publisherName} </li>
+                  <li>Số lượng: {product.stock} </li>
                 </ul>
               </div>
             </div>

@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getAllAddresses, createVNPAYPaymentIntent, deleteAddress, calculateShippingRates, getProductById, createZALOPAYPaymentIntent } from "../api/server";
+import {
+  getAllAddresses,
+  createVNPAYPaymentIntent,
+  deleteAddress,
+  calculateShippingRates,
+  getProductById,
+  createZALOPAYPaymentIntent,
+  validateCoupon,
+  getValidCoupons
+} from "../api/server";
 import { useCart } from "../components/context/cartContext"; // Điều chỉnh đường dẫn theo project của bạn
 import CreateAddress from "./admin/createAddress"; // Component tạo địa chỉ
 import EditAddress from "./admin/editAddress";     // Component chỉnh sửa địa chỉ
 import Modal from "./model"; // Component Modal
 import "../asset/css/checkout.css";
+import CouponModal from "./couponModal";
 
 const Checkout = () => {
 
@@ -41,9 +51,61 @@ const Checkout = () => {
   const shippingFee = shippingInfo ? shippingInfo.total_fee : 0;
 
   // Sau đó bạn có thể sử dụng biến này để tính tổng đơn hàng, ví dụ:
-  const finalTotal = totalPrice + shippingFee;
+
   // Giả sử bạn đã import tính shipping API, ví dụ:
   // import { calculateShippingRates } from "../api/server";
+  // Đầu file Checkout.js
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+
+  // State để quản lý modal chọn coupon
+  const [showCouponModal, setShowCouponModal] = useState(false);
+
+  // State lưu danh sách coupon hợp lệ (có thể được lấy từ backend theo order hiện tại)
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+
+  // Hàm mở modal chọn coupon
+  const handleOpenCouponModal = async () => {
+    try {
+      // Gọi API lấy danh sách coupon hợp lệ (ví dụ, dựa trên tổng tiền đơn hàng)
+      // Bạn có thể truyền finalTotal hoặc các tham số khác theo yêu cầu backend
+      const response = await getValidCoupons(finalTotal);
+      // Giả sử API trả về dạng { coupons: [...] }
+      const coupons = response.coupons || response;
+      setAvailableCoupons(coupons);
+      setShowCouponModal(true);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách coupon:", error);
+      alert("Không thể lấy danh sách coupon.");
+    }
+  };
+
+  // Hàm đóng modal
+  const handleCloseCouponModal = () => {
+    setShowCouponModal(false);
+  };
+  // Hàm xử lý kiểm tra coupon (gọi API BE để xác thực mã coupon)
+  const handleApplyCoupon = async () => {
+    try {
+      if (!couponCode.trim()) {
+        alert("Vui lòng nhập mã coupon!");
+        return;
+      }
+      // Gọi API kiểm tra coupon (ví dụ: validateCoupon)
+      const response = await validateCoupon(couponCode);
+      if (response && response.isValid) {
+        setAppliedCoupon(response.data); // Lưu thông tin coupon từ BE (có thể chứa: couponId, code, discountPercentage, discountValue, v.v.)
+        alert("Coupon hợp lệ và được áp dụng!");
+      } else {
+        alert("Mã coupon không hợp lệ hoặc đã hết hiệu lực!");
+        setAppliedCoupon(null);
+      }
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra coupon:", error);
+      alert("Có lỗi xảy ra khi kiểm tra mã coupon!");
+    }
+  };
+
   function parseSize(sizeStr) {
     if (typeof sizeStr !== "string" || sizeStr.trim() === "") {
       return { width: 0, height: 0, length: 1 };
@@ -174,6 +236,32 @@ const Checkout = () => {
     }
   }, [orderItems]);
 
+  // Giả sử bạn truyền coupon từ Checkout component dưới tên appliedCoupon
+  let orderDiscount = 0;
+  let shippingDiscount = 0;
+
+  if (appliedCoupon) {
+    if (appliedCoupon.couponType === "order") {
+      if (appliedCoupon.discountValue) {
+        orderDiscount = Number(appliedCoupon.discountValue);
+      } else if (appliedCoupon.discountPercentage) {
+        orderDiscount = totalPrice * (Number(appliedCoupon.discountPercentage) / 100);
+      }
+    } else if (appliedCoupon.couponType === "shipping") {
+      if (appliedCoupon.discountValue) {
+        shippingDiscount = Number(appliedCoupon.discountValue);
+      } else if (appliedCoupon.discountPercentage) {
+        shippingDiscount = shippingFee * (Number(appliedCoupon.discountPercentage) / 100);
+      }
+    }
+  }
+
+  const finalTotal = (totalPrice - orderDiscount) + (shippingFee - shippingDiscount);
+  console.log("totalPrice:", totalPrice);
+  console.log("shippingFee:", shippingFee);
+  console.log("orderDiscount:", orderDiscount);
+  console.log("shippingDiscount:", shippingDiscount);
+  console.log("finalTotal:", finalTotal);
   // --- Các hàm xử lý modal CRUD địa chỉ ---
   const handleAddAddress = () => {
     setShowCreateAddressModal(true);
@@ -259,12 +347,14 @@ const Checkout = () => {
       }
 
       // Gọi hàm checkout, truyền thêm checkedItems (danh sách các sản phẩm tick được chọn)
+      // Trong hàm xử lý thanh toán online (ví dụ handleOnlinePayment)
       const orderId = await checkout(
         user._id,
         selectedAddressId,
         orderData.checkedItems,
         shippingFee,
-        "vnpay"  // hoặc selectedPaymentMethod nếu nó có giá trị "vnpay"
+        "vnpay",            // hoặc selectedPaymentMethod nếu có
+        appliedCoupon       // truyền thông tin coupon vào đây; nó có thể là null nếu không dùng
       );
       if (!orderId) {
         alert("Đơn hàng không được tạo, vui lòng thử lại!");
@@ -281,11 +371,11 @@ const Checkout = () => {
       };
 
       console.log("Payload gửi lên BE:", payload);
-      const data = "await createVNPAYPaymentIntent(payload);"
+      const data = await createVNPAYPaymentIntent(payload);
       console.log("Dữ liệu trả về từ BE:", data);
 
       if (data && data.paymentUrl) {
-        // window.location.href = data.paymentUrl;
+        window.location.href = data.paymentUrl;
       } else {
         alert("Không thể tạo thanh toán online, vui lòng thử lại sau!");
       }
@@ -325,7 +415,8 @@ const Checkout = () => {
         selectedAddressId,
         orderData.checkedItems,
         shippingFee,
-        "zalopay"
+        "zalopay",
+        appliedCoupon
       );
       if (!orderId) {
         alert("Đơn hàng không được tạo, vui lòng thử lại!");
@@ -342,7 +433,7 @@ const Checkout = () => {
         _id: item._id,
         cartQuantity: item.cartQuantity || 1
       }));
-      
+
       const payload = {
         orderId,
         appUser: user._id,
@@ -401,7 +492,8 @@ const Checkout = () => {
         selectedAddressId,
         orderData.checkedItems,
         shippingFee,
-        "cash"  // hoặc selectedPaymentMethod nếu nó có giá trị "cash"
+        "cash",  // hoặc selectedPaymentMethod nếu nó có giá trị "cash"
+        appliedCoupon 
       );
 
       if (orderId) {
@@ -579,6 +671,40 @@ const Checkout = () => {
                   </div>
                 </div>
 
+                <div className="coupon">
+                  <div className="coupon-box">
+                    <div className="pttt">Mã Giảm giá</div>
+                    <div className="coupon-section" style={{ marginBottom: "1rem", display: "flex", alignItems: "center", gap: "10px" }}>
+                      <input
+                        type="text"
+                        id="couponCode"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        placeholder="Nhập mã giảm giá (nếu có)"
+                        className="form-control"
+                      />
+                      <button onClick={handleApplyCoupon} className="btn btn-secondary">
+                        Áp dụng
+                      </button>
+                      {/* Nút mở modal chọn coupon */}
+                      <button onClick={handleOpenCouponModal} className="btn btn-outline-primary">
+                        Chọn mã giảm giá
+                      </button>
+                    </div>
+
+                    {appliedCoupon && (
+                      <div className="applied-coupon-info" style={{ marginBottom: "1rem" }}>
+                        <p>
+                          <strong>Coupon:</strong> {appliedCoupon.code}{" "}
+                          {appliedCoupon.discountValue
+                            ? `- Giảm ${appliedCoupon.discountValue.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}`
+                            : `- Giảm ${appliedCoupon.discountPercentage}%`}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
               </div>
               {/* Cột địa chỉ giao hàng và tóm tắt đơn hàng */}
               <div className="col-md-4 order-md-2 col-12">
@@ -692,6 +818,18 @@ const Checkout = () => {
             </div>
           </div>
         </main>
+      )}
+
+      {showCouponModal && (
+        <CouponModal
+          availableCoupons={availableCoupons}
+          onSelectCoupon={(coupon) => {
+            setAppliedCoupon(coupon);
+            setCouponCode(coupon.code);
+            setShowCouponModal(false);
+          }}
+          onClose={handleCloseCouponModal}
+        />
       )}
 
       {/* Modal cho CreateAddress */}

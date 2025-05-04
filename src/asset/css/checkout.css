@@ -135,6 +135,24 @@
     padding: 15px;
     border-radius: 10px;
   }
+
+  .coupon {
+    margin-top: 20px;
+    background-color: #F7F7F7;
+    text-align: left;
+    padding: 20px;
+  }
+  .coupon-box 
+  {
+    border: 1px solid #888888 ;
+    padding: 15px;
+    border-radius: 10px;
+  }
+  .coupon-section input
+  {
+    max-width: 400px;
+  }
+  
   .pttt {
     font-size: 18px;
     font-weight: 500;

@@ -33,6 +33,7 @@ import Dashboard from './components/admin/dashboard';
 import ShippingCalculator from './components/shippingCaculator';
 import ViewUser from './components/admin/viewUser';
 import ScrollToTop from './components/scroll_top';
+import ViewCoupon from './components/admin/viewCoupon';
 // import ViewOrder from './components/admin/viewOrder';
 
 function App() {
@@ -85,6 +86,7 @@ function App() {
             <Route path="/viewOrder" element={<PrivateRoute element={ViewOrder} roles={['1']} />} />
             <Route path="/viewPost" element={<PrivateRoute element={ViewPost} roles={['1']} />} />
             <Route path="/viewUser" element={<PrivateRoute element={ViewUser} roles={['1']} />} />
+            <Route path="/viewCoupon" element={<PrivateRoute element={ViewCoupon} roles={['1']} />} />
 
           </Route>
           <Route path="/sideBar" element={<SideBar />} />

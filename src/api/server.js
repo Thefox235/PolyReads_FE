@@ -4,6 +4,117 @@ import axios from 'axios';
 const BASE_URL = 'http://localhost:3000';
 // const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
 
+// Lấy voucher chung
+export async function getGlobalCoupons() {
+  const response = await axios.get(`${BASE_URL}/coupon/global`);
+  return response.data;
+}
+
+//lấy coupon validate
+export async function getValidCoupons(totalAmount) {
+  try {
+    const response = await axios.get(`${BASE_URL}/coupon/valid?total=${totalAmount}`);
+    return response.data; // Dữ liệu trả về dưới dạng { coupons: [...] }
+  } catch (error) {
+    console.error("Error fetching valid coupons:", error);
+    throw error;
+  }
+}
+
+//kiểm tra coupon
+export async function validateCoupon(couponCode) {
+  try {
+    const response = await axios.post(`${BASE_URL}/coupon/validate`, { couponCode });
+    return response.data; // Dữ liệu trả về từ API gồm thông tin coupon
+  } catch (error) {
+    console.error("Error validating coupon:", error);
+    throw error;
+  }
+}
+
+//lấy coupon theo id user 
+export const getUserCoupons = async (userId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/coupon/user/${userId}`);
+    return response.data.coupons;
+  } catch (error) {
+    console.error("Error fetching user coupons", error);
+    throw error;
+  }
+};
+
+// Lấy danh sách coupon
+export const getCoupons = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/coupon`);
+    // Giả sử backend trả về { coupons: [...] }
+    return response.data.coupons;
+  } catch (error) {
+    console.error("Error fetching coupons", error);
+    throw error;
+  }
+};
+
+// Tạo một coupon mới
+export const createCoupon = async (couponData) => {
+  const storedUser = sessionStorage.getItem("user");
+  const token = storedUser ? JSON.parse(storedUser).token : "";
+  
+  try {
+    const response = await axios.post(`${BASE_URL}/coupon`, couponData, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data.coupon;
+  } catch (error) {
+    console.error("Error creating coupon", error);
+    throw error;
+  }
+
+};
+
+// Cập nhật coupon theo ID
+export const updateCoupon = async (id, couponData) => {
+  const storedUser = sessionStorage.getItem("user");
+  const token = storedUser ? JSON.parse(storedUser).token : "";
+  try {
+    const response = await axios.put(
+      `${BASE_URL}/coupon/${id}`,
+      couponData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.coupon;
+  } catch (error) {
+    console.error("Error updating coupon", error);
+    throw error;
+  }
+};
+
+export const deleteCoupon = async (id) => {
+  const storedUser = sessionStorage.getItem("user");
+  const token = storedUser ? JSON.parse(storedUser).token : "";
+  try {
+    const response = await axios.delete(
+      `${BASE_URL}/coupon/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting coupon", error);
+    throw error;
+  }
+};
+
+
 //gộp order
 export const continuePaymentAPI = (data) => {
   return axios.post(`${BASE_URL}/order/continue-payment`, data);

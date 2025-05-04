@@ -107,7 +107,7 @@ const SideBar = () => {
                             </div>
                             <img className="img-3" src="https://res.cloudinary.com/dxwda4hfn/image/upload/v1745244470/human_gl8pgu.png" />
                         </Link>
-                        <Link to={'/viewDiscount'} className="div-11">
+                        <Link to={'/viewCoupon'} className="div-11">
                             <div className="text-wrapper-70">
                                 <a style={{ color: "white" }} href="" /> Mã giảm giá
                             </div>
