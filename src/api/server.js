@@ -3,6 +3,21 @@ import axios from 'axios';
 // const BASE_URL = 'https://polyread-be.netlify.app';
 const BASE_URL = 'http://localhost:3000';
 // const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
+export async function processPaymentSuccess(orderId, email, orderDetails) {
+  try {
+    // Giả sử API endpoint được định nghĩa là /api/order/:orderId/email
+    const response = await axios.post(`${BASE_URL}/order/${orderId}/email`, {
+      email,
+      orderDetails,
+    });
+    console.log("Email sent successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error sending confirmation email:", error);
+    console.log(email);
+    throw error;
+  }
+}
 
 // Lấy voucher chung
 export async function getGlobalCoupons() {

@@ -257,11 +257,11 @@ const Checkout = () => {
   }
 
   const finalTotal = (totalPrice - orderDiscount) + (shippingFee - shippingDiscount);
-  console.log("totalPrice:", totalPrice);
-  console.log("shippingFee:", shippingFee);
-  console.log("orderDiscount:", orderDiscount);
-  console.log("shippingDiscount:", shippingDiscount);
-  console.log("finalTotal:", finalTotal);
+  // console.log("totalPrice:", totalPrice);
+  // console.log("shippingFee:", shippingFee);
+  // console.log("orderDiscount:", orderDiscount);
+  // console.log("shippingDiscount:", shippingDiscount);
+  // console.log("finalTotal:", finalTotal);
   // --- Các hàm xử lý modal CRUD địa chỉ ---
   const handleAddAddress = () => {
     setShowCreateAddressModal(true);

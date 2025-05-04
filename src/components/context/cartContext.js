@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { createOrder, createOrderDetail, getDiscounts, createPayment, updateOrder } from "../../api/server";
+import { createOrder, createOrderDetail, getDiscounts, createPayment, updateOrder, processPaymentSuccess } from "../../api/server";
 import { Navigate, useNavigate } from "react-router-dom";
 
 const CartContext = createContext();
@@ -102,10 +102,10 @@ export const CartProvider = ({ children }) => {
         alert("Bạn chưa chọn địa chỉ giao hàng!");
         return;
       }
-  
+
       // Lấy danh sách discount từ server (giả sử hàm getDiscounts đã có)
       const discountList = await getDiscounts();
-  
+
       // Tạo danh sách order items dựa trên sản phẩm đã chọn
       const orderItems = checkedItems.map((item) => {
         const prod = item.product;
@@ -121,10 +121,10 @@ export const CartProvider = ({ children }) => {
           total: currentPrice * (item.cartQuantity || 1),
         };
       });
-  
+
       const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantity, 0);
       const totalPrice = orderItems.reduce((sum, item) => sum + item.total, 0);
-  
+
       // Tính giảm giá riêng cho đơn hàng và phí vận chuyển dựa trên appliedCoupon
       let orderDiscount = 0;
       let shippingDiscount = 0;
@@ -143,10 +143,10 @@ export const CartProvider = ({ children }) => {
           }
         }
       }
-  
+
       // Tính finalTotal = (tổng tiền sản phẩm sau giảm) + (phí vận chuyển sau giảm)
       const finalTotal = (totalPrice - orderDiscount) + (shippingFee - shippingDiscount);
-  
+
       // Xây dựng payload đơn hàng (bao gồm thông tin coupon nếu có)
       const orderPayload = {
         userId,
@@ -160,28 +160,64 @@ export const CartProvider = ({ children }) => {
         payment_status: "pending",
         coupon: appliedCoupon
           ? {
-              couponId: appliedCoupon.couponId, // hoặc dùng _id tùy vào cấu trúc dữ liệu của bạn
-              code: appliedCoupon.code,
-              couponType: appliedCoupon.couponType,
-              discountPercentage: appliedCoupon.discountPercentage,
-              discountValue: appliedCoupon.discountValue,
-            }
+            couponId: appliedCoupon.couponId, // hoặc dùng _id tùy vào cấu trúc dữ liệu của bạn
+            code: appliedCoupon.code,
+            couponType: appliedCoupon.couponType,
+            discountPercentage: appliedCoupon.discountPercentage,
+            discountValue: appliedCoupon.discountValue,
+          }
           : undefined,
       };
-  
+
       console.log("Order payload:", orderPayload);
-  
+
       // Tạo Order
       const orderRes = await createOrder(orderPayload);
       const orderId = orderRes.order._id;
-  
+
       // Tạo Order Detail
       const orderDetailPayload = {
         orderId,
         items: orderItems.map((item) => ({ ...item, orderId })),
       };
       await createOrderDetail(orderDetailPayload);
-  
+      console.log(checkedItems);
+      const mailAddress = orderPayload.addressId;
+      // Tạo danh sách order items dựa trên sản phẩm đã chọn
+      const totalQuantityForShipping = checkedItems.reduce(
+        (sum, it) => sum + (it.cartQuantity || 1),
+        0
+      );
+      
+      const orderItemsMail = checkedItems.map((item) => {
+   
+        const prod = item.product;
+        const discountObj = prod.discount
+          ? discountList.find((dis) => dis._id === prod.discount)
+          : null;
+        const discountPercent = discountObj ? Number(discountObj.value) : 0;
+        const currentPrice = Number(prod.price) * ((100 - discountPercent) / 100);
+        const discountAmount = (Number(prod.price) - currentPrice) * (item.cartQuantity || 1);
+        
+        return {
+          address: mailAddress,
+          productId: prod._id,
+          productName: prod.name || prod.productName || "", // Thêm tên sản phẩm ở đây
+          quantity: item.cartQuantity || 1,
+          price: currentPrice,
+          total: currentPrice * (item.cartQuantity || 1),
+          image: item.img || prod.url_image || prod.image || "",
+          discountAmount,
+          shippingFee: shippingFee / totalQuantityForShipping
+        };
+      });
+
+      const userString = sessionStorage.getItem("user");
+      const user = JSON.parse(userString);
+      console.log(user);
+      // Bây giờ bạn có thể truy cập user.email
+      await processPaymentSuccess(orderId, user.email, { total: finalTotal, items: orderItemsMail });
+
       // Xử lý thanh toán
       if (paymentMethod === "vnpay" || paymentMethod === "zalopay") {
         const paymentPayload = {
@@ -213,16 +249,16 @@ export const CartProvider = ({ children }) => {
           payment_status: "success",
         });
       }
-  
+
       sessionStorage.setItem("orderId", orderId);
-  
+
       // Cập nhật giỏ hàng: loại bỏ các mặt hàng đã thanh toán
       setCart((prevCart) =>
         prevCart.filter(
           (item) => !checkedItems.some((checkedItem) => checkedItem._id === item._id)
         )
       );
-  
+
       return orderId;
     } catch (error) {
       console.error("Lỗi tạo đơn hàng:", error);
