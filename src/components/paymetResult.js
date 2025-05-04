@@ -76,8 +76,8 @@ const PaymentResult = () => {
     const paymentId = sessionStorage.getItem('paymentId');
 
     axios
-      // .post('https://polyread-be.netlify.app/payment/confirm', {
-      .post('http://localhost:3000/payment/confirm', {
+      .post('https://polyread-be.netlify.app/payment/confirm', {
+      // .post('http://localhost:3000/payment/confirm', {
         orderId,
         paymentId,
         responseCode: unifiedResponseCode,

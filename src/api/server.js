@@ -1,11 +1,12 @@
 // api.js
 import axios from 'axios';
-// const BASE_URL = 'https://polyread-be.netlify.app';
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://polyread-be.netlify.app';
+// const BASE_URL = 'http://localhost:3000';
 // const ADDR_URL = 'https://vapi.vnappmob.com/api/province';
-
+// Export an asynchronous function called updateProductsDiscount that takes in two parameters: categoryId and discountId
 export async function updateProductsDiscount(categoryId, discountId) {
   try {
+    // Create a payload object with the categoryId and discountId parameters
     const payload = {
       categoryId, 
       discountId  // Nếu discountId là null hoặc undefined, backend sẽ xử lý thành xóa discount.
