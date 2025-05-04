@@ -81,7 +81,7 @@ const Header = ({ user, handleLogout }) => {
                                 <SearchForm />
                             </div>
                             <nav className="d-flex align-items-center custom-nav">
-                                <li>Tiếng Việt</li>
+                              
                                 <>
                                     {user ? (
                                         <li className="user-dropdown-menu">
@@ -155,7 +155,7 @@ const Header = ({ user, handleLogout }) => {
                             </nav>
                         </div>
                         <div className="responsive-mobile">
-                            <div>Tiếng Việt</div>
+                          
                             <div>ĐĂNG KÝ | </div>
                             <div>ĐĂNG NHẬP |</div>
                             <div>
