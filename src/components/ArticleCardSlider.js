@@ -8,7 +8,7 @@ const ArticleCard = ({ post }) => {
     const truncatedTitle =
         post.title.length > 40 ? post.title.substring(0, 40) + "..." : post.title;
     // Sử dụng trường views nếu có, ngược lại hiển thị "0 lượt xem"
-    const viewCount = post.views ? `${post.views} lượt xem` : "0 lượt xem";
+
 
     return (
         <div className="article_3_card_silde">
@@ -32,7 +32,6 @@ const ArticleCard = ({ post }) => {
                 <span className="article_3_right_text_2a">
                     {new Date(post.createdAt).toLocaleDateString()}
                 </span>
-                <span className="article_3_right_text_2a">{viewCount}</span>
             </div>
         </div>
     );

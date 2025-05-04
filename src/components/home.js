@@ -288,9 +288,11 @@ const Home = () => {
                               currency: "VND"
                             })}
                           </div>
-                          <div className="sale-badge">
-                            -{discountPercent > 0 ? discountPercent : ''}%
-                          </div>
+                          {discountPercent > 0 && (
+                            <div className="sale-badge">
+                              -{discountPercent}%
+                            </div>
+                          )}
                         </div>
                         <div className="price-sold-container">
                           {/* Hiển thị giá gốc, ở đây lưu trong product.price */}

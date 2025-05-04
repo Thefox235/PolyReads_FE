@@ -115,7 +115,7 @@ const Footer = () => {
                                                 {new Date(post.createdAt).toLocaleDateString()}
                                             </span>
                                             <span style={{ color: "#889097", textAlign: "left", fontSize: 13 }}>
-                                                5,579 lượt xem
+                                               
                                             </span>
                                         </div>
                                     </div>
@@ -147,7 +147,7 @@ const Footer = () => {
                     <p>Thay đổi địa chỉ khách hàng</p>
                     <p>Chi tiết tài khoản</p>
                     <p>Lịch sử mua hàng</p>
-                    <div style={{ paddingTop: 20 }} className="footer-register">
+                    {/* <div style={{ paddingTop: 20 }} className="footer-register">
                         <h5 className="text-start">ĐĂNG KÝ</h5>
                         <div className="d-flex mt-3">
                             <input
@@ -157,7 +157,7 @@ const Footer = () => {
                             />{" "}
                         </div>
                         <button className="d-flex mt-2 btn-lh">Đăng ký</button>
-                    </div>
+                    </div> */}
                 </div>
             </footer>
 

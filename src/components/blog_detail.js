@@ -620,13 +620,13 @@ const BlogDetail = () => {
                                             <td colSpan="6">Đang tải bài viết...</td>
                                         </tr>
                                     )}
-
+{/* 
                                     <img
                                         className="card_slide"
                                         id="slideshow"
                                         src="img/book_1.png"
                                         alt=""
-                                    />
+                                    /> */}
                                 </div>
                             </div>
                         </div>
@@ -685,14 +685,8 @@ const BlogDetail = () => {
                                             <div className="card_left_2_title_2">
                                                 <span className="card_left_2_text_2">{new Date(post.createdAt).toLocaleDateString()}</span>
                                                 <span className="card_left_2_text_2">
-                                                    <img
-                                                        id=""
-                                                        width={13}
-                                                        height={13}
-                                                        preserveaspectratio="none"
-                                                        src="https://media-hosting.imagekit.io//1383d94ae8c748c0/download.png?Expires=1836489064&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Xc6YKJDxSQJwwUIYDxlrtiYwsmYk8C~xITF1W7OE4sQ1yJpBKpgVRR-XDd2JON5G17xr73OcL3fwvAvbraxs0GVTRad7tbJW9KWTxRecDCiM3XXSlJxf4pgnYHpJAZA8acpp6byJyZqIVVf4pAsJt9U51ORZcmFWhue62eKEW-zg5Vr1AfZs9kYEBcaC9EBnfOpA1SQburE2qMPphyj26Op4uzKLBfl05XjuQK9aM-93E-~OuCuLFTWHMlRiZ9MHGefFyF2QuwS7USc6s5Xn19i4R8aE6tifFOgfo6KlOpJVGPzhQmPoz7WLNcYgo2jjTQ9QQ5Gr7MKyUxy0rk~TVA__"
-                                                    />
-                                                    123 lượt xem
+                                                   
+                                                    
                                                 </span>
                                             </div>
 

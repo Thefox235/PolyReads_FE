@@ -91,7 +91,7 @@ const BulkUpdateDiscountModal = ({ categories, discounts, onClose, onUpdateSucce
                     <option value="">Không có discount</option>
                     {discounts.map((dis) => (
                       <option key={dis._id} value={dis._id}>
-                        {dis.value}% {dis.code ? ` - ${dis.code}` : ''}
+                        {dis.value}%
                       </option>
                     ))}
                   </select>
