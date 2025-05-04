@@ -396,7 +396,7 @@ const CreatePro = ({ onClose, onCreateSuccess }) => {
                 label="Giảm giá"
                 options={discounts.map(dis => ({
                   value: dis._id,
-                  label: `${dis.code} - ${dis.value}%`
+                  label: `${dis.value}%`
                 }))}
                 
                 value={form.discount}
