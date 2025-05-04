@@ -109,7 +109,7 @@ const Product = () => {
           // Nếu là tìm kiếm, gọi API tìm kiếm
           const productData = await getProductSearch({ field: searchField, keyword: searchKeyword, page: currentPage, limit });
           console.log(productData);
-          setProducts(productData.products);
+          setProducts(productData);
         } else {
           // Gọi API filter tổng hợp
           let params = { page: currentPage, limit };
