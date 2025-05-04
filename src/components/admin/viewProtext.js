@@ -593,12 +593,10 @@ const Home = () => {
 
                 <div>
                   <div className="card-blog ">
-                    <Link to={`/blog/${post._id}`}>
-                      <img
-                        src={post.coverImage}
-                        alt={post.slug}
-                      />
-                    </Link>
+                    <img
+                      src={post.coverImage}
+                      alt={post.slug}
+                    />
                     <Link
                       style={{ color: "#333333" }}
                       to={`/blog/${post._id}`} className="time d-flex justify-content-center align-items-center ">

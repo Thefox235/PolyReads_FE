@@ -14,6 +14,40 @@
     padding: 20px;
 }
 
+#profile-info .account-profile {
+    display: none;
+}
+
+.close-account {
+    display: none;
+}
+
+@media (max-width: 800px) {
+    .content.none {
+        display: none;
+    }
+
+    .close-account {
+        display: block;
+    }
+
+    .account-sidebar {
+        width: 100% !important;
+    }
+
+    #profile-info .account-profile {
+        display: block;
+    }
+
+    .voucher-card {
+        width: 100% !important;
+    }
+
+    .account-sidebar.none {
+        display: none;
+    }
+}
+
 .account-profile {
     text-align: center;
     padding-bottom: 20px;
@@ -308,6 +342,7 @@ nav ul {
     font-weight: bold;
     text-decoration: none;
 }
+
 .order-summary {
     display: flex;
     gap: 10px;

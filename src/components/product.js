@@ -20,7 +20,7 @@ const Product = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-
+  const [danhmuc, setDanhmuc] = useState(false);
   // Lấy tham số tìm kiếm (nếu có)
   const isSearch = queryParams.get("search") === "true";
   const searchField = queryParams.get("field") || null;
@@ -242,7 +242,7 @@ const Product = () => {
     };
     fetchSidebarLists();
   }, [selectedCategory, isSearch, searchKeyword]);
-  
+
   const selectedCategoryName =
     selectedCategory && categoryList.length > 0
       ? categoryList.find(cat => cat._id === selectedCategory)?.name
@@ -285,10 +285,35 @@ const Product = () => {
             )}
           </p>
         </div>
+
+        <div className="danhmuc " onClick={() => setDanhmuc(!danhmuc)}>
+          {danhmuc === false ? (
+            <img
+              src="https://s3-alpha-sig.figma.com/img/5eb6/f072/7332695743681bad126d9f443d0b5617?Expires=1745798400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=H0J~5-n3eIWeWz76z7bJEN83ZDcuEczXTmD5EbDZXjxLGjAp7bfXuRLUWhFao~6~VflRB-T~wtBKILe9GWQ0mLg5zMVEwpVfZj1qUnFfoKHaHult0odOlzw3FFS0bBd~qUKcjXqQRtoyTnfVaH9SH-MmRsTUMOWhBkFU4sLznlH6YqXOkqs2TjDEryQest7KtoCKK~jhNLEiw-qsPt8bA4wsZ72ykg9aRphTk-JPmQqeM9PubX1oyLUj5hYAltxZrMMA8uEXlkVKWwrdOGgZGK-~SiMEMauUmePtTbMmnuCi7E1HDOt24VmsjIKlpdJeuQVdWDqavwKHoobrgh65qg__"
+              alt=""
+              width={40}
+            />
+          ) : (
+            <div>X</div>
+          )}
+        </div>
       </section>
 
+      <div
+        className=" justify-content-between align-items-center px-4 p-sp"
+        style={{ borderBottom: "1px solid rgb(190, 188, 188)" }}
+      >
+        <div className="title_top_menu tab_link_module mt-3">
+          <h3>
+            <a href="new-arrivals" title="Sản phẩm mới">
+              Sản phẩm mới
+            </a>
+          </h3>
+        </div>
+      </div>
+
       <div className="product-container">
-        <aside className="sidebar">
+        <aside className={`sidebar ${danhmuc == false && "none"}`}>
           {/* Sidebar cho danh mục */}
           <div className="d-flex justify-content-between align-items-center" style={{ borderBottom: "1px solid rgb(190,188,188)" }}>
             <div className="title_top_menu_product tab_link_module">
@@ -372,7 +397,7 @@ const Product = () => {
           </div>
 
           {/* Sidebar cho giá tiền (giữ nguyên) */}
-          <div className="d-flex justify-content-between align-items-center" style={{ borderBottom: "1px solid rgb(190,188,188)" }}>
+          {/* <div className="d-flex justify-content-between align-items-center" style={{ borderBottom: "1px solid rgb(190,188,188)" }}>
             <div className="title_top_menu_product tab_link_module">
               <h3 className="product-title-h3">
                 <a href="new-arrivals" title="Sản phẩm hot">Giá tiền</a>
@@ -403,7 +428,7 @@ const Product = () => {
                 <input type="checkbox" /> Giá trên 150.000đ
               </li>
             </ul>
-          </div>
+          </div> */}
         </aside>
 
         <article>
@@ -439,7 +464,7 @@ const Product = () => {
                               })}
                             </div>
                             <div className="shop-name">
-                              {productAuthor ? product.author.name  : ''}
+                              {productAuthor ? product.author.name : ''}
                             </div>
                           </div>
                           <div className="add-to-cart" onClick={() => addCart(product, productImage)} style={{ cursor: 'pointer' }}>
@@ -537,7 +562,7 @@ const Product = () => {
             </p>
           </div>
           <div className="intro-item">
-          <i style={{ fontSize: '55px' }} class="bi bi-emoji-smile-fill"></i>
+            <i style={{ fontSize: '55px' }} class="bi bi-emoji-smile-fill"></i>
             <p>
               <strong>DỄ DÀNG TIỆN LỢI</strong>
               <br />

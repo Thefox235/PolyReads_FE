@@ -2,10 +2,11 @@
 .san-pham * {
   box-sizing: border-box;
 }
-.detail_product
-{
+
+.detail_product {
   padding: 30px 0px 30px 0px;
 }
+
 .border_bottom_title {
   position: relative;
 }
@@ -23,6 +24,7 @@
   display: table;
   clear: both;
 }
+
 .title_top_menu h3 {
   margin: 0;
   font-size: 20px;
@@ -43,10 +45,10 @@
   display: -moz-inline-flex;
   display: -ms-inline-flex;
   display: -o-inline-flex;
-  display: inline-flex
-;
+  display: inline-flex;
   margin-left: -5px;
 }
+
 .title_top_menu h3 a {
   color: #fff;
   -webkit-transform: skew(-10deg);
@@ -54,6 +56,7 @@
   -o-transform: skew(-10deg);
   transform: skew(-10deg);
 }
+
 .san-pham {
   display: flex;
   padding-top: 30px;
@@ -98,14 +101,17 @@
   /* Thiết lập hiển thị dạng webkit-box để hỗ trợ dòng giới hạn */
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;   /* Giới hạn tối đa 2 dòng */
+  -webkit-line-clamp: 2;
+  /* Giới hạn tối đa 2 dòng */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
 
   /* Giữ chiều cao cố định cho 2 dòng */
-  line-height: 18px;        /* Điều chỉnh phù hợp với font-size */
-  height: 36px;             /* 2 dòng x 18px */
+  line-height: 18px;
+  /* Điều chỉnh phù hợp với font-size */
+  height: 36px;
+  /* 2 dòng x 18px */
 
   /* Các thuộc tính ban đầu */
   color: #000000;
@@ -175,20 +181,21 @@
 }
 
 @media (max-width: 768px) {
-  .mobile-product 
-  {
+  .mobile-product {
     width: 220.5px;
   }
 
 }
-.sptt
-{
+
+.sptt {
   padding: 0 40px;
 }
+
 .list-product {
   overflow: hidden;
   width: 100%;
   white-space: nowrap;
+
 }
 
 .products-wrapper,
@@ -197,6 +204,70 @@
   display: flex;
   gap: 15px;
   transition: transform 0.5s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .list-product {
+    overflow: hidden;
+    width: 100%;
+    white-space: nowrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .NewProducts .list-product .mobile-product {
+    width: 100% !important;
+  }
+
+  .products-wrapper-page {
+    /* width: 50%; */
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .san-pham-item-page {
+    width: 100% !important;
+  }
+
+  .article_4_left,
+  .card_left_2,
+  .card_right,
+  .card_right_0,
+  .card_right_2,
+  .detail_article_3_left,
+  .blog-detail-article_2_title {
+    width: 100% !important;
+  }
+
+  .article_4_rigth {
+    margin-left: 0 !important;
+  }
+
+  .article_5_left_text {
+    margin-bottom: 20px;
+  }
+
+  .title_manga_3,
+  .detail_article_3_left_4 {
+    margin-left: 0px !important;
+  }
+
+  .blog-detail-article_2_title {
+    padding: 10px;
+    height: auto !important;
+  }
+
+  .article_5_left,
+  .article_5_left_img,
+  .article_5_left_text {
+    width: auto !important;
+    max-width: 500px;
+  }
+
+  .article_5 {
+    height: 100%;
+
+  }
 }
 
 @media (min-width: 1168px) {
@@ -216,14 +287,15 @@
 .products-wrapper .mobile-product {
   width: 208.5px;
 }
-.NewProducts .list-product .mobile-product 
-{
+
+.NewProducts .list-product .mobile-product {
   width: 208.5px;
 }
-.NewProducts .list-product .mobile-product:hover
-{
+
+.NewProducts .list-product .mobile-product:hover {
   border: 1px solid #a3a3a3;
 }
+
 .mobile-product {
   width: 220.5px;
   /* border: 1px solid #ccc; */
@@ -269,10 +341,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
-  
+
   /* Đảm bảo phần tử xác định chiều rộng */
   width: 100%;
-  
+
   /* Các thuộc tính font chữ và style */
   font-family: "Inter-Light", sans-serif;
   font-size: 14px;
@@ -281,8 +353,10 @@
   margin-bottom: 5px;
 
   /* Xác định line-height và height cố định cho 2 dòng */
-  line-height: 20px;  /* Điều chỉnh tùy theo thiết kế */
-  height: 40px;       /* 2 dòng x 20px */
+  line-height: 20px;
+  /* Điều chỉnh tùy theo thiết kế */
+  height: 40px;
+  /* 2 dòng x 20px */
 }
 
 
@@ -298,19 +372,20 @@
   font-size: 20px;
   padding: 8px 50px;
   clip-path: polygon(10px 0%,
-          /* Góc trên bên trái */
-          calc(100% - 25px) 0%,
-          /* Góc trên bên phải */
-          100% 100px,
-          /* Cắt góc trên bên phải */
-          100% 100px,
-          /* Góc dưới bên phải */
-          0% 100px,
-          /* Góc dưới bên trái */
-          100% 600px
-          /* Cắt góc trên bên trái */
-      );
+      /* Góc trên bên trái */
+      calc(100% - 25px) 0%,
+      /* Góc trên bên phải */
+      100% 100px,
+      /* Cắt góc trên bên phải */
+      100% 100px,
+      /* Góc dưới bên phải */
+      0% 100px,
+      /* Góc dưới bên trái */
+      100% 600px
+      /* Cắt góc trên bên trái */
+    );
 }
+
 .price-container {
   display: flex;
   align-items: center;
@@ -355,4 +430,3 @@
   font-weight: 300;
   color: #666;
 }
-

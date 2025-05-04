@@ -43,11 +43,18 @@
 }
 
 .products-wrapper-page {
-    display: flex
-;
+    display: flex;
     gap: 15px;
     transition: transform 0.5s ease-in-out;
     flex-wrap: wrap;
+    justify-content: center;
+}
+
+@media (max-width: 500px) {
+    .products-wrapper-page {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 .san-pham-page {
     display: flex
@@ -85,6 +92,42 @@
     height: 240px;
     object-fit: cover;
     border-radius: 20px 20px 0 0;
+}
+.danhmuc img,
+.danhmuc div {
+    background-color: #917FB3;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+}
+
+.danhmuc div {
+    margin-right: 230px;
+}
+
+.p-sp {
+    display: none;
+}
+
+@media (max-width: 985px) {
+    .sidebar.none {
+        display: none;
+    }
+    .p-sp {
+        display: flex;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 50px;
+        right: 0;
+        z-index: 999;
+        overflow: scroll;
+        height: 100%;
+    }
 }
 .sidebar {
     width: 262px;
