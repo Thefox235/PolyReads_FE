@@ -279,23 +279,23 @@ const handleCheckout = () => {
             <div className="promo-section">
               <div className="title-promotion">
                 <h4>
-                  <FontAwesomeIcon icon={faRectangleList} />
+                  <FontAwesomeIcon icon={faRectangleList} /> Khuyến mãi
                 </h4>
-                {/* <span>
+                <span>
                   Xem thêm <FontAwesomeIcon icon={faChevronRight} />
-                </span> */}
+                </span>
               </div>
-              {/* <div className="title-discount">
+              <div className="title-discount">
                 <h5 className="text-uppercase fw-bold">
                   Mã giảm 50k - toàn sàn
                 </h5>
                 <span className="text-decoration-underline">
                   <a href="#">Chi tiết</a>
                 </span>
-              </div> */}
-              {/* <p>
+              </div>
+              <p>
                 Đơn hàng từ 550k - Xem chi tiết để biết thêm về thể lệ chương trình
-              </p> */}
+              </p>
               <div className="progress-container">
                 <div className="row align-items-center">
                   <div className="col-9">
@@ -319,7 +319,7 @@ const handleCheckout = () => {
                 <p>6 khuyến mãi đủ điều kiện</p>
                 <FontAwesomeIcon icon={faChevronRight} />
               </div> */}
-              {/* <p className="mt-1">Có thể áp dụng đồng thời nhiều khuyến mãi</p> */}
+              <p className="mt-1">Có thể áp dụng đồng thời nhiều khuyến mãi</p>
             </div>
             <div className="total-section mt-2">
               <div className="d-flex justify-content-between align-items-center">

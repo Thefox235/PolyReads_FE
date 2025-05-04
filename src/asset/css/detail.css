@@ -317,9 +317,9 @@ main {
 
 }
 
-.tab-menu .active {
+/* .tab-menu .active {
     color: #917FB3;
-}
+} */
 
 .motasp,
 .thongtin,
@@ -534,3 +534,21 @@ main {
     width: 100%;
 }
 
+.buy-now {
+    /* margin-top: 15px; */
+    background-color: #917FB3;
+    color: #fff;
+    padding: 8px 10px 13px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    width: 50%;
+}
+
+.detail-buttons
+{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}

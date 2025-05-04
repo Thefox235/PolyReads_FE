@@ -493,7 +493,7 @@ const Checkout = () => {
         orderData.checkedItems,
         shippingFee,
         "cash",  // hoặc selectedPaymentMethod nếu nó có giá trị "cash"
-        appliedCoupon
+        appliedCoupon 
       );
 
       if (orderId) {
@@ -594,7 +594,7 @@ const Checkout = () => {
                           <div className="item-details">
                             <div>Số lượng: {item.quantily}</div>
                             <div className="price">
-                              {(item.total ?? 0).toLocaleString("vi-VN", {
+                              {item.total.toLocaleString("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
                               })}

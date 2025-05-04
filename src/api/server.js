@@ -28,7 +28,9 @@ export async function updateProductsDiscount(categoryId, discountId) {
 export async function processPaymentSuccess(orderId, email, orderDetails) {
   try {
     // Giả sử API endpoint được định nghĩa là /api/order/:orderId/email
-    const response = await axios.post(`${BASE_URL}/order/${orderId}/email`, {
+    // const response = await axios.post(`${BASE_URL}/order/${orderId}/email`, {
+    const response = await axios.post(`http://localhost:3000/order/${orderId}/email`, {
+
       email,
       orderDetails,
     });
