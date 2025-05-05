@@ -84,11 +84,11 @@ const ViewUser = () => {
                       className="form-control"
                     >
                       {/* Theo nghiệp vụ: role "1" là User, còn lại là Admin */}
-                      <option value="1">User</option>
-                      <option value="2">Admin</option>
+                      <option value="0">User</option>
+                      <option value="1">Admin</option>
                     </select>
                   ) : (
-                    user.role === "1" ? 'User' : 'Admin'
+                    user.role === "0" ? 'User' : 'Admin'
                   )}
                 </td>
                 <td>
